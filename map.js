@@ -1,11 +1,8 @@
-Game.Map = function(tiles, width, height) {
+// various map drawing utilties
 
-    this._tiles = tiles;
-
-    this._width = width || Game.mapWidth;
+Game.Map = function(width, height) {
+    this._width =  width || Game.mapWidth;
     this._height = height || Game.mapHeight;
-
-    this._items = {};
 };
 
 Game.Map.fillMap = function(width, height, value) {
@@ -19,19 +16,13 @@ Game.Map.fillMap = function(width, height, value) {
     return map;
 };
 
-Map.prototype.checkNext = function(x, y) {    
+Game.Map.ForestBuilder = function(width, height) {
+    Game.Map.call(this, width, height);
 };
 
+Game.Map.ForestBuilder.extend(Game.Map);
 
-Game.Map.Forest = function(width, height) {
-
-    Game.Map.call(this, [], width, height);
-    
-//    this._width = width || Game.mapWidth;
-//    this._height = height || Game.mapHeight;
-};
-
-Game.Map.Forest.prototype.create = function(callback) {
+Game.Map.ForestBuilder.prototype.create = function(callback) {
     var map = Game.Map.fillMap(this._width, this._height, 0);
     for (var i=1; i<this._width; i++) {
         for (var j=1; j<this._height; j++) {
@@ -54,11 +45,6 @@ Game.Map.Forest.prototype.create = function(callback) {
     map[x][y+1] = 2;
     map[x+1][y+1] = 2;
 
-    x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 2));
-    y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 2));
-    var key = x + ',' + y;
-    this._items[key] = Game.ItemRepository.createRandom();
-    
     for (var i=0; i<this._width; i++) {
         for (var j=0; j<this._height; j++) {            
             callback(i, j, map[i][j]);

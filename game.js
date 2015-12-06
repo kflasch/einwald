@@ -3,10 +3,11 @@ var Game = {
     mapHeight: 24,
     display: null,
     engine: null,
-    tiles: [],
     player: null,
+    player2: null,
     turns: 0,
     message: '',
+    zone: null,
     items: {},
 
     init: function() {
@@ -15,6 +16,8 @@ var Game = {
 
         document.body.appendChild(this.display.getContainer());
         
+        this.player = new Game.Entity(Game.PlayerTemplate);
+
         this._generateMap();
 
         var scheduler = new ROT.Scheduler.Simple();
@@ -27,59 +30,57 @@ var Game = {
     _generateMap: function() {
 
         // initialze nested array
+        var tiles = [];
         for (var x=0; x < Game.mapWidth; x++) {
-            this.tiles[x] = [];
+            tiles[x] = [];
             for (var y=0; y < Game.mapHeight; y++) {
-                this.tiles[x][y] = Tile.nullTile;
+                tiles[x][y] = Tile.nullTile;
             }
         }
-        /*
-        var generator = new ROT.Map.Cellular(Game.mapWidth, Game.mapHeight);
-        generator.randomize(0.5);
-        for (var i=0; i<3; i++) {
-            generator.create();
-        }
-        generator.create(function(x, y, value) {
-            if (value === 1) {
-                this.tiles[x][y] = Tile.caveFloorTile;
-            } else {
-                this.tiles[x][y] = Tile.caveWallTile;
-            }
-        }.bind(this));
-        */
-        var generator = new Game.Map.Forest(Game.mapWidth, Game.mapHeight);
-        generator.create(function(x, y, value) {
-            if (value === 1) {
-                this.tiles[x][y] = Tile.tree;
-            } else if (value === 2) {
-                this.tiles[x][y] = Tile.water;
-            } else {
-                this.tiles[x][y] = Tile.grass;
-            }
-        }.bind(this));
 
+        this.zone = new Game.Zone.Forest(tiles);
         
-//        this._drawWholeMap();
-
-        this._createPlayer();
-
-        this._createItems();
+        var pos = this._findEmptyPosition();
+        //this.player = new Player(pos.x, pos.y);
+        this.player._x = pos.x;
+        this.player._y = pos.y;
 
         this.refresh();
     },
 
+    _renderZone: function() {
+        for (var x = 0; x < Game.mapWidth; x++) {
+            for (var y = 0; y < Game.mapHeight; y++) {
+                var glyph = this.zone._tiles[x][y]._glyph;
+                this.display.draw(x, y, glyph._char,
+                                  glyph._foreground, glyph._background);
+            }
+        }
+    },
+    
     _drawWholeMap: function() {
         for (var x = 0; x < Game.mapWidth; x++) {
             for (var y = 0; y < Game.mapHeight; y++) {
-                var glyph = this.tiles[x][y]._glyph;
+                var glyph = this.zone._tiles[x][y]._glyph;
                 this.display.draw(x, y, glyph._char,
                                   glyph._foreground, glyph._background);
             }
         }
     },
 
+    _drawItems: function() {
+
+        var items = this.zone._items;
+        for (key in items) {
+            var parts = key.split(',');
+            var item = items[key];
+            this.display.draw(parseInt(parts[0]), parseInt(parts[1]),
+                              item._char, item._foreground, item._background);
+        }
+    },
+
     _drawEntities: function() {
-        this.player._draw();
+        this.player.draw();
     },
 
     _findEmptyPosition: function() {
@@ -93,25 +94,15 @@ var Game = {
 
     // check if given coordinates are passable (passable terrain and empty)
     _isPassable: function(x, y) {
-        if (this.tiles[x] === undefined ||
-            this.tiles[x][y] === undefined ||
-            this.tiles[x][y]._passable == false) {
+        if (this.zone._tiles[x] === undefined ||
+            this.zone._tiles[x][y] === undefined ||
+            this.zone._tiles[x][y]._passable == false) {
             return false;
         } else {
             return true;
         }
     },
     
-    _createPlayer: function() {
-        var pos = this._findEmptyPosition();
-        this.player = new Player(pos.x, pos.y);
-    },
-
-    _createItems: function() {
-        var pos = this._findEmptyPosition();
-        //Item = new Item
-    },
-
     _updateStatus: function() {
         Game.display.drawText(2, 26, "Name: ");
         Game.display.drawText(2, 27, "Turns: " + Game.turns);
@@ -121,8 +112,10 @@ var Game = {
 
     refresh: function() {
         Game.display.clear();
-        Game._drawWholeMap();
-        Game._drawEntities();
+        Game._renderZone();
+        //Game._drawWholeMap();
+        //Game._drawItems();
+        //Game._drawEntities();
         Game._updateStatus();
     }
 };
@@ -133,6 +126,7 @@ var Player = function(x, y) {
     this._draw();
 };
 
+/*
 Player.prototype.act = function() {
     Game.engine.lock();
     window.addEventListener("keydown", this);
@@ -160,19 +154,16 @@ Player.prototype.handleEvent = function(e) {
     var eventDesc = '';
     
     if (Game._isPassable(newX, newY)) {
-        var glyph = Game.tiles[this._x][this._y]._glyph;
-//        Game.display.draw(this._x, this._y, glyph._char,
-//                      glyph._foreground, glyph._background);
+        var glyph = Game.zone._tiles[this._x][this._y]._glyph;
         this._x = newX;
         this._y = newY;
-//        this._draw();
-        Game.message = 'You pass through ' + Game.tiles[newX][newY]._desc + '.';
+        Game.message = 'You pass through ' + Game.zone._tiles[newX][newY]._desc + '.';
     } else {
-        if (Game.tiles[newX] === undefined ||
-            Game.tiles[newX][newY] === undefined) {
+        if (Game.zone._tiles[newX] === undefined ||
+            Game.zone._tiles[newX][newY] === undefined) {
             Game.message = 'You cannot pass this way.';
         } else {
-            Game.message = (Game.tiles[newX][newY]._desc || 'Something') + ' is in the way.';
+            Game.message = (Game.zone._tiles[newX][newY]._desc || 'Something') + ' is in the way.';
             Game.message = Game.message.capitalize();
         }
     }
@@ -186,6 +177,7 @@ Player.prototype.handleEvent = function(e) {
 Player.prototype._draw = function() {
     Game.display.draw(this._x, this._y, "@", "#ff0");
 };
+*/
 
 window.onload = function() {
     if (!ROT.isSupported()) {

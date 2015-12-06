@@ -4,6 +4,9 @@ Game.Item = function(properties) {
     Game.DynamicGlyph.call(this, properties);
     this._passable = properties['passable'] || true;
     this._name = properties['name'] || '';
+
+    this._x = null;
+    this._y = null;
 };
 
 Game.Item.extend(Game.DynamicGlyph);
