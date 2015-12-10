@@ -32,3 +32,8 @@ Game.ItemRepository.define('book', {
     fg: 'brown'
 });
 
+Game.ItemRepository.define('mushroom', {
+    name: 'mushroom',
+    chr: '\,',
+    fg: 'darkkhaki'
+});

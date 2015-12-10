@@ -3,6 +3,7 @@ var Game = {
     mapHeight: 24,
     display: null,
     engine: null,
+    scheduler: null,
     player: null,
     turns: 0,
     message: '',
@@ -24,14 +25,15 @@ var Game = {
         bindEvent('keydown');
         bindEvent('keypress');
         
+        this.scheduler = new ROT.Scheduler.Simple();
+
         this.player = new Game.Entity(Game.PlayerTemplate);
 
         this._generateMap();
 
-        var scheduler = new ROT.Scheduler.Simple();
-        scheduler.add(this.player, true);
+        this.scheduler.add(this.player, true);
 
-        this.engine = new ROT.Engine(scheduler);
+        this.engine = new ROT.Engine(this.scheduler);
         this.engine.start();
     },
 
@@ -46,12 +48,7 @@ var Game = {
             }
         }
 
-        this.zone = new Game.Zone.Forest(tiles);
-
-        this.player._zone = this.zone;
-        var pos = this._findEmptyPosition();
-        this.player._x = pos.x;
-        this.player._y = pos.y;
+        this.zone = new Game.Zone.Forest(tiles, this.player);
 
         this.refresh();
     },
@@ -82,34 +79,40 @@ var Game = {
     },
 
     _drawEntities: function() {
-        this.player.draw();
-    },
-
-    _findEmptyPosition: function() {
-        var x, y;
-        do {
-            x = Math.floor(ROT.RNG.getUniform() * Game.mapWidth);
-            y = Math.floor(ROT.RNG.getUniform() * Game.mapHeight);
-        } while (!this._isPassable(x,y));
-        return {x: x, y: y};
-    },
-
-    // check if given coordinates are passable (passable terrain and empty)
-    _isPassable: function(x, y) {
-        if (this.zone._tiles[x] === undefined ||
-            this.zone._tiles[x][y] === undefined ||
-            this.zone._tiles[x][y]._passable == false) {
-            return false;
-        } else {
-            return true;
+//        this.player.draw();
+        var zoneEntities = Game.zone._entities;
+        for (key in zoneEntities) {
+            var parts = key.split(',');
+            var entity = zoneEntities[key];
+            if (entity) {
+                this.display.draw(parseInt(parts[0]), parseInt(parts[1]),
+                                  entity._char, entity._foreground, entity._background);
+            }
         }
+
+
     },
-    
+
     _updateStatus: function() {
-        Game.display.drawText(2, 26, "Name: ");
-        Game.display.drawText(2, 27, "Turns: " + Game.turns);
+
+        Game.display.drawText(2, 26, "Turns: " + Game.turns);
 
         Game.display.drawText(2, 29, Game.message);
+
+        var items = Game.player._items;
+        var itemList = "";
+        if (items && items.length > 0) {
+            for (var i = 0; i < items.length; i++) {
+                if (items[i])
+                    if (itemList.length === 0) {
+                        itemList = items[i].describe();
+                    } else {
+                        itemList = itemList + ", " + items[i].describe();
+                    }
+            }
+        }
+        Game.display.drawText(2, 31, "Inventory: " + itemList);
+
     },
 
     refresh: function() {
@@ -155,6 +158,8 @@ Game.handleInput = function(inputType, inputData) {
             Game.movePlayer(0, -1);
         } else if (inputData.keyCode === ROT.VK_DOWN) {
             Game.movePlayer(0, 1);
+        } else if (inputData.keyCode === ROT.VK_D) {
+            Game.message = "You can't figure out how to drop anything.";
         } else if (inputData.keyCode === ROT.VK_G) {
             var items = Game.zone.getItemsAt(Game.player._x, Game.player._y);
             if (items && items.length === 1) {
@@ -174,7 +179,7 @@ Game.handleInput = function(inputType, inputData) {
         // for multi-key input (shift-char, etc)
         var keyChar = String.fromCharCode(inputData.charCode);
         if (keyChar === '?') {
-            Game.message = 'help';
+            Game.message = "'g' to pick up";
         } else {
             return;
         }
