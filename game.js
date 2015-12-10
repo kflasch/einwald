@@ -121,6 +121,17 @@ var Game = {
         Game._drawItems();
         Game._drawEntities();
         Game._updateStatus();
+    },
+
+    keyMap: {
+        38: 0,
+        33: 1,
+        39: 2,
+        34: 3,
+        40: 4,
+        35: 5,
+        37: 6,
+        36: 7
     }
 };
 
@@ -132,32 +143,10 @@ Game.movePlayer = function(dX, dY) {
 
 Game.handleInput = function(inputType, inputData) {
     if (inputType === 'keydown') {
-        /*
-        var keyMap = {};
-        keyMap[38] = 0;
-        keyMap[33] = 1;
-        keyMap[39] = 2;
-        keyMap[34] = 3;
-        keyMap[40] = 4;
-        keyMap[35] = 5;
-        keyMap[37] = 6;
-        keyMap[36] = 7;
 
-        var code = e.keyCode;
-        if (!(code in keyMap)) { return; }
-
-        var dir = ROT.DIRS[8][keyMap[code]];
-        var newX = this._x + dir[0];
-        var newY = this._y + dir[1];
-        */
-        if (inputData.keyCode === ROT.VK_LEFT) {
-            Game.movePlayer(-1, 0);
-        } else if (inputData.keyCode === ROT.VK_RIGHT) {
-            Game.movePlayer(1, 0);
-        } else if (inputData.keyCode === ROT.VK_UP) {
-            Game.movePlayer(0, -1);
-        } else if (inputData.keyCode === ROT.VK_DOWN) {
-            Game.movePlayer(0, 1);
+        if (inputData.keyCode in Game.keyMap) {
+            var dir = ROT.DIRS[8][Game.keyMap[inputData.keyCode]];
+            Game.movePlayer(dir[0], dir[1]);
         } else if (inputData.keyCode === ROT.VK_D) {
             Game.message = "You can't figure out how to drop anything.";
         } else if (inputData.keyCode === ROT.VK_G) {
