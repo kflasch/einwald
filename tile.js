@@ -10,7 +10,7 @@ Tile = function(properties) {
 Tile.nullTile = new Tile({
 });
 Tile.tree = new Tile({
-    chr: 'T',
+    chr: '♣', // ♠
     fg: 'green',
     passable: false,
     desc: 'a tree'

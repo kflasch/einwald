@@ -137,6 +137,22 @@ Game.EntityMixins.TaskActor = {
     }
 };
 
+Game.EntityMixins.Killable = {
+    name: 'Killable',
+    init: function(template) {
+        this._maxHP = template['maxHP'] || 10;
+        this._hp = template['hp'] || this._maxHP;
+    }
+};
+
+Game.EntityMixins.ExperienceGainer = {
+    name: 'ExperienceGainer',
+    init: function(template) {
+        this._level = template['level'] || 1;
+        this._xp = template['xp'] || 0;
+    }
+};
+
 // entities
 
 Game.PlayerTemplate = {
@@ -144,6 +160,8 @@ Game.PlayerTemplate = {
     chr: '@',
     fg: '#ff0',
     mixins: [Game.EntityMixins.PlayerActor,
+             Game.EntityMixins.Killable,
+             Game.EntityMixins.ExperienceGainer,
              Game.EntityMixins.InventoryHolder]
 };
 

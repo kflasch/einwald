@@ -12,9 +12,9 @@ var Game = {
 
     init: function() {
         this.display = new ROT.Display({fontFamily:"droid sans mono, monospace",
-                                        fontSize: 18, width:100, height:40});
+                                        fontSize: 18, width:90, height:40});
 
-        document.body.appendChild(this.display.getContainer());
+        document.getElementById('ROTDisplay').appendChild(this.display.getContainer());
         
         // do we need to remove these while processing game events?
         var bindEvent = function(event) {
@@ -79,7 +79,6 @@ var Game = {
     },
 
     _drawEntities: function() {
-//        this.player.draw();
         var zoneEntities = Game.zone._entities;
         for (key in zoneEntities) {
             var parts = key.split(',');
@@ -95,9 +94,7 @@ var Game = {
 
     _updateStatus: function() {
 
-        Game.display.drawText(2, 26, "Turns: " + Game.turns);
-
-        Game.display.drawText(2, 29, Game.message);
+        Game.display.drawText(2, 26, Game.message);
 
         var items = Game.player._items;
         var itemList = "";
@@ -111,7 +108,7 @@ var Game = {
                     }
             }
         }
-        Game.display.drawText(2, 31, "Inventory: " + itemList);
+        Game.display.drawText(2, 30, "Inventory: " + itemList);
 
     },
 
@@ -121,6 +118,7 @@ var Game = {
         Game._drawItems();
         Game._drawEntities();
         Game._updateStatus();
+        Game.UI.update();
     },
 
     keyMap: {
@@ -133,6 +131,16 @@ var Game = {
         37: 6,
         36: 7
     }
+};
+
+Game.dialog = function() {
+
+    Game.display.clear();
+    for (var i=3; i<40; i++) {
+        Game.display.draw(i, 2, '-',
+                          'white', 'black');
+    }
+    
 };
 
 Game.movePlayer = function(dX, dY) {
@@ -168,6 +176,7 @@ Game.handleInput = function(inputType, inputData) {
         // for multi-key input (shift-char, etc)
         var keyChar = String.fromCharCode(inputData.charCode);
         if (keyChar === '?') {
+//            Game.dialog();
             Game.message = "'g' to pick up";
         } else {
             return;

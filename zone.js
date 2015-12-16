@@ -1,5 +1,7 @@
 Game.Zone = function(tiles) {
 
+    this._name = "";
+    
     this._tiles = tiles;
 
     this._width =  tiles.length || Game.mapWidth;
@@ -114,6 +116,8 @@ Game.Zone.Forest = function(tiles, player) {
 
     Game.Zone.call(this, tiles);
 
+    this._name = "Forest";
+    
     var generator = new Game.Map.ForestBuilder();
     generator.create(function(x, y, value) {
         if (value === 1) {
