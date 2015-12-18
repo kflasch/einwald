@@ -61,3 +61,25 @@ body {
     background-color: rgba(34, 34, 34, 0.125);
     border: 1px rgba(34, 34, 34, 0.75) solid;
 }
+
+#overlay {
+    visibility: hidden;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width:100%;
+    height:100%;
+    text-align:center;
+    z-index: 1000;
+}
+
+#overlay div {
+    width: 400px;
+    height: 500px;
+    margin: 100px auto;
+    color: #DEDEDE;
+    background-color: rgba(34, 34, 34, 0.85);
+    text-align: left;
+    border:1px solid #333;
+    padding:15px;
+}

@@ -1,8 +1,4 @@
 Game.UI = {
-    init: function() {
-        
-    },
-
     update: function() {
         Game.UI.Status.update();
         Game.UI.Messages.update();
@@ -73,4 +69,43 @@ Game.UI.Messages = {
         output += "</span>";
         return output;        
     }
+};
+
+Game.UI.Overlay = {
+
+    toggle: function() {
+        var elem = document.getElementById("overlay");
+        elem.style.visibility = (elem.style.visibility == "visible") ? "hidden" : "visible";
+    },
+
+    show: function(text) {
+        var elem = document.getElementById("overlay");
+        elem.style.visibility = "visible";
+        output = "<div>" + text + "</div>";
+        elem.innerHTML = output;
+    },
+
+    hide: function() {
+        var elem = document.getElementById("overlay");
+        elem.innerHTML = "";
+        elem.style.visibility = "hidden";
+    },
+
+    showHelp: function() {
+        var elem = document.getElementById("overlay");
+        // if help screen already open, clear it and hide
+        if (elem.style.visibility == "visible") {
+            elem.style.visibility = "hidden";
+            elem.innerHTML = "";
+            return;
+        }
+        elem.style.visibility = "visible";
+        var output = "<div>";
+        output += "<span style='color:orange'>Help</span> <br />";
+        output += "arrow keys or numpad to move <br />";
+        output += "'g' to pick up <br />";
+        output += "</div>";
+        elem.innerHTML = output;        
+    }    
+    
 };

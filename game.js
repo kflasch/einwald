@@ -155,8 +155,8 @@ Game.handleInput = function(inputType, inputData) {
         // for multi-key input (shift-char, etc)
         var keyChar = String.fromCharCode(inputData.charCode);
         if (keyChar === '?') {
-//            Game.dialog();
-            Game.message = "'g' to pick up";
+            Game.UI.Overlay.showHelp();
+//            Game.UI.Overlay.show("'g' to pick up");
         } else {
             return;
         }
