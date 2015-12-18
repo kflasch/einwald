@@ -7,6 +7,20 @@ body {
     color: #b82;
 }
 
+#wrapper {
+    width: 100%
+}
+
+#ROTDisplay {
+    margin-right: 20px;
+    height: 100%;
+    background-color: #000000;
+    position: fixed;
+//    display: block;
+    padding: 5px;
+    float: left;
+}
+
 .ui {
     width: 350px;
     height: 100%;
@@ -28,11 +42,22 @@ body {
 //    display: none;
 }
 
-#ROTDisplay {
-    margin-right: 20px;
-    height: 100%;
-    background-color: #000000;
-    position: fixed;
-    display: block;
-    padding: 5px;
+.uibot {
+    width: 900px;
+    margin-top: 460px;
+    float: left;
+    position: relative;
+    display: inline-block;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#messages {
+    text-align: left;
+    padding: 8px 10px 15px;
+    margin: 4px 5px 0px;
+    color: #DEDEDE;
+    height: 100px;
+    background-color: rgba(34, 34, 34, 0.125);
+    border: 1px rgba(34, 34, 34, 0.75) solid;
 }

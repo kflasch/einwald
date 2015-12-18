@@ -92,32 +92,11 @@ var Game = {
 
     },
 
-    _updateStatus: function() {
-
-        Game.display.drawText(2, 26, Game.message);
-
-        var items = Game.player._items;
-        var itemList = "";
-        if (items && items.length > 0) {
-            for (var i = 0; i < items.length; i++) {
-                if (items[i])
-                    if (itemList.length === 0) {
-                        itemList = items[i].describe();
-                    } else {
-                        itemList = itemList + ", " + items[i].describe();
-                    }
-            }
-        }
-        Game.display.drawText(2, 30, "Inventory: " + itemList);
-
-    },
-
     refresh: function() {
         Game.display.clear();
         Game._renderZone();
         Game._drawItems();
         Game._drawEntities();
-        Game._updateStatus();
         Game.UI.update();
     },
 
