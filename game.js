@@ -156,12 +156,11 @@ Game.handleInput = function(inputType, inputData) {
         var keyChar = String.fromCharCode(inputData.charCode);
         if (keyChar === '?') {
             Game.UI.Overlay.showHelp();
-//            Game.UI.Overlay.show("'g' to pick up");
         } else {
             return;
         }
         
-        Game.engine.unlock();
+//        Game.engine.unlock();
     }
 
 };
