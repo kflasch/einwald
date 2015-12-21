@@ -1,6 +1,8 @@
 var Game = {
-    mapWidth: 80,
-    mapHeight: 24,
+    canvasWidth: 80,
+    canvasHeight: 24,
+    mapWidth: 100,
+    mapHeight: 30,
     display: null,
     engine: null,
     scheduler: null,
@@ -12,7 +14,7 @@ var Game = {
 
     init: function() {
         this.display = new ROT.Display({fontFamily:"droid sans mono, monospace",
-                                        fontSize: 18, width:90, height:40});
+                                        fontSize: 18, width:this.canvasWidth, height:this.canvasHeight});
 
         document.getElementById('ROTDisplay').appendChild(this.display.getContainer());
         
@@ -44,7 +46,7 @@ var Game = {
         for (var x=0; x < Game.mapWidth; x++) {
             tiles[x] = [];
             for (var y=0; y < Game.mapHeight; y++) {
-                tiles[x][y] = Tile.nullTile;
+                tiles[x][y] = Game.Tile.nullTile;
             }
         }
 
@@ -54,49 +56,54 @@ var Game = {
     },
 
     _renderZone: function() {
+
+        var offsets = this._getCanvasOffsets();
+        var topLeftX = offsets.x;
+        var topLeftY = offsets.y;
+
+        for (var x = topLeftX; x < topLeftX + Game.canvasWidth; x++) {
+            for (var y = topLeftY; y < topLeftY + Game.canvasHeight; y++) {
+                var glyph = this.zone.getTile(x, y);
+                if (glyph !== Game.Tile.nullTile) {
+                    var fg = 'darkGray';
+                    var items = this.zone.getItemsAt(x, y);
+                    if (items) 
+                        glyph = items[items.length - 1];
+                    var entity = this.zone.getEntityAt(x, y);
+                    if (entity)
+                        glyph = entity;
+                    fg = glyph._foreground;
+                    this.display.draw(x - topLeftX, y - topLeftY, glyph._char,
+                                      fg, glyph._background);
+                }
+            }
+        }
+        
+    },
+    
+    _renderZoneOld: function() {
+        
         for (var x = 0; x < Game.mapWidth; x++) {
             for (var y = 0; y < Game.mapHeight; y++) {
-                var glyph = this.zone._tiles[x][y]._glyph;
+                var glyph = this.zone._tiles[x][y];
                 this.display.draw(x, y, glyph._char,
                                   glyph._foreground, glyph._background);
             }
         }
         
     },
+
+    _getCanvasOffsets: function() {
+        var topLeftX = Math.max(0, this.player._x - (Game.canvasWidth / 2));
+        topLeftX = Math.min(topLeftX, Game.mapWidth - Game.canvasWidth);
+        var topLeftY = Math.max(0, this.player._y - (Game.canvasHeight / 2));
+        topLeftY = Math.min(topLeftY, Game.mapHeight - Game.canvasHeight);
+        return { x: topLeftX, y: topLeftY };
+    },
     
-    _drawItems: function() {
-
-        var zoneItems = this.zone._items;
-        for (key in zoneItems) {
-            var parts = key.split(',');
-            var itemsAt = zoneItems[key];
-            if (itemsAt) {
-                var item = itemsAt[0];
-                this.display.draw(parseInt(parts[0]), parseInt(parts[1]),
-                              item._char, item._foreground, item._background);
-            }
-        }
-    },
-
-    _drawEntities: function() {
-        var zoneEntities = Game.zone._entities;
-        for (key in zoneEntities) {
-            var parts = key.split(',');
-            var entity = zoneEntities[key];
-            if (entity) {
-                this.display.draw(parseInt(parts[0]), parseInt(parts[1]),
-                                  entity._char, entity._foreground, entity._background);
-            }
-        }
-
-
-    },
-
     refresh: function() {
         Game.display.clear();
         Game._renderZone();
-        Game._drawItems();
-        Game._drawEntities();
         Game.UI.update();
     },
 
@@ -158,9 +165,7 @@ Game.handleInput = function(inputType, inputData) {
             Game.UI.Overlay.showHelp();
         } else {
             return;
-        }
-        
-//        Game.engine.unlock();
+        }        
     }
 
 };

@@ -14,9 +14,9 @@ Game.Zone = function(tiles) {
 
 Game.Zone.prototype.getTile = function(x, y) {
     if (x < 0 || x >= this._width || y < 0 || y >= this._height) {
-        return Tile.nullTile;
+        return Game.Tile.nullTile;
     } else {
-        return this._tiles[x][y] || Tile.nullTile;
+        return this._tiles[x][y] || Game.Tile.nullTile;
     }
 };
 
@@ -121,11 +121,11 @@ Game.Zone.Forest = function(tiles, player) {
     var generator = new Game.Map.ForestBuilder();
     generator.create(function(x, y, value) {
         if (value === 1) {
-            this._tiles[x][y] = Tile.tree;
+            this._tiles[x][y] = Game.Tile.tree;
         } else if (value === 2) {
-            this._tiles[x][y] = Tile.water;
+            this._tiles[x][y] = Game.Tile.water;
         } else {
-            this._tiles[x][y] = Tile.grass;
+            this._tiles[x][y] = Game.Tile.grass;
         }
     }.bind(this));
 

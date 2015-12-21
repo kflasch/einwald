@@ -48,7 +48,7 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
              descMsg = 'You pass through ' + tile._desc + '.';
         }
     } else {
-        if (tile == Tile.nullTile) {
+        if (tile == Game.Tile.nullTile) {
              descMsg = "You cannot pass this way.";
         } else {
              descMsg = (tile._desc || 'Something') + ' is in the way.';

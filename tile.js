@@ -1,38 +1,40 @@
-Tile = function(properties) {
+Game.Tile = function(properties) {
     properties = properties || {};
+
+    Game.Glyph.call(this, properties);
     
-    this._glyph = new Game.Glyph(properties);
     this._passable = properties['passable'] || false;
     this._desc = properties['desc'] || '';
 };
 
+Game.Tile.extend(Game.Glyph);
 
-Tile.nullTile = new Tile({
+Game.Tile.nullTile = new Game.Tile({
 });
-Tile.tree = new Tile({
+Game.Tile.tree = new Game.Tile({
     chr: '♣', // ♠
     fg: 'green',
     passable: false,
     desc: 'a tree'
 });
-Tile.grass = new Tile({
+Game.Tile.grass = new Game.Tile({
     chr: '.',
     fg: 'green',
     passable: true,
     desc: 'grass'
 });
-Tile.water = new Tile({
+Game.Tile.water = new Game.Tile({
     chr: '~',
     fg: 'blue',
     passable: true,
     desc: 'water'
 });
-Tile.caveFloorTile = new Tile({
+Game.Tile.caveFloorTile = new Game.Tile({
     chr: '.',
     fg: 'white',
     passable: true
 });
-Tile.caveWallTile = new Tile({
+Game.Tile.caveWallTile = new Game.Tile({
     chr: '#',
     fg: 'goldenrod',
     passable: false
