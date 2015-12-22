@@ -7,6 +7,8 @@ Game.Zone = function(tiles) {
     this._width =  tiles.length || Game.mapWidth;
     this._height = tiles[0].length || Game.mapHeight;
 
+    this._fov = this.setupFOV();
+
     // map of 'x,y' to items, entities
     this._items = {};
     this._entities = {};
@@ -18,6 +20,13 @@ Game.Zone.prototype.getTile = function(x, y) {
     } else {
         return this._tiles[x][y] || Game.Tile.nullTile;
     }
+};
+
+Game.Zone.prototype.setupFOV = function() {
+    var thisZone = this;
+    return new ROT.FOV.PreciseShadowcasting(function(x, y) {
+        return !thisZone.getTile(x, y)._blocksLight;
+    }, {topology: 8});
 };
 
 Game.Zone.prototype.getItemsAt = function(x, y) {

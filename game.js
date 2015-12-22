@@ -61,18 +61,28 @@ var Game = {
         var topLeftX = offsets.x;
         var topLeftY = offsets.y;
 
+        var visCells = {};
+        this.zone._fov.compute(
+            this.player._x, this.player._y,
+            this.player._sightRadius,
+            function(x, y, radius, visibility) {
+                visCells[x + "," + y] = true;
+            });
+
         for (var x = topLeftX; x < topLeftX + Game.canvasWidth; x++) {
             for (var y = topLeftY; y < topLeftY + Game.canvasHeight; y++) {
                 var glyph = this.zone.getTile(x, y);
                 if (glyph !== Game.Tile.nullTile) {
                     var fg = 'darkGray';
-                    var items = this.zone.getItemsAt(x, y);
-                    if (items) 
-                        glyph = items[items.length - 1];
-                    var entity = this.zone.getEntityAt(x, y);
-                    if (entity)
-                        glyph = entity;
-                    fg = glyph._foreground;
+                    if (visCells[x + "," + y]) {
+                        var items = this.zone.getItemsAt(x, y);
+                        if (items) 
+                            glyph = items[items.length - 1];
+                        var entity = this.zone.getEntityAt(x, y);
+                        if (entity)
+                            glyph = entity;
+                        fg = glyph._foreground;
+                    }
                     this.display.draw(x - topLeftX, y - topLeftY, glyph._char,
                                       fg, glyph._background);
                 }

@@ -5,6 +5,7 @@ Game.Entity = function(properties) {
 
     this._x = properties['x'] || 0;
     this._y = properties['y'] || 0;
+    this._sightRadius = properties['sightRadius'] || 0;
 
     this._zone = null;
     this._alive = true;
@@ -159,6 +160,7 @@ Game.PlayerTemplate = {
     name: 'player',
     chr: '@',
     fg: '#ff0',
+    sightRadius: 6,
     mixins: [Game.EntityMixins.PlayerActor,
              Game.EntityMixins.Killable,
              Game.EntityMixins.ExperienceGainer,
@@ -172,5 +174,6 @@ Game.EntityRepository.define('sb', {
     name: 'sb',
     chr: 's',
     fg: 'red',
+    sightRadius: 6,
     mixins: [Game.EntityMixins.TaskActor]
 });
