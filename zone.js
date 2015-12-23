@@ -7,11 +7,13 @@ Game.Zone = function(tiles) {
     this._width =  tiles.length || Game.mapWidth;
     this._height = tiles[0].length || Game.mapHeight;
 
-    this._fov = this.setupFOV();
+    this._fov = this._setupFOV();
 
     // map of 'x,y' to items, entities
     this._items = {};
     this._entities = {};
+
+    this._explored = this._setupExplored();
 };
 
 Game.Zone.prototype.getTile = function(x, y) {
@@ -22,11 +24,36 @@ Game.Zone.prototype.getTile = function(x, y) {
     }
 };
 
-Game.Zone.prototype.setupFOV = function() {
+Game.Zone.prototype._setupFOV = function() {
     var thisZone = this;
     return new ROT.FOV.PreciseShadowcasting(function(x, y) {
         return !thisZone.getTile(x, y)._blocksLight;
     }, {topology: 8});
+};
+
+Game.Zone.prototype._setupExplored = function() {
+    var arr = [];
+    for (var x=0; x < this._width; x++) {
+        arr[x] = [];
+        for (var y=0; y < this._height; y++) {
+            arr[x][y] = false;
+        }
+    }
+    return arr;
+};
+
+Game.Zone.prototype.setExplored = function(x, y, state) {
+    if (this.getTile(x, y) !== Game.Tile.nullTile) {
+        this._explored[x][y] = state;
+    }
+};
+
+Game.Zone.prototype.isExplored = function(x, y) {
+    if (this.getTile(x, y) !== Game.Tile.nullTile) {
+        return this._explored[x][y];
+    } else {
+        return false;
+    }
 };
 
 Game.Zone.prototype.getItemsAt = function(x, y) {

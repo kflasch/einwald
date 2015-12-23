@@ -62,47 +62,45 @@ var Game = {
         var topLeftY = offsets.y;
 
         var visCells = {};
+        var thisZone = this.zone;
         this.zone._fov.compute(
             this.player._x, this.player._y,
             this.player._sightRadius,
             function(x, y, radius, visibility) {
+                //var dx = x - this.player._x;
+                //var dy = y - this.player._y;
+                //if (dx*dx+dy*dy*Math.sqrt(3) > this.player._sightRadius*this.player._sightRadius)
+                //    return;
                 visCells[x + "," + y] = true;
+                //visCells[x + "," + y] = visibility;
+                thisZone.setExplored(x, y, true);
             });
 
         for (var x = topLeftX; x < topLeftX + Game.canvasWidth; x++) {
             for (var y = topLeftY; y < topLeftY + Game.canvasHeight; y++) {
-                var glyph = this.zone.getTile(x, y);
-                if (glyph !== Game.Tile.nullTile) {
-                    var fg = 'darkGray';
-                    if (visCells[x + "," + y]) {
-                        var items = this.zone.getItemsAt(x, y);
-                        if (items) 
-                            glyph = items[items.length - 1];
-                        var entity = this.zone.getEntityAt(x, y);
-                        if (entity)
-                            glyph = entity;
-                        fg = glyph._foreground;
+                if (this.zone.isExplored(x, y)) {
+                    var glyph = this.zone.getTile(x, y);
+                    if (glyph !== Game.Tile.nullTile) {
+                        var fg = glyph._darkfg;
+                        if (visCells[x + "," + y]) {
+                            var items = this.zone.getItemsAt(x, y);
+                            if (items) 
+                                glyph = items[items.length - 1];
+                            var entity = this.zone.getEntityAt(x, y);
+                            if (entity)
+                                glyph = entity;
+                            fg = glyph._foreground;
+                            //fg = Game.shadeColor(glyph._foreground, visCells[x + "," + y]);
+                        }
+                        this.display.draw(x - topLeftX, y - topLeftY, glyph._char,
+                                          fg, glyph._background);
                     }
-                    this.display.draw(x - topLeftX, y - topLeftY, glyph._char,
-                                      fg, glyph._background);
                 }
             }
         }
         
     },
     
-    _renderZoneOld: function() {
-        
-        for (var x = 0; x < Game.mapWidth; x++) {
-            for (var y = 0; y < Game.mapHeight; y++) {
-                var glyph = this.zone._tiles[x][y];
-                this.display.draw(x, y, glyph._char,
-                                  glyph._foreground, glyph._background);
-            }
-        }
-        
-    },
-
     _getCanvasOffsets: function() {
         var topLeftX = Math.max(0, this.player._x - (Game.canvasWidth / 2));
         topLeftX = Math.min(topLeftX, Game.mapWidth - Game.canvasWidth);
@@ -129,14 +127,11 @@ var Game = {
     }
 };
 
-Game.dialog = function() {
-
-    Game.display.clear();
-    for (var i=3; i<40; i++) {
-        Game.display.draw(i, 2, '-',
-                          'white', 'black');
-    }
-    
+Game.shadeColor = function(colStr, vis) {
+    var colArr = ROT.Color.fromString(colStr);
+    //    var shadeCol = [255*vis, 255*vis, 255*vis];
+    colArr = [colArr[0]*vis, colArr[1]*vis, colArr[2]*vis];
+    return ROT.Color.toHex(colArr);
 };
 
 Game.movePlayer = function(dX, dY) {

@@ -15,21 +15,24 @@ Game.Tile.nullTile = new Game.Tile({
 });
 Game.Tile.tree = new Game.Tile({
     chr: '♣', // ♠
-    fg: 'green',
+    fg: 'rgb(0,128,0)',
+    dfg: ROT.Color.toHex(ROT.Color.multiply([0,128,0], [20, 100, 15])),
     passable: false,
     blocksLight: true,
     desc: 'a tree'
 });
 Game.Tile.grass = new Game.Tile({
     chr: '.',
-    fg: 'green',
+    fg: 'rgb(0,128,0)',
+    dfg: ROT.Color.toHex(ROT.Color.multiply([0,128,0], [20, 100, 15])),
     passable: true,
     blocksLight: false,
     desc: 'grass'
 });
 Game.Tile.water = new Game.Tile({
     chr: '~',
-    fg: 'blue',
+    fg: 'rgb(0, 0, 160)',
+    dfg: ROT.Color.toHex(ROT.Color.multiply([0,0,160], [20, 100, 100])),
     passable: true,
     blocksLight: false,
     desc: 'water'
