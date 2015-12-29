@@ -106,6 +106,9 @@ Game.UI.Overlay = {
         output += "'g' to pick up <br />";
         output += "</div>";
         elem.innerHTML = output;        
-    }    
+    },
+
+    handleInput: function() {
+    }
     
 };

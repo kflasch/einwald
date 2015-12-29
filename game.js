@@ -11,6 +11,8 @@ var Game = {
     message: '',
     zone: null,
     items: {},
+    overlay: null,
+    currentDialog: null,
 
     init: function() {
         this.display = new ROT.Display({fontFamily:"droid sans mono, monospace",
@@ -21,7 +23,11 @@ var Game = {
         // do we need to remove these while processing game events?
         var bindEvent = function(event) {
             window.addEventListener(event, function(e) {
-                Game.handleInput(event, e);
+                if (Game.currentDialog) {
+                    Game.currentDialog.handleInput(event, e);
+                } else {
+                    Game.handleInput(event, e);
+                }
             });
         };
         bindEvent('keydown');
@@ -146,6 +152,9 @@ Game.handleInput = function(inputType, inputData) {
         if (inputData.keyCode in Game.keyMap) {
             var dir = ROT.DIRS[8][Game.keyMap[inputData.keyCode]];
             Game.movePlayer(dir[0], dir[1]);
+        } else if (inputData.keyCode === ROT.VK_I) {
+            Game.currentDialog = new Game.Dialog.Inv();
+            Game.currentDialog.show();
         } else if (inputData.keyCode === ROT.VK_D) {
             Game.message = "You can't figure out how to drop anything.";
         } else if (inputData.keyCode === ROT.VK_G) {
@@ -167,7 +176,8 @@ Game.handleInput = function(inputType, inputData) {
         // for multi-key input (shift-char, etc)
         var keyChar = String.fromCharCode(inputData.charCode);
         if (keyChar === '?') {
-            Game.UI.Overlay.showHelp();
+            Game.currentDialog = new Game.Dialog.Help();
+            Game.currentDialog.show();
         } else {
             return;
         }        
