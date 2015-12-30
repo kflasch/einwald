@@ -25,8 +25,8 @@ Game.UI.Status = {
         output += "Location: " + Game.zone._name;
         output += "<br />";
         output += "<br />";
-        output += "Inventory: <br />";
-        output += this.getInv();
+//        output += "Inventory: <br />";
+//        output += this.getInv();
         return output;
     },
 

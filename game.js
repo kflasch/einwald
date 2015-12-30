@@ -11,7 +11,6 @@ var Game = {
     message: '',
     zone: null,
     items: {},
-    overlay: null,
     currentDialog: null,
 
     init: function() {
@@ -153,10 +152,12 @@ Game.handleInput = function(inputType, inputData) {
             var dir = ROT.DIRS[8][Game.keyMap[inputData.keyCode]];
             Game.movePlayer(dir[0], dir[1]);
         } else if (inputData.keyCode === ROT.VK_I) {
-            Game.currentDialog = new Game.Dialog.Inv();
+            Game.currentDialog = Game.Dialog.invDialog;
             Game.currentDialog.show();
         } else if (inputData.keyCode === ROT.VK_D) {
-            Game.message = "You can't figure out how to drop anything.";
+            Game.currentDialog = Game.Dialog.dropDialog;
+            Game.currentDialog.show();
+//            Game.message = "You can't figure out how to drop anything.";
         } else if (inputData.keyCode === ROT.VK_G) {
             var items = Game.zone.getItemsAt(Game.player._x, Game.player._y);
             if (items && items.length === 1) {

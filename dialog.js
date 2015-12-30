@@ -2,14 +2,16 @@ Game.Dialog = function(properties) {
 
     properties = properties || {};
     
-    this._title = '';
+    this._title = properties['title'] || '';
     this._modal = true;
 };
 
 Game.Dialog.prototype.show = function() {
     var elem = document.getElementById("overlay");
     elem.style.visibility = "visible";
-    output = "<div>" + this.getOutput() + "</div>";
+    output = "<div>";
+    output += "<span style='color:orange'>" + this._title + "</span> <br />";
+    output += this.getOutput() + "</div>";
     elem.innerHTML = output;
     Game.currentDialog = this;
 };
@@ -29,15 +31,17 @@ Game.Dialog.prototype.getOutput = function() {
 };
 
 Game.Dialog.Help = function() {
-    Game.Dialog.call(this);
+    var properties = { title: 'Help' };
+    Game.Dialog.call(this, properties);
 };
 
 Game.Dialog.Help.extend(Game.Dialog);
 
 Game.Dialog.Help.prototype.getOutput = function() {
-    var output = "<span style='color:orange'>Help</span> <br />";
-    output += "arrow keys or numpad to move <br />";
+    var output = "arrow keys or numpad to move <br />";
     output += "'g' to pick up <br />";
+    output += "'i' to show inventory <br />";
+    output += "'ESC' to exit screens <br />";
     return output;
 };
 
@@ -55,24 +59,58 @@ Game.Dialog.Help.prototype.handleInput = function(inputType, inputData) {
 };
 
 
-Game.Dialog.Inv = function() {
-    Game.Dialog.call(this);
+// item dialogs
+
+
+Game.Dialog.Items = function(properties) {
+    this._selectedIndices = {};
+    Game.Dialog.call(this, properties);
 };
 
-Game.Dialog.Inv.extend(Game.Dialog);
+Game.Dialog.Items.extend(Game.Dialog);
 
-Game.Dialog.Inv.prototype.getOutput = function() {
-    var output = "<span style='color:orange'>Inventory</span> <br />";
-    output += " <br />";
-    output += " <br />";
+Game.Dialog.Items.prototype.getOutput = function() {
+    var output = this.getInv();
+    //output += " <br />";
+    //output += " <br />";
     return output;
 };
 
-Game.Dialog.Inv.prototype.handleInput = function(inputType, inputData) {
+Game.Dialog.Items.prototype.getInv = function() {
+    var items = Game.player._items;
+    var itemListText = "";
+    if (items && items.length > 0) {
+        for (var i = 0; i < items.length; i++) {
+            if (items[i]) {
+                var letter = String.fromCharCode(i+97);
+                var status = "";
+                var itemText = letter + " - " + items[i].describe() + status;
+                itemListText = itemListText + itemText + "<br />";
+            }
+        }
+    }
+    return itemListText;
+};
+
+Game.Dialog.Items.prototype.handleInput = function(inputType, inputData) {
     if (inputType === 'keydown') {
         if (inputData.keyCode === ROT.VK_ESCAPE) {
             this.hide();
-        } else if (inputData.keyCode === ROT.VK_I) {
+        } else if (inputData.keyCode >= ROT.VK_A &&
+                   inputData.keyCode <= ROT.VK_Z) {
+            var itemIndex = inputData.keyCode - ROT.VK_A;
+            var items = Game.player._items;
+            if (items[itemIndex]) {
+                
+            }
         }
     }
 };
+
+Game.Dialog.invDialog = new Game.Dialog.Items({
+    title: 'Inventory'
+});
+
+Game.Dialog.dropDialog = new Game.Dialog.Items({
+    title: 'Drop'
+});
