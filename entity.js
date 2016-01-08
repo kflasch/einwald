@@ -97,9 +97,13 @@ Game.EntityMixins.InventoryHolder = {
         }
         return false;
     },
+    removeItem: function(i) {
+        // TODO: unequip/etc
+        this._items[i] = null;
+    },
     pickupItems: function() {
         var zoneItems = this._zone.getItemsAt(this._x, this._y);
-        
+
         if (this.addItem(zoneItems[0])) {
             zoneItems.splice([0], 1);
         } else {
@@ -108,6 +112,32 @@ Game.EntityMixins.InventoryHolder = {
 
         this._zone.setItemsAt(this._x, this._y, zoneItems);
         return true;
+    },
+    pickupItems: function(indices) {
+        var zoneItems = this._zone.getItemsAt(this._x, this._y);
+        var added = 0;
+        for (var i=0; i < indices.length; i++) {
+            // need to modify index since splice removes element from zoneItems
+            if (this.addItem(zoneItems[indices[i] - added])) {
+                zoneItems.splice(indices[i] - added, 1);
+                added++;
+            } else {
+                // can't pick up item
+                console.log("can't pick up item");
+                break;
+            }
+        }
+        this._zone.setItemsAt(this._x, this._y, zoneItems);
+        return added === indices.length;
+    },
+    dropItems: function(indices) {
+        for (var i=0; i < indices.length; i++) {
+            if (this._items[i]) {
+                if (this._zone)
+                    this._zone.addItem(this._x, this._y, this._items[i]);
+                this.removeItem(i);
+            }
+        }
     }
 };
 

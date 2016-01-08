@@ -155,16 +155,21 @@ Game.handleInput = function(inputType, inputData) {
             Game.currentDialog = Game.Dialog.invDialog;
             Game.currentDialog.show();
         } else if (inputData.keyCode === ROT.VK_D) {
-            Game.currentDialog = Game.Dialog.dropDialog;
+            Game.currentDialog = new Game.Dialog.Items(Game.Dialog.dropProp);
             Game.currentDialog.show();
-//            Game.message = "You can't figure out how to drop anything.";
         } else if (inputData.keyCode === ROT.VK_G) {
             var items = Game.zone.getItemsAt(Game.player._x, Game.player._y);
+            console.log(items);
             if (items && items.length === 1) {
                 var item = items[0];
-                if (Game.player.pickupItems()) {
+                if (Game.player.pickupItems([0])) {
                     Game.message = "You pick up a " + item.describe() + ".";
+                } else {
+                    Game.message = "You can't pick the " + item.describe() + " up.";
                 }
+            } else if (items && items.length > 0) {
+                Game.currentDialog = new Game.Dialog.Items(Game.Dialog.pickupProp);
+                Game.currentDialog.show();
             } else {
                 Game.message = "There is nothing here to pick up.";
             }

@@ -26,9 +26,15 @@ Game.Dialog.prototype.hide = function() {
 Game.Dialog.prototype.handleInput = function(inputType, inputData) {
 };
 
+// default action for hitting enter/etc
+Game.Dialog.prototype.doMainAction = function() {
+    this.hide();
+};
+
 Game.Dialog.prototype.getOutput = function() {
     return "placeholder";
 };
+
 
 Game.Dialog.Help = function() {
     var properties = { title: 'Help' };
@@ -39,7 +45,7 @@ Game.Dialog.Help.extend(Game.Dialog);
 
 Game.Dialog.Help.prototype.getOutput = function() {
     var output = "arrow keys or numpad to move <br />";
-    output += "'g' to pick up <br />";
+    output += "'g' to get / pick up <br />";
     output += "'i' to show inventory <br />";
     output += "'ESC' to exit screens <br />";
     return output;
@@ -61,9 +67,9 @@ Game.Dialog.Help.prototype.handleInput = function(inputType, inputData) {
 
 // item dialogs
 
-
 Game.Dialog.Items = function(properties) {
     this._selectedIndices = {};
+    this._mainAction = properties['mainAction'];
     Game.Dialog.call(this, properties);
 };
 
@@ -84,12 +90,22 @@ Game.Dialog.Items.prototype.getInv = function() {
             if (items[i]) {
                 var letter = String.fromCharCode(i+97);
                 var status = "";
-                var itemText = letter + " - " + items[i].describe() + status;
+                var selectionState = this._selectedIndices[i] ? ' + ' : ' - ';
+                var itemText = letter + selectionState + items[i].describe() + status;
                 itemListText = itemListText + itemText + "<br />";
             }
         }
     }
     return itemListText;
+};
+
+Game.Dialog.Items.prototype.doMainAction = function() {
+    var selItems = {};
+    var items = Game.player._items;
+    for (var key in this._selectedIndices) {
+        selItems[key] = items[key];
+    }
+    this._mainAction(selItems);
 };
 
 Game.Dialog.Items.prototype.handleInput = function(inputType, inputData) {
@@ -101,8 +117,15 @@ Game.Dialog.Items.prototype.handleInput = function(inputType, inputData) {
             var itemIndex = inputData.keyCode - ROT.VK_A;
             var items = Game.player._items;
             if (items[itemIndex]) {
-                
+                if (this._selectedIndices[itemIndex]) {
+                    delete this._selectedIndices[itemIndex];
+                } else {
+                    this._selectedIndices[itemIndex] = true;
+                }
+                this.show();
             }
+        } else if (inputData.keyCode === ROT.VK_RETURN) {
+            this.doMainAction();
         }
     }
 };
@@ -112,5 +135,28 @@ Game.Dialog.invDialog = new Game.Dialog.Items({
 });
 
 Game.Dialog.dropDialog = new Game.Dialog.Items({
-    title: 'Drop'
+    title: 'Drop',
+    mainAction: function(selItems) {
+        Game.player.dropItems(Object.keys(selItems));
+        this.hide();
+        Game.engine.unlock();
+    }
 });
+
+Game.Dialog.dropProp = {
+    title: 'Drop',
+    mainAction: function(selItems) {
+        Game.player.dropItems(Object.keys(selItems));
+        this.hide();
+        Game.engine.unlock();
+    }
+};
+
+Game.Dialog.pickupProp = {
+    title: 'Pick Up',
+    mainAction: function(selItems) {
+        Game.player.pickupItems(selItems);
+        this.hide();
+        Game.engine.unlock();
+    }
+};

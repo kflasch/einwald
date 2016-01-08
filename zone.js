@@ -72,6 +72,15 @@ Game.Zone.prototype.setItemsAt = function(x, y, items) {
     }
 };
 
+Game.Zone.prototype.addItem = function(x, y, item) {
+    var key = x + ',' + y;
+    if (this._items[key]) {
+        this._items[key].push(item);
+    } else {
+        this._items[key] = [item];
+    }
+};
+
 Game.Zone.prototype.getEmptyRandomPosition = function() {
     var x, y;
     do {
@@ -170,7 +179,7 @@ Game.Zone.Forest = function(tiles, player) {
     var entity = Game.EntityRepository.createRandom();
     this.addEntityAtRandomPosition(entity);
 
-    for (var i=0; i<20; i++) {
+    for (var i=0; i<50; i++) {
         x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 2));
         y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 2));
         if (this.getTile(x, y)._passable) {
