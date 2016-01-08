@@ -67,31 +67,32 @@ Game.Dialog.Help.prototype.handleInput = function(inputType, inputData) {
 
 // item dialogs
 
-Game.Dialog.Items = function(properties) {
+Game.Dialog.Items = function(properties, items) {
     this._selectedIndices = {};
     this._mainAction = properties['mainAction'];
+    this._items = items;
     Game.Dialog.call(this, properties);
 };
 
 Game.Dialog.Items.extend(Game.Dialog);
 
 Game.Dialog.Items.prototype.getOutput = function() {
-    var output = this.getInv();
+    var output = this.getItemOutput();
     //output += " <br />";
     //output += " <br />";
     return output;
 };
 
-Game.Dialog.Items.prototype.getInv = function() {
-    var items = Game.player._items;
+Game.Dialog.Items.prototype.getItemOutput = function() {
+//    var items = Game.player._items;
     var itemListText = "";
-    if (items && items.length > 0) {
-        for (var i = 0; i < items.length; i++) {
-            if (items[i]) {
+    if (this._items && this._items.length > 0) {
+        for (var i = 0; i < this._items.length; i++) {
+            if (this._items[i]) {
                 var letter = String.fromCharCode(i+97);
                 var status = "";
                 var selectionState = this._selectedIndices[i] ? ' + ' : ' - ';
-                var itemText = letter + selectionState + items[i].describe() + status;
+                var itemText = letter + selectionState + this._items[i].describe() + status;
                 itemListText = itemListText + itemText + "<br />";
             }
         }
@@ -101,9 +102,8 @@ Game.Dialog.Items.prototype.getInv = function() {
 
 Game.Dialog.Items.prototype.doMainAction = function() {
     var selItems = {};
-    var items = Game.player._items;
     for (var key in this._selectedIndices) {
-        selItems[key] = items[key];
+        selItems[key] = this._items[key];
     }
     this._mainAction(selItems);
 };
@@ -115,8 +115,7 @@ Game.Dialog.Items.prototype.handleInput = function(inputType, inputData) {
         } else if (inputData.keyCode >= ROT.VK_A &&
                    inputData.keyCode <= ROT.VK_Z) {
             var itemIndex = inputData.keyCode - ROT.VK_A;
-            var items = Game.player._items;
-            if (items[itemIndex]) {
+            if (this._items[itemIndex]) {
                 if (this._selectedIndices[itemIndex]) {
                     delete this._selectedIndices[itemIndex];
                 } else {
@@ -143,6 +142,15 @@ Game.Dialog.dropDialog = new Game.Dialog.Items({
     }
 });
 
+Game.Dialog.invProp = {
+    title: 'Inventory',
+    mainAction: function(selItems) {
+//        Game.player.dropItems(Object.keys(selItems));
+        this.hide();
+//        Game.engine.unlock();
+    }
+};
+
 Game.Dialog.dropProp = {
     title: 'Drop',
     mainAction: function(selItems) {
@@ -155,7 +163,7 @@ Game.Dialog.dropProp = {
 Game.Dialog.pickupProp = {
     title: 'Pick Up',
     mainAction: function(selItems) {
-        Game.player.pickupItems(selItems);
+        Game.player.pickupItems(Object.keys(selItems));
         this.hide();
         Game.engine.unlock();
     }

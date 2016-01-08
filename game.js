@@ -152,31 +152,36 @@ Game.handleInput = function(inputType, inputData) {
             var dir = ROT.DIRS[8][Game.keyMap[inputData.keyCode]];
             Game.movePlayer(dir[0], dir[1]);
         } else if (inputData.keyCode === ROT.VK_I) {
-            Game.currentDialog = Game.Dialog.invDialog;
+            Game.currentDialog = new Game.Dialog.Items(Game.Dialog.invProp, Game.player._items);
             Game.currentDialog.show();
+            return;
         } else if (inputData.keyCode === ROT.VK_D) {
-            Game.currentDialog = new Game.Dialog.Items(Game.Dialog.dropProp);
+            var dropItems = Game.player._items;
+            Game.currentDialog = new Game.Dialog.Items(Game.Dialog.dropProp, dropItems);
             Game.currentDialog.show();
+            return;
         } else if (inputData.keyCode === ROT.VK_G) {
-            var items = Game.zone.getItemsAt(Game.player._x, Game.player._y);
-            console.log(items);
-            if (items && items.length === 1) {
-                var item = items[0];
+            var getItems = Game.zone.getItemsAt(Game.player._x, Game.player._y);
+            console.log(getItems);
+            if (getItems && getItems.length === 1) {
+                var item = getItems[0];
                 if (Game.player.pickupItems([0])) {
                     Game.message = "You pick up a " + item.describe() + ".";
                 } else {
                     Game.message = "You can't pick the " + item.describe() + " up.";
                 }
-            } else if (items && items.length > 0) {
-                Game.currentDialog = new Game.Dialog.Items(Game.Dialog.pickupProp);
+            } else if (getItems && getItems.length > 0) {
+                Game.currentDialog = new Game.Dialog.Items(Game.Dialog.pickupProp, getItems);
                 Game.currentDialog.show();
             } else {
                 Game.message = "There is nothing here to pick up.";
             }
+            return;
         } else {
             return;
         }
-        
+
+        // expend a turn if we got here
         Game.engine.unlock();
     } else if (inputType === 'keypress') {
         // for multi-key input (shift-char, etc)
