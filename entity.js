@@ -131,11 +131,25 @@ Game.EntityMixins.InventoryHolder = {
         return added === indices.length;
     },
     dropItems: function(indices) {
+        console.log(indices);
+        var removed = 0;
+        var itemDesc = "";
         for (var i=0; i < indices.length; i++) {
-            if (this._items[i]) {
+            if (this._items[indices[i]]) {
                 if (this._zone)
-                    this._zone.addItem(this._x, this._y, this._items[i]);
-                this.removeItem(i);
+                    this._zone.addItem(this._x, this._y, this._items[indices[i]]);
+                itemDesc = this._items[indices[i]].describe();
+                this.removeItem(indices[i]);
+                removed++;
+            }
+        }
+        if (this.hasMixin(Game.EntityMixins.PlayerActor)) {
+            if (removed === 1) {
+                Game.UI.addMessage("You dropped a " + itemDesc + ".");
+            } else if (removed > 1) {
+                Game.UI.addMessage("You dropped " + removed + " items.");
+            } else {
+                Game.UI.addMessage("You don't drop anything.");
             }
         }
     }
