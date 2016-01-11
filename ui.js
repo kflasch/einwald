@@ -1,6 +1,11 @@
 Game.UI = {
     update: function() {
         Game.UI.Status.update();
+        Game.UI.Messages.update(); // necessary?
+    },
+
+    addMessage: function(msg) {
+        Game.UI.Messages.pushMessage(msg);
         Game.UI.Messages.update();
     }
 };
@@ -25,25 +30,7 @@ Game.UI.Status = {
         output += "Location: " + Game.zone._name;
         output += "<br />";
         output += "<br />";
-//        output += "Inventory: <br />";
-//        output += this.getInv();
         return output;
-    },
-
-    getInv: function() {    
-        var items = Game.player._items;
-        var itemList = "";
-        if (items && items.length > 0) {
-            for (var i = 0; i < items.length; i++) {
-                if (items[i])
-                    if (itemList.length === 0) {
-                        itemList = items[i].describe();
-                    } else {
-                        itemList = itemList + "<br /> " + items[i].describe();
-                    }
-            }
-        }
-        return itemList;
     }
 
 };
@@ -58,17 +45,20 @@ Game.UI.Messages = {
     },
 
     getOutput: function() {
-        this.msgArray.pop();
-        this.msgArray.unshift(Game.message);
-        var output = Game.message;
-        output += "<br />";
-        output += "<span style='color:grey'>";
-        for (var i=1; i < this.msgArray.length; i++) {
+        var output = "<span style='color:grey'>";
+        for (var i=0; i < this.msgArray.length-1; i++) {
             output += this.msgArray[i] + "<br />";
         }
         output += "</span>";
-        return output;        
+        output += this.msgArray[4];
+        return output;
+    },
+
+    pushMessage: function(msg) {
+        this.msgArray.shift();
+        this.msgArray.push(msg);        
     }
+
 };
 
 Game.UI.Overlay = {

@@ -8,7 +8,6 @@ var Game = {
     scheduler: null,
     player: null,
     turns: 0,
-    message: '',
     zone: null,
     items: {},
     currentDialog: null,
@@ -162,19 +161,18 @@ Game.handleInput = function(inputType, inputData) {
             return;
         } else if (inputData.keyCode === ROT.VK_G) {
             var getItems = Game.zone.getItemsAt(Game.player._x, Game.player._y);
-            console.log(getItems);
             if (getItems && getItems.length === 1) {
                 var item = getItems[0];
                 if (Game.player.pickupItems([0])) {
-                    Game.message = "You pick up a " + item.describe() + ".";
+                    Game.UI.addMessage("You pick up a " + item.describe() + ".");
                 } else {
-                    Game.message = "You can't pick the " + item.describe() + " up.";
+                    Game.UI.addMessage("You can't pick the " + item.describe() + " up.");
                 }
             } else if (getItems && getItems.length > 0) {
                 Game.currentDialog = new Game.Dialog.Items(Game.Dialog.pickupProp, getItems);
                 Game.currentDialog.show();
             } else {
-                Game.message = "There is nothing here to pick up.";
+                Game.UI.addMessage("There is nothing here to pick up.");
             }
             return;
         } else {

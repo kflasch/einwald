@@ -57,7 +57,7 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
         }
     }
     if (isPlayer && descMsg)
-        Game.message = descMsg;
+        Game.UI.addMessage(descMsg);
 };
 
 // mixins

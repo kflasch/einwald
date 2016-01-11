@@ -145,9 +145,7 @@ Game.Dialog.dropDialog = new Game.Dialog.Items({
 Game.Dialog.invProp = {
     title: 'Inventory',
     mainAction: function(selItems) {
-//        Game.player.dropItems(Object.keys(selItems));
         this.hide();
-//        Game.engine.unlock();
     }
 };
 
