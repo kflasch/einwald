@@ -90,19 +90,25 @@ Game.Zone.prototype.getEmptyRandomPosition = function() {
     return {x: x, y: y};
 };
 
+Game.Zone.prototype.getEmptyRandomPositionNear = function(nx, ny, dist) {
+    var x, y;
+    var maxx = nx + dist, maxy = ny + dist;
+    var minx = nx - dist, miny = ny - dist;
+    var maxCheck = Math.pow((dist + dist + 1), 2), check = 0;
+    do {
+        //x = Math.floor(ROT.RNG.getUniform() * (maxx - minx + 1)) + min;
+        x = ROT.RNG.getUniformInt(minx, maxx);
+        y = ROT.RNG.getUniformInt(miny, maxy);
+        check++;
+    } while (!this.isPassable(x, y) && check<=maxCheck);
+    if (check >= maxCheck) return null;
+    return {x: x, y: y};
+};
+
 // true if given pos is passable and has no entities
 Game.Zone.prototype.isPassable = function(x, y) {
     return this.getTile(x, y)._passable &&
         !this.getEntityAt(x, y);
-    /*
-    if (this.zone._tiles[x] === undefined ||
-        this.zone._tiles[x][y] === undefined ||
-        this.zone._tiles[x][y]._passable == false) {
-        return false;
-    } else {
-        return true;
-    }
-    */
 };
 
 Game.Zone.prototype.getEntityAt = function(x, y) {
@@ -176,8 +182,18 @@ Game.Zone.Forest = function(tiles, player) {
 
     this.addEntityAtRandomPosition(player);
 
-    var entity = Game.EntityRepository.createRandom();
-    this.addEntityAtRandomPosition(entity);
+    for (var i=0; i<10; i++) {
+        x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 2));
+        y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 2));
+        if (this.getTile(x, y)._passable) {
+            var entity = Game.EntityRepository.createRandom();
+            this.addEntityAtRandomPosition(entity);
+        }
+    }
+    var itemLoc = this.getEmptyRandomPositionNear(player._x, player._y, 2);
+    if (itemLoc) {
+        this._items[itemLoc.x + ',' + itemLoc.y] = [Game.ItemRepository.create('knife')];
+    }
 
     for (var i=0; i<50; i++) {
         x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 2));

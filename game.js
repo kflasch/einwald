@@ -11,6 +11,7 @@ var Game = {
     zone: null,
     items: {},
     currentDialog: null,
+    debug: false,
 
     init: function() {
         this.display = new ROT.Display({fontFamily:"droid sans mono, monospace",
@@ -155,9 +156,13 @@ Game.handleInput = function(inputType, inputData) {
             Game.currentDialog.show();
             return;
         } else if (inputData.keyCode === ROT.VK_D) {
-            var dropItems = Game.player._items;
-            Game.currentDialog = new Game.Dialog.Items(Game.Dialog.dropProp, dropItems);
-            Game.currentDialog.show();
+            if (Game.player.getInvSize() === 0) {
+                Game.UI.addMessage("You have nothing to drop.");                
+            } else {
+                var dropItems = Game.player._items;
+                Game.currentDialog = new Game.Dialog.Items(Game.Dialog.dropProp, dropItems);
+                Game.currentDialog.show();
+            }
             return;
         } else if (inputData.keyCode === ROT.VK_G) {
             var getItems = Game.zone.getItemsAt(Game.player._x, Game.player._y);
@@ -175,6 +180,8 @@ Game.handleInput = function(inputType, inputData) {
                 Game.UI.addMessage("There is nothing here to pick up.");
             }
             return;
+        } else if (inputData.keyCode === ROT.VK_BACK_SLASH) {
+            Game.debug = (Game.debug === false) ? true : false;
         } else {
             return;
         }

@@ -33,7 +33,7 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
     var target = this._zone.getEntityAt(x, y);
     if (target) {
         if (isPlayer) {
-            descMsg = "You touch " + target._name + ".";
+            descMsg = "You poke the " + target._name + ".";
         }
     } else if (tile._passable) {
         this.setPosition(x, y);
@@ -131,7 +131,6 @@ Game.EntityMixins.InventoryHolder = {
         return added === indices.length;
     },
     dropItems: function(indices) {
-        console.log(indices);
         var removed = 0;
         var itemDesc = "";
         for (var i=0; i < indices.length; i++) {
@@ -152,6 +151,14 @@ Game.EntityMixins.InventoryHolder = {
                 Game.UI.addMessage("You don't drop anything.");
             }
         }
+    },
+    getInvSize: function() {
+        var count = 0;
+        for (var i=0; i < this._items.length; i++) {
+            if (this._items[i])
+                count++;
+        }
+        return count;
     }
 };
 
@@ -198,14 +205,43 @@ Game.EntityMixins.ExperienceGainer = {
     }
 };
 
+Game.EntityMixins.Equipper = {
+    name: 'Equipper',
+    init: function(template) {
+        this._armor = null;
+        this._handOne = null;
+        this._handTwo = null;
+    },
+    wield: function(item) {
+        this._handOne = item;
+    },
+    unwield: function() {
+        this._handOne = null;        
+    },
+    wear: function(item) {
+        this._armor = item;
+    },
+    takeOff: function() {
+        this._armor = null;
+    },
+    unequip: function(item) {
+        if (this._weapon === item) {
+            this.unwield();
+        } else if (this._armor === item) {
+            this.takeOff();
+        }
+    }
+};
+
 // entities
 
 Game.PlayerTemplate = {
     name: 'player',
     chr: '@',
-    fg: '#ff0',
+    fg: '#ffa',
     sightRadius: 6,
     mixins: [Game.EntityMixins.PlayerActor,
+             Game.EntityMixins.Equipper,
              Game.EntityMixins.Killable,
              Game.EntityMixins.ExperienceGainer,
              Game.EntityMixins.InventoryHolder]
@@ -214,10 +250,27 @@ Game.PlayerTemplate = {
 
 Game.EntityRepository = new Game.Repository('entities', Game.Entity);
 
-Game.EntityRepository.define('sb', {
-    name: 'sb',
+Game.EntityRepository.define('spider', {
+    name: 'spider',
     chr: 's',
-    fg: 'red',
+    fg: 'brown',
     sightRadius: 6,
     mixins: [Game.EntityMixins.TaskActor]
+});
+
+Game.EntityRepository.define('wolf', {
+    name: 'wolf',
+    chr: 'w',
+    fg: 'grey',
+    sightRadius: 6,
+    mixins: [Game.EntityMixins.TaskActor]
+});
+
+Game.EntityRepository.define('wanderer', {
+    name: 'wanderer',
+    chr: '@',
+    fg: '#ff0',
+    sightRadius: 6,
+    mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Equipper]
 });

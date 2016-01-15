@@ -16,6 +16,22 @@ Game.Item.prototype.describe = function() {
 };
 
 
+// item mixins
+
+Game.ItemMixins = {};
+
+Game.ItemMixins.Edible = {
+};
+
+Game.ItemMixins.Equippable = {
+    name: 'Equippable',
+    init: function(template) {
+        this._attackVal = template['attackVal'] || 0;
+        this._weidable = template['wieldable'] || false;
+        this._wearable = template['wearable'] || false;        
+    }
+};
+
 // item repo & definitions
 
 Game.ItemRepository = new Game.Repository('items', Game.Item);
@@ -37,3 +53,11 @@ Game.ItemRepository.define('mushroom', {
     chr: '\,',
     fg: 'darkkhaki'
 });
+
+Game.ItemRepository.define('knife', {
+    name: 'knife',
+    chr: ')',
+    fg: 'grey',
+    wieldable: true,
+    mixins: [Game.ItemMixins.Equippable]
+}, { disableRandomCreation: true });
