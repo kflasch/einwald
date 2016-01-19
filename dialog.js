@@ -14,7 +14,6 @@ Game.Dialog.prototype.show = function() {
     output += "<span style='color:orange'>" + this._title + "</span> <br />";
     output += this.getOutput() + "</div>";
     output += "<div id='sub'>";
-    output += "<span style='color:orange'>" + "---" + "</span> <br />";
     output += "</div>";
     elem.innerHTML = output;
     Game.currentDialog = this;
@@ -27,16 +26,20 @@ Game.Dialog.prototype.hide = function() {
     Game.currentDialog = null;
 };
 
-Game.Dialog.prototype.hideSub = function() {
+
+Game.Dialog.prototype.hideSubWin = function() {
     var elem = document.getElementById("sub");
     elem.innerHTML = "";
     elem.style.visibility = "hidden";
+    this._subwin = false;
 };
 
+/*
 Game.Dialog.prototype.showSub = function() {
     var elem = document.getElementById("sub");
     elem.style.visibility = "visible";
 };
+*/
 
 Game.Dialog.prototype.handleInput = function(inputType, inputData) {
 };
@@ -123,7 +126,10 @@ Game.Dialog.Items.prototype.doMainAction = function() {
 };
 
 Game.Dialog.Items.prototype.handleInput = function(inputType, inputData) {
-    if (this._subwin) this.handleInputSub(inputType, inputData);
+    if (this._subwin) {
+        this.handleInputSub(inputType, inputData);
+        return;
+    }
     if (inputType === 'keydown') {
         if (inputData.keyCode === ROT.VK_ESCAPE) {
             this.hide();
@@ -154,20 +160,11 @@ Game.Dialog.Items.prototype.handleInput = function(inputType, inputData) {
 Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
     if (inputType === 'keydown') {
         if (inputData.keyCode === ROT.VK_ESCAPE) {
-            this.hide();
+            this._selectedIndices = {};
+            this.hideSubWin();
+            this.show();
         } else if (inputData.keyCode >= ROT.VK_A &&
                    inputData.keyCode <= ROT.VK_Z) {
-            var itemIndex = inputData.keyCode - ROT.VK_A;
-            if (this._items[itemIndex]) {
-                if (this._selectedIndices[itemIndex]) {
-                    delete this._selectedIndices[itemIndex];
-                } else {
-                    this._selectedIndices[itemIndex] = true;
-                }
-                this.show();
-            }
-        } else if (inputData.keyCode === ROT.VK_RETURN) {
-            this.doMainAction();
         }
     }
 };
@@ -175,7 +172,10 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
 Game.Dialog.Items.prototype.showSubWin = function(item) {
     var elem = document.getElementById("sub");
     elem.style.visibility = "visible";
-
+    output = "<span style='color:red'>" + item.describe() + "</span> <br />";
+    output += "<br />";
+    output += " item description";
+    elem.innerHTML = output;
 };
 
 /*
@@ -199,7 +199,8 @@ Game.Dialog.invProp = {
     canSelectMultiple: false,
     mainAction: function(selItems) {
         this._subwin = true;
-        this.showSubWin(selItems[0]);
+        var item = this._items[Object.keys(selItems)[0]];
+        this.showSubWin(item);
     }
 };
 
