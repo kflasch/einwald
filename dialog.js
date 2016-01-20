@@ -3,7 +3,6 @@ Game.Dialog = function(properties) {
     properties = properties || {};
     
     this._title = properties['title'] || '';
-    //this._modal = true;
     this._subwin = false;
 };
 
@@ -68,6 +67,8 @@ Game.Dialog.Help.prototype.getOutput = function() {
     output += "'i' to show inventory <br />";
     output += "'ESC' to exit screens <br />";
     return output;
+    // Apply, Equip, Remove, Throw, and Drop
+    
 };
 
 Game.Dialog.Help.prototype.handleInput = function(inputType, inputData) {
@@ -107,14 +108,24 @@ Game.Dialog.Items.prototype.getItemOutput = function() {
         for (var i = 0; i < this._items.length; i++) {
             if (this._items[i]) {
                 var letter = String.fromCharCode(i+97);
-                var status = "";
+                var status = this.getItemStatus(this._items[i]);
                 var selectionState = this._selectedIndices[i] ? ' + ' : ' - ';
-                var itemText = letter + selectionState + this._items[i].describe() + status;
+                var itemText = letter + selectionState + this._items[i].describe()
+                    + " " + status;
                 itemListText = itemListText + itemText + "<br />";
             }
         }
     }
     return itemListText;
+};
+
+Game.Dialog.Items.prototype.getItemStatus = function(item) {
+    //var output = "";
+    if (Game.player._handOne === item)
+        return "(wielding)";
+    if (Game.player._armor === item)
+        return "(wearing)";
+    return "";
 };
 
 Game.Dialog.Items.prototype.doMainAction = function() {
@@ -163,8 +174,22 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
             this._selectedIndices = {};
             this.hideSubWin();
             this.show();
-        } else if (inputData.keyCode >= ROT.VK_A &&
-                   inputData.keyCode <= ROT.VK_Z) {
+        } else if (inputData.keyCode === ROT.VK_E) {
+            if (this._currentItem && this._currentItem.hasMixin('Equippable')) {
+                if (Game.player.isEquipped(this._currentItem)) {
+                    Game.player.unequip(this._currentItem);
+                    console.log(this._currentItem);
+                    console.log(Game.player._handOne);
+                                
+                    Game.UI.addMessage("You unequip the " + this._currentItem._name + ".");
+                    this.hide();                    
+                } else {
+                    //Game.player.unequip(this._currentItem);
+                    Game.player.wield(this._currentItem);
+                    Game.UI.addMessage("You equip the " + this._currentItem._name + ".");
+                    this.hide();
+                }
+            }
         }
     }
 };
@@ -172,10 +197,28 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
 Game.Dialog.Items.prototype.showSubWin = function(item) {
     var elem = document.getElementById("sub");
     elem.style.visibility = "visible";
-    output = "<span style='color:red'>" + item.describe() + "</span> <br />";
+    output = "<span style='color:#CCCC00'>" + item.describe() + "</span> <br />";
     output += "<br />";
     output += " item description";
+    output += "<span style='position:absolute; bottom:30px; left:20px'> ";
+    output += this.getActions(item);
+//    output += "[ESC] to close ";
+    output += "</span>";
     elem.innerHTML = output;
+};
+
+Game.Dialog.Items.prototype.getActions = function(item) {
+    var output = "";
+    if (item.hasMixin('Equippable')) {
+        if (Game.player.isEquipped(item))
+            output += " un[<span style='color:cyan'>e</span>]quip";
+        else
+            output += " [<span style='color:cyan'>e</span>]quip";
+    }
+    if (item.hasMixin('Usable'))
+        output += " [<span style='color:cyan'>u</span>]se";
+    output += " [<span style='color:cyan'>d</span>]rop";
+    return output;
 };
 
 /*
@@ -199,8 +242,8 @@ Game.Dialog.invProp = {
     canSelectMultiple: false,
     mainAction: function(selItems) {
         this._subwin = true;
-        var item = this._items[Object.keys(selItems)[0]];
-        this.showSubWin(item);
+        this._currentItem = this._items[Object.keys(selItems)[0]];
+        this.showSubWin(this._currentItem);
     }
 };
 

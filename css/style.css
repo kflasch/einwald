@@ -88,6 +88,7 @@ body {
 
 #overlay #sub {
     visibility: hidden;
+    position: relative;
     float: right;
     width: 400px;
     height: 475px;

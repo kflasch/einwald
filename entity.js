@@ -225,11 +225,18 @@ Game.EntityMixins.Equipper = {
         this._armor = null;
     },
     unequip: function(item) {
-        if (this._weapon === item) {
+        if (this._handOne === item) {
             this.unwield();
         } else if (this._armor === item) {
             this.takeOff();
         }
+    },
+    isEquipped: function(item) {
+        if (this._armor === item)
+            return true;
+        if (this._handOne === item)
+            return true;
+        return false;
     }
 };
 
