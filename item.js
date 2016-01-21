@@ -4,6 +4,7 @@ Game.Item = function(properties) {
     Game.DynamicGlyph.call(this, properties);
     this._passable = properties['passable'] || true;
     this._name = properties['name'] || '';
+    this._desc = properties['desc'] || '';
 
     this._x = null;
     this._y = null;
@@ -11,10 +12,9 @@ Game.Item = function(properties) {
 
 Game.Item.extend(Game.DynamicGlyph);
 
-Game.Item.prototype.describe = function() {
+Game.Item.prototype.getName = function() {
     return this._name;
 };
-
 
 // item mixins
 
@@ -54,10 +54,11 @@ Game.ItemRepository.define('mushroom', {
     fg: 'darkkhaki'
 });
 
-Game.ItemRepository.define('knife', {
-    name: 'knife',
+Game.ItemRepository.define('dagger', {
+    name: 'dagger',
     chr: ')',
     fg: 'grey',
     wieldable: true,
+    desc: 'A well-balanced iron dagger.',
     mixins: [Game.ItemMixins.Equippable]
 }, { disableRandomCreation: true });

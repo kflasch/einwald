@@ -50,13 +50,13 @@ Game.DynamicGlyph.prototype.hasMixin = function(obj) {
     }
 };
 
-Game.DynamicGlyph.prototype.describe = function() {
+Game.DynamicGlyph.prototype.getName = function() {
     return this._name;
 };
 
 Game.DynamicGlyph.prototype.raiseEvent = function(event) {
     if (!this._listeners[event])
-        return;
+        return null;
 
     var args = Array.prototype.slice.call(arguments, 1);
 

@@ -192,7 +192,7 @@ Game.Zone.Forest = function(tiles, player) {
     }
     var itemLoc = this.getEmptyRandomPositionNear(player._x, player._y, 2);
     if (itemLoc) {
-        this._items[itemLoc.x + ',' + itemLoc.y] = [Game.ItemRepository.create('knife')];
+        this._items[itemLoc.x + ',' + itemLoc.y] = [Game.ItemRepository.create('dagger')];
     }
 
     for (var i=0; i<50; i++) {

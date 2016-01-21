@@ -110,7 +110,7 @@ Game.Dialog.Items.prototype.getItemOutput = function() {
                 var letter = String.fromCharCode(i+97);
                 var status = this.getItemStatus(this._items[i]);
                 var selectionState = this._selectedIndices[i] ? ' + ' : ' - ';
-                var itemText = letter + selectionState + this._items[i].describe()
+                var itemText = letter + selectionState + this._items[i].getName()
                     + " " + status;
                 itemListText = itemListText + itemText + "<br />";
             }
@@ -190,6 +190,9 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
                     this.hide();
                 }
             }
+        } else if (inputData.keyCode === ROT.VK_D) {
+            Game.player.dropItem(Object.keys(this._selectedIndices)[0]);
+            this.hide();
         }
     }
 };
@@ -197,9 +200,9 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
 Game.Dialog.Items.prototype.showSubWin = function(item) {
     var elem = document.getElementById("sub");
     elem.style.visibility = "visible";
-    output = "<span style='color:#CCCC00'>" + item.describe() + "</span> <br />";
+    output = "<span style='color:#CCCC00'>" + item.getName() + "</span> <br />";
     output += "<br />";
-    output += " item description";
+    output += item._desc;
     output += "<span style='position:absolute; bottom:30px; left:20px'> ";
     output += this.getActions(item);
 //    output += "[ESC] to close ";
@@ -241,9 +244,11 @@ Game.Dialog.invProp = {
     title: 'Inventory',
     canSelectMultiple: false,
     mainAction: function(selItems) {
-        this._subwin = true;
         this._currentItem = this._items[Object.keys(selItems)[0]];
-        this.showSubWin(this._currentItem);
+        if (this._currentItem) {
+            this._subwin = true;
+            this.showSubWin(this._currentItem);
+        }
     }
 };
 

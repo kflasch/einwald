@@ -169,9 +169,9 @@ Game.handleInput = function(inputType, inputData) {
             if (getItems && getItems.length === 1) {
                 var item = getItems[0];
                 if (Game.player.pickupItems([0])) {
-                    Game.UI.addMessage("You pick up a " + item.describe() + ".");
+                    Game.UI.addMessage("You pick up a " + item.getName() + ".");
                 } else {
-                    Game.UI.addMessage("You can't pick the " + item.describe() + " up.");
+                    Game.UI.addMessage("You can't pick the " + item.getName() + " up.");
                 }
             } else if (getItems && getItems.length > 0) {
                 Game.currentDialog = new Game.Dialog.Items(Game.Dialog.pickupProp, getItems);

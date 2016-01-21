@@ -41,7 +41,7 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
         var items = this._zone.getItemsAt(x, y);
         if (items) {
             if (items.length === 1) {
-                descMsg = "You see a " + items[0].describe() + ".";
+                descMsg = "You see a " + items[0].getName() + ".";
             } else {
                 descMsg = "You see several objects here.";
             }
@@ -98,7 +98,9 @@ Game.EntityMixins.InventoryHolder = {
         return false;
     },
     removeItem: function(i) {
-        // TODO: unequip/etc
+        // if item is equippable, make sure it is unequipped before dropping
+        if (this._items[i] && this.hasMixin(Game.EntityMixins.Equipper))
+            this.unequip(this._items[i]);
         this._items[i] = null;
     },
     pickupItems: function() {
@@ -132,23 +134,34 @@ Game.EntityMixins.InventoryHolder = {
     },
     dropItems: function(indices) {
         var removed = 0;
-        var itemDesc = "";
+        var itemName = "";
         for (var i=0; i < indices.length; i++) {
             if (this._items[indices[i]]) {
                 if (this._zone)
                     this._zone.addItem(this._x, this._y, this._items[indices[i]]);
-                itemDesc = this._items[indices[i]].describe();
+                itemName = this._items[indices[i]].getName();
                 this.removeItem(indices[i]);
                 removed++;
             }
         }
         if (this.hasMixin(Game.EntityMixins.PlayerActor)) {
             if (removed === 1) {
-                Game.UI.addMessage("You dropped a " + itemDesc + ".");
+                Game.UI.addMessage("You dropped a " + itemName + ".");
             } else if (removed > 1) {
                 Game.UI.addMessage("You dropped " + removed + " items.");
             } else {
                 Game.UI.addMessage("You don't drop anything.");
+            }
+        }
+    },
+    dropItem: function(i) {
+        if (this._items[i]) {
+            var itemName = this._items[i].getName();
+            if (this._zone)
+                this._zone.addItem(this._x, this._y, this._items[i]);
+            this.removeItem(i);
+            if (this.hasMixin(Game.EntityMixins.PlayerActor)) {
+                Game.UI.addMessage("You dropped a " + itemName + ".");
             }
         }
     },
