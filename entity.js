@@ -32,8 +32,13 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
     var descMsg = null;
     var target = this._zone.getEntityAt(x, y);
     if (target) {
-        if (isPlayer) {
-            descMsg = "You poke the " + target._name + ".";
+        if (this.hasMixin('Attacker')) {
+            if (this.isHostile(target)) {
+                this.attack(target);
+                return true;
+            } else {
+                descMsg = target.getName() + " is in the way.";
+            }
         }
     } else if (tile._passable) {
         this.setPosition(x, y);
@@ -58,6 +63,13 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
     }
     if (isPlayer && descMsg)
         Game.UI.addMessage(descMsg);
+};
+
+Game.Entity.prototype.isHostile = function(target) {
+    var isPlayer = this.hasMixin(Game.EntityMixins.PlayerActor);
+    if (isPlayer || target.hasMixin(Game.EntityMixins.PlayerActor))
+        return true;
+    else return false;
 };
 
 // mixins
@@ -207,14 +219,23 @@ Game.EntityMixins.Killable = {
     init: function(template) {
         this._maxHP = template['maxHP'] || 10;
         this._hp = template['hp'] || this._maxHP;
+        this._defenseValue = template['defenseValue'] || 0;
     },
-    modifyHP: function(delta) {
+    modifyHP: function(thing, delta) {
         this._hp += delta;
         if (this._hp > this._maxHP) {
             this._hp = this._maxHP;
         } else if (this._hp <= 0) {
             // entity has died
         }
+    },
+    getDefenseValue: function() {
+        if (this.hasMixin(Game.EntityMixins.Equipper)) {
+            if (this.getArmor()) {
+                return this.getArmor().getDefenseValue();
+            }
+        }
+        return this._defenseValue;
     }
 };
 
@@ -245,6 +266,12 @@ Game.EntityMixins.Equipper = {
     takeOff: function() {
         this._armor = null;
     },
+    getWeapon: function() {
+        return this._handOne;
+    },
+    getArmor: function() {
+        return this._armor;
+    },
     unequip: function(item) {
         if (this._handOne === item) {
             this.unwield();
@@ -265,8 +292,34 @@ Game.EntityMixins.Attacker = {
     name: 'Attacker',
     groupName: 'Attacker',
     init: function(template) {
+        this._attackValue = template['attackValue'] || 1;
+    },
+    getAttackValue: function() {
+        if (this.hasMixin(Game.EntityMixins.Equipper)) {
+            if (this.getWeapon()) {
+                console.log(this.getWeapon());
+                return this.getWeapon().getAttackValue();
+            }
+        }
+        return this._attackValue;
     },
     attack: function(target) {
+        if (target.hasMixin('Killable')) {
+            var attVal = this.getAttackValue();
+            var defVal = target.getDefenseValue();
+            var max = Math.max(0, attVal - defVal);
+            var damage = 1 + Math.floor(Math.random() * max);
+
+            if (this.hasMixin('PlayerActor')) {
+                Game.UI.addMessage("You strike the " + target.getName()
+                                   + " for " + damage + " damage!");
+            } else {
+                Game.UI.addMessage("The " + target.getName() + " strikes you for "
+                                   + damage + " damage!");
+            }
+
+            target.modifyHP(this, damage);
+        }
     }
 };
 
@@ -281,6 +334,7 @@ Game.PlayerTemplate = {
     mixins: [Game.EntityMixins.PlayerActor,
              Game.EntityMixins.Equipper,
              Game.EntityMixins.Killable,
+             Game.EntityMixins.Attacker,
              Game.EntityMixins.ExperienceGainer,
              Game.EntityMixins.InventoryHolder]
 };
@@ -293,7 +347,8 @@ Game.EntityRepository.define('spider', {
     chr: 's',
     fg: 'brown',
     sightRadius: 6,
-    mixins: [Game.EntityMixins.TaskActor]
+    mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Killable]
 });
 
 Game.EntityRepository.define('wolf', {
@@ -301,7 +356,8 @@ Game.EntityRepository.define('wolf', {
     chr: 'w',
     fg: 'grey',
     sightRadius: 6,
-    mixins: [Game.EntityMixins.TaskActor]
+    mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Killable]
 });
 
 Game.EntityRepository.define('wanderer', {
@@ -310,5 +366,6 @@ Game.EntityRepository.define('wanderer', {
     fg: '#ff0',
     sightRadius: 6,
     mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Killable,
              Game.EntityMixins.Equipper]
 });

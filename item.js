@@ -41,6 +41,9 @@ Game.ItemMixins.Equippable = {
         this._attackVal = template['attackVal'] || 0;
         this._wieldable = template['wieldable'] || false;
         this._wearable = template['wearable'] || false;        
+    },
+    getAttackValue: function() {
+        return this._attackVal;
     }
 };
 
@@ -83,6 +86,7 @@ Game.ItemRepository.define('dagger', {
     chr: ')',
     fg: 'grey',
     wieldable: true,
+    attackVal: 2,
     desc: 'A well-balanced iron dagger.',
     mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
 }, { disableRandomCreation: true });
