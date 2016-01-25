@@ -11,6 +11,10 @@ body {
     width: 100%
 }
 
+.highlight {
+    background-color: #332233;
+}
+
 #ROTDisplay {
     margin-right: 20px;
     height: 100%;

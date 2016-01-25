@@ -21,6 +21,18 @@ Game.Item.prototype.getName = function() {
 Game.ItemMixins = {};
 
 Game.ItemMixins.Edible = {
+    name: 'Edible',
+    init: function(template) {
+        this.foodVal = template['foodVal'] || 0;
+        this.hpVal = template['hpVal'] || 0;
+    },
+    eat: function(entity) {
+        if (entity.hasMixin('Killable')) {
+            entity.modifyHP(this.hpVal);
+        }
+        if (entity.hasMixin('Eater')) {
+        }
+    }
 };
 
 Game.ItemMixins.Equippable = {
@@ -32,6 +44,13 @@ Game.ItemMixins.Equippable = {
     }
 };
 
+Game.ItemMixins.Throwable = {
+    name: 'Throwable',
+    init: function(template) {
+    }
+};
+
+
 // item repo & definitions
 
 Game.ItemRepository = new Game.Repository('items', Game.Item);
@@ -39,19 +58,24 @@ Game.ItemRepository = new Game.Repository('items', Game.Item);
 Game.ItemRepository.define('smallrock', {
     name: 'small rock',
     chr: '*',
-    fg: 'gray'
+    fg: 'gray',
+    mixins: [Game.ItemMixins.Throwable]
 });
 
 Game.ItemRepository.define('book', {
     name: 'book',
     chr: '+',
-    fg: 'brown'
+    fg: 'brown',
+    mixins: [Game.ItemMixins.Throwable]
 });
 
 Game.ItemRepository.define('mushroom', {
     name: 'mushroom',
     chr: '\,',
-    fg: 'darkkhaki'
+    fg: 'darkkhaki',
+    foodVal: 1,
+    hpVal: 2,
+    mixins: [Game.ItemMixins.Edible]
 });
 
 Game.ItemRepository.define('dagger', {
@@ -60,5 +84,5 @@ Game.ItemRepository.define('dagger', {
     fg: 'grey',
     wieldable: true,
     desc: 'A well-balanced iron dagger.',
-    mixins: [Game.ItemMixins.Equippable]
+    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
 }, { disableRandomCreation: true });

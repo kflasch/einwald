@@ -109,13 +109,28 @@ Game.Dialog.Items.prototype.getItemOutput = function() {
             if (this._items[i]) {
                 var letter = String.fromCharCode(i+97);
                 var status = this.getItemStatus(this._items[i]);
-                var selectionState = this._selectedIndices[i] ? ' + ' : ' - ';
-                var itemText = letter + selectionState + this._items[i].getName()
-                    + " " + status;
-                itemListText = itemListText + itemText + "<br />";
+                var selectionState = " - ";
+                var hl = "";
+                if (this._selectedIndices[i]) {
+                    hl = "class='highlight'";
+                    selectionState = " + ";
+                }
+                var itemText = "<span " + hl + ">"
+                    + letter + selectionState + this._items[i].getName()
+                    + " " + status + "</span> <br />";
+                //itemText = letter + selectionState + this._items[i].getName()
+                //    + " " + status;
+                
+                itemListText = itemListText + itemText;
+//                var itemText = letter + selectionState + this._items[i].getName()
+//                    + " " + status;
+//                itemListText = itemListText + itemText + "<br />";
+//                itemListText = "<p class='highlight'>"
+//                    + itemListText + itemText + "</p>";//<br />";
             }
         }
     }
+    //return "<ul style='list-style-type:none'>" + itemListText + "</ul>";
     return itemListText;
 };
 
@@ -174,13 +189,10 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
             this._selectedIndices = {};
             this.hideSubWin();
             this.show();
-        } else if (inputData.keyCode === ROT.VK_E) {
+        } else if (inputData.keyCode === ROT.VK_W) {
             if (this._currentItem && this._currentItem.hasMixin('Equippable')) {
                 if (Game.player.isEquipped(this._currentItem)) {
                     Game.player.unequip(this._currentItem);
-                    console.log(this._currentItem);
-                    console.log(Game.player._handOne);
-                                
                     Game.UI.addMessage("You unequip the " + this._currentItem._name + ".");
                     this.hide();                    
                 } else {
@@ -193,7 +205,13 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
         } else if (inputData.keyCode === ROT.VK_D) {
             Game.player.dropItem(Object.keys(this._selectedIndices)[0]);
             this.hide();
-        }
+        } else if (inputData.keyCode === ROT.VK_E) {
+            if (this._currentItem && this._currentItem.hasMixin('Edible')) {
+                this._currentItem.eat(Game.player);
+                this.hide();
+                Game.engine.unlock();
+            }
+        } 
     }
 };
 
@@ -213,11 +231,22 @@ Game.Dialog.Items.prototype.showSubWin = function(item) {
 Game.Dialog.Items.prototype.getActions = function(item) {
     var output = "";
     if (item.hasMixin('Equippable')) {
-        if (Game.player.isEquipped(item))
-            output += " un[<span style='color:cyan'>e</span>]quip";
-        else
-            output += " [<span style='color:cyan'>e</span>]quip";
+        if (Game.player.isEquipped(item)) {
+            if (item._wieldable)
+                output += " un[<span style='color:cyan'>w</span>]ield";
+            else
+                output += " un[<span style='color:cyan'>w</span>]ear";
+        } else {
+            if (item._wieldable)
+                output += " [<span style='color:cyan'>w</span>]ield";
+            else
+                output += " [<span style='color:cyan'>w</span>]ear";
+        }
     }
+    if (item.hasMixin('Edible'))
+        output += " [<span style='color:cyan'>e</span>]at";
+    if (item.hasMixin('Drinkable'))
+        output += " [<span style='color:cyan'>q</span>]uaff";
     if (item.hasMixin('Usable'))
         output += " [<span style='color:cyan'>u</span>]se";
     output += " [<span style='color:cyan'>d</span>]rop";

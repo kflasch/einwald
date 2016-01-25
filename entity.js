@@ -46,7 +46,7 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
                 descMsg = "You see several objects here.";
             }
         } else {
-             descMsg = 'You pass through ' + tile._desc + '.';
+             //descMsg = 'You pass through ' + tile._desc + '.';
         }
     } else {
         if (tile == Game.Tile.nullTile) {
@@ -207,6 +207,14 @@ Game.EntityMixins.Killable = {
     init: function(template) {
         this._maxHP = template['maxHP'] || 10;
         this._hp = template['hp'] || this._maxHP;
+    },
+    modifyHP: function(delta) {
+        this._hp += delta;
+        if (this._hp > this._maxHP) {
+            this._hp = this._maxHP;
+        } else if (this._hp <= 0) {
+            // entity has died
+        }
     }
 };
 
@@ -253,6 +261,15 @@ Game.EntityMixins.Equipper = {
     }
 };
 
+Game.EntityMixins.Attacker = {
+    name: 'Attacker',
+    groupName: 'Attacker',
+    init: function(template) {
+    },
+    attack: function(target) {
+    }
+};
+
 // entities
 
 Game.PlayerTemplate = {
@@ -260,6 +277,7 @@ Game.PlayerTemplate = {
     chr: '@',
     fg: '#ffa',
     sightRadius: 6,
+    hp: 7,
     mixins: [Game.EntityMixins.PlayerActor,
              Game.EntityMixins.Equipper,
              Game.EntityMixins.Killable,
