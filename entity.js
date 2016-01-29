@@ -9,7 +9,6 @@ Game.Entity = function(properties) {
 
     this._zone = null;
     this._alive = true;
-
 };
 
 Game.Entity.extend(Game.DynamicGlyph);
@@ -63,6 +62,24 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
     }
     if (isPlayer && descMsg)
         Game.UI.addMessage(descMsg);
+};
+
+Game.Entity.prototype.kill = function(message) {
+    if (!this._alive) {
+        console.log("tried to kill already dead entity " + this);
+        return;
+    }
+
+    this._alive = false;
+
+    if (this.hasMixin(Game.EntityMixins.PlayerActor)) {
+        // player died
+        if (message == null)
+            message = "You have died!";
+        Game.UI.addMessage(message);
+    } else {
+        this._zone.removeEntity(this);
+    }
 };
 
 Game.Entity.prototype.isHostile = function(target) {
@@ -221,12 +238,23 @@ Game.EntityMixins.Killable = {
         this._hp = template['hp'] || this._maxHP;
         this._defenseValue = template['defenseValue'] || 0;
     },
-    modifyHP: function(thing, delta) {
+    // agent is the object that changed hp
+    modifyHP: function(agent, delta) {
         this._hp += delta;
         if (this._hp > this._maxHP) {
             this._hp = this._maxHP;
         } else if (this._hp <= 0) {
-            // entity has died
+            this.raiseEvent('onDeath', agent);
+            agent.raiseEvent('onKill', this);
+            this.kill();
+            /*
+            if (this.hasMixin('PlayerActor')) {
+                // player has died
+                Game.UI.addMessage("You've died...");
+            } else if (agent.hasMixin('PlayerActor')) {
+                // player has killed entity
+            }
+            */
         }
     },
     getDefenseValue: function() {
@@ -244,6 +272,27 @@ Game.EntityMixins.ExperienceGainer = {
     init: function(template) {
         this._level = template['level'] || 1;
         this._xp = template['xp'] || 0;
+    }
+};
+
+Game.EntityMixins.CorpseDropper = {
+    name: 'CorpseDropper',
+    init: function(template) {
+        // Chance of dropping a cropse (out of 100).
+        this._corpseDropRate = template['corpseDropRate'] || 100;
+    },
+    listeners: {
+        onDeath: function(attacker) {
+            // Check if we should drop a corpse.
+            if (Math.round(Math.random() * 100) <= this._corpseDropRate) {
+                console.log(this._foreground);
+                this._zone.addItem(this._x, this._y,
+                    Game.ItemRepository.create('corpse', {
+                        name: this._name + ' corpse',
+                        fg: this._foreground
+                    }));
+            }    
+        }
     }
 };
 
@@ -318,7 +367,7 @@ Game.EntityMixins.Attacker = {
                                    + damage + " damage!");
             }
 
-            target.modifyHP(this, damage);
+            target.modifyHP(this, -damage);
         }
     }
 };
@@ -347,8 +396,10 @@ Game.EntityRepository.define('spider', {
     chr: 's',
     fg: 'brown',
     sightRadius: 6,
+    maxHP: 3,
     mixins: [Game.EntityMixins.TaskActor,
-             Game.EntityMixins.Killable]
+             Game.EntityMixins.Killable,
+             Game.EntityMixins.CorpseDropper]
 });
 
 Game.EntityRepository.define('wolf', {
@@ -356,8 +407,10 @@ Game.EntityRepository.define('wolf', {
     chr: 'w',
     fg: 'grey',
     sightRadius: 6,
+    maxHP: 6,
     mixins: [Game.EntityMixins.TaskActor,
-             Game.EntityMixins.Killable]
+             Game.EntityMixins.Killable,
+             Game.EntityMixins.CorpseDropper]
 });
 
 Game.EntityRepository.define('wanderer', {
@@ -365,7 +418,9 @@ Game.EntityRepository.define('wanderer', {
     chr: '@',
     fg: '#ff0',
     sightRadius: 6,
+    maxHP: 10,
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Killable,
+             Game.EntityMixins.CorpseDropper,
              Game.EntityMixins.Equipper]
 });

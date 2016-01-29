@@ -134,6 +134,19 @@ Game.Zone.prototype.addEntity = function(entity) {
     //if (entity.hasMixin('PlayerActor')) {
     //    Game.player = entity;
     //}
+};
+
+Game.Zone.prototype.removeEntity = function(entity) {
+    var key = entity._x + ',' + entity._y;
+    if (this._entities[key] == entity)
+        delete this._entities[key];
+
+    if (entity.hasMixin('Actor'))
+        Game.scheduler.remove(entity);
+
+    //if (entity.hasMixin('PlayerActor')) {
+    //    Game.player = undefined;
+    //}
 
 };
 

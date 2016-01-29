@@ -65,6 +65,7 @@ Game.Dialog.Help.prototype.getOutput = function() {
     output += "'g' to get / pick up <br />";
     output += "'d' to drop <br />";
     output += "'i' to show inventory <br />";
+    output += "'.' to wait a turn <br />";
     output += "'ESC' to exit screens <br />";
     return output;
     // Apply, Equip, Remove, Throw, and Drop

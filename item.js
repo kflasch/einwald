@@ -28,7 +28,7 @@ Game.ItemMixins.Edible = {
     },
     eat: function(entity) {
         if (entity.hasMixin('Killable')) {
-            entity.modifyHP(this.hpVal);
+            entity.modifyHP(this, this.hpVal);
         }
         if (entity.hasMixin('Eater')) {
         }
@@ -89,4 +89,12 @@ Game.ItemRepository.define('dagger', {
     attackVal: 2,
     desc: 'A well-balanced iron dagger.',
     mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
+}, { disableRandomCreation: true });
+
+Game.ItemRepository.define('corpse', {
+    name: 'corpse',
+    chr: '%',
+    foodValue: 75,
+    consumptions: 1,
+    mixins: [Game.ItemMixins.Edible]
 }, { disableRandomCreation: true });

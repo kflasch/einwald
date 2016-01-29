@@ -180,6 +180,10 @@ Game.handleInput = function(inputType, inputData) {
                 Game.UI.addMessage("There is nothing here to pick up.");
             }
             return;
+        } else if (inputData.keyCode === ROT.VK_PERIOD) {
+            // skip turn
+            Game.engine.unlock();
+            return;
         } else if (inputData.keyCode === ROT.VK_BACK_SLASH) {
             Game.debug = (Game.debug === false) ? true : false;
         } else {
