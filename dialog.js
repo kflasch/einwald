@@ -52,6 +52,7 @@ Game.Dialog.prototype.getOutput = function() {
     return "placeholder";
 };
 
+// help menu
 
 Game.Dialog.Help = function() {
     var properties = { title: 'Help' };
@@ -73,6 +74,36 @@ Game.Dialog.Help.prototype.getOutput = function() {
 };
 
 Game.Dialog.Help.prototype.handleInput = function(inputType, inputData) {
+    if (inputType === 'keydown') {
+        if (inputData.keyCode === ROT.VK_ESCAPE) {
+            this.hide();
+        }
+    } else if (inputType === 'keypress') {
+        var keyChar = String.fromCharCode(inputData.charCode);
+        if (keyChar === '?') {
+            this.hide();
+        }        
+    }
+};
+
+// main menu
+
+Game.Dialog.MainMenu = function() {
+    var properties = { title: 'Main Menu' };
+    Game.Dialog.call(this, properties);
+};
+
+Game.Dialog.MainMenu.extend(Game.Dialog);
+
+Game.Dialog.MainMenu.prototype.getOutput = function() {
+    var output = " <br />" ;
+//    output += " [<span style='color:cyan'>s</span>]ave";
+//    output += " [<span style='color:cyan'>l</span>]oad";
+    output += " <br />";
+    return output;
+};
+
+Game.Dialog.MainMenu.prototype.handleInput = function(inputType, inputData) {
     if (inputType === 'keydown') {
         if (inputData.keyCode === ROT.VK_ESCAPE) {
             this.hide();

@@ -8,8 +8,8 @@ var Game = {
     scheduler: null,
     player: null,
     turns: 0,
+    world: null,
     zone: null,
-    items: {},
     currentDialog: null,
     debug: false,
 
@@ -206,7 +206,7 @@ Game.handleInput = function(inputType, inputData) {
 };
 
 window.onload = function() {
-    if (!ROT.isSupported()) {
+    if (!ROT.isSupported() || typeof(Storage) === 'undefined') {
         alert("Your browser is not supported.");
     } else {
         Game.init();
