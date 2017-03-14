@@ -89,7 +89,7 @@ Game.Dialog.Help.prototype.handleInput = function(inputType, inputData) {
 // main menu
 
 Game.Dialog.MainMenu = function() {
-    var properties = { title: 'Main Menu' };
+    var properties = { title: 'Einwald' };
     Game.Dialog.call(this, properties);
 };
 
@@ -97,7 +97,7 @@ Game.Dialog.MainMenu.extend(Game.Dialog);
 
 Game.Dialog.MainMenu.prototype.getOutput = function() {
     var output = " <br />" ;
-//    output += " [<span style='color:cyan'>s</span>]ave";
+    output += " [<span style='color:cyan'>s</span>]tart a new game";
 //    output += " [<span style='color:cyan'>l</span>]oad";
     output += " <br />";
     return output;
@@ -105,8 +105,9 @@ Game.Dialog.MainMenu.prototype.getOutput = function() {
 
 Game.Dialog.MainMenu.prototype.handleInput = function(inputType, inputData) {
     if (inputType === 'keydown') {
-        if (inputData.keyCode === ROT.VK_ESCAPE) {
+        if (inputData.keyCode === ROT.VK_S) {
             this.hide();
+            Game._startGame();
         }
     } else if (inputType === 'keypress') {
         var keyChar = String.fromCharCode(inputData.charCode);

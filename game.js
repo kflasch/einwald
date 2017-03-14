@@ -32,6 +32,14 @@ var Game = {
         bindEvent('keydown');
         bindEvent('keypress');
         
+        Game.currentDialog = new Game.Dialog.MainMenu();
+        Game.currentDialog.show();
+    },
+
+    _startGame: function() {
+
+        document.getElementById('wrapper').style.visibility = 'visible';
+        
         this.scheduler = new ROT.Scheduler.Simple();
 
         this.player = new Game.Entity(Game.PlayerTemplate);
@@ -41,7 +49,7 @@ var Game = {
         this.scheduler.add(this.player, true);
 
         this.engine = new ROT.Engine(this.scheduler);
-        this.engine.start();
+        this.engine.start();            
     },
 
     _generateMap: function() {
