@@ -97,8 +97,9 @@ Game.Dialog.MainMenu.extend(Game.Dialog);
 
 Game.Dialog.MainMenu.prototype.getOutput = function() {
     var output = " <br />" ;
-    output += " [<span style='color:cyan'>s</span>]tart a new game";
-//    output += " [<span style='color:cyan'>l</span>]oad";
+    output += " [<span style='color:cyan'>s</span>]tart a new game <br />";
+    if (localStorage.getItem("einwaldplayer"))
+        output += " [<span style='color:cyan'>l</span>]oad <br />";    
     output += " <br />";
     return output;
 };
@@ -108,11 +109,16 @@ Game.Dialog.MainMenu.prototype.handleInput = function(inputType, inputData) {
         if (inputData.keyCode === ROT.VK_S) {
             this.hide();
             Game._startGame();
+        } else if (inputData.keyCode === ROT.VK_L) {
+            if (localStorage.getItem("einwaldplayer")) {
+                this.hide();
+                Game._startGame(true);
+            }
         }
     } else if (inputType === 'keypress') {
         var keyChar = String.fromCharCode(inputData.charCode);
         if (keyChar === '?') {
-            this.hide();
+            //this.hide();
         }        
     }
 };
