@@ -31,25 +31,51 @@ var Game = {
         };
         bindEvent('keydown');
         bindEvent('keypress');
+
+        //window.addEventListener("beforeunload", function(e) {
+        //    e.returnValue = "Quit?";
+        //});
         
         Game.currentDialog = new Game.Dialog.MainMenu();
         Game.currentDialog.show();
     },
 
-    _startGame: function() {
+    _startGame: function(load=false) {
 
         document.getElementById('wrapper').style.visibility = 'visible';
         
         this.scheduler = new ROT.Scheduler.Simple();
 
-        this.player = new Game.Entity(Game.PlayerTemplate);
+        if (load) {
+            this._loadGame();
+        } else {
+            this.player = new Game.Entity(Game.PlayerTemplate);
+            this.player._name = Names.genPlayerName();
+        }
 
         this._generateMap();
+        this._generateQuest();
 
         this.scheduler.add(this.player, true);
 
         this.engine = new ROT.Engine(this.scheduler);
         this.engine.start();            
+    },
+
+    _loadGame: function() {
+        var playerJSON = localStorage.getItem("einwald_player");
+        this.player = JSON.parse(playerJSON);
+
+        //this.player = new Game.Entity(Game.PlayerTemplate);
+        //this.player._name = localStorage.getItem("einwald_playername");
+        //this.player._hp = localStorage.getItem("einwald_playerhp");
+        
+    },
+
+    _saveGame: function() {
+        localStorage.setItem("einwald_player", JSON.stringify(this.player));
+        //localStorage.setItem("einwald_playername", this.player._name);
+        //localStorage.setItem("einwald_playerhp", this.player._hp);
     },
 
     _generateMap: function() {
@@ -66,6 +92,9 @@ var Game = {
         this.zone = new Game.Zone.Forest(tiles, this.player);
 
         this.refresh();
+    },
+
+    _generateQuest: function() {
     },
 
     _renderZone: function() {
@@ -191,6 +220,10 @@ Game.handleInput = function(inputType, inputData) {
         } else if (inputData.keyCode === ROT.VK_PERIOD) {
             // skip turn
             Game.engine.unlock();
+            return;
+        } else if (inputData.keyCode === ROT.VK_S) {
+            this._saveGame();
+            Game.UI.addMessage("Game saved.");
             return;
         } else if (inputData.keyCode === ROT.VK_BACK_SLASH) {
             Game.debug = (Game.debug === false) ? true : false;
