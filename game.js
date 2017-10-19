@@ -66,9 +66,9 @@ var Game = {
     },
     
     _saveGame: function() {
+        localStorage.setItem("einwald_turns", this.turns);
         localStorage.setItem("einwald_player", this.player.exportToString());
         localStorage.setItem("einwald_zone", this.zone.exportToString());
-
         
         /*
         for (var key in this.zone._entities)
@@ -92,6 +92,8 @@ var Game = {
 
     _loadGame: function() {
 
+        this.turns = localStorage.getItem("einwald_turns");
+        
         var savedPlayer = JSON.parse(localStorage.getItem("einwald_player"));
         for (var key in savedPlayer) {
             this.player[key] = savedPlayer[key];
