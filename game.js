@@ -68,26 +68,7 @@ var Game = {
     _saveGame: function() {
         localStorage.setItem("einwald_turns", this.turns);
         localStorage.setItem("einwald_player", this.player.exportToString());
-        localStorage.setItem("einwald_zone", this.zone.exportToString());
-        
-        /*
-        for (var key in this.zone._entities)
-            delete this.zone._entities[key]._zone;        
-        localStorage.setItem("einwald_zone", JSON.stringify(this.zone));
-        */
-        /*
-        var seen = [];
-        var zoneJSON = JSON.stringify(this.zone, function(key, val) {
-            if (val != null && typeof val == "object") {
-                if (seen.indexOf(val) >= 0) {
-                    return;
-                }
-                seen.push(val);                
-            }
-            return val;
-        });
-        localStorage.setItem("einwald_zone", zoneJSON);        
-        */
+        localStorage.setItem("einwald_zone", this.zone.exportToString());        
     },
 
     _loadGame: function() {
@@ -101,28 +82,26 @@ var Game = {
 
         var savedZone = JSON.parse(localStorage.getItem("einwald_zone"));
         this.zone = new Game.Zone(savedZone._tiles);
-        this.zone._items = savedZone._items;
+        for (var xyloc in savedZone._items) {
+            var itemArr = savedZone._items[xyloc];
+            for (var i=0;i<itemArr.length; i++) {
+                var savedItem = itemArr[i];
+                //console.log(savedItem);
+                var newItem = new Game.Item();
+                for (var itemProp in savedItem)
+                    newItem[itemProp] = savedItem[itemProp];
+                this.zone.addItem(xyloc, newItem);
+            }
+            
+                //newItem[itemProp] = savedZone._items[itemProp];
+        
+        }
         this.zone.addEntity(this.player);
         for (var key in savedZone) {
             //console.log(key);
         }
 
         this.refresh();
-        /*
-        var zoneJSON = localStorage.getItem("einwald_zone");
-        var loadZone = JSON.parse(zoneJSON);
-        
-        for (var key in loadZone._entities) {
-            if (loadZone._entities[key]._attachedMixins['PlayerActor']) {
-                this.player._name = loadZone._entities[key]._name;
-            }
-
-            //this.zone._entities[key]._zone = this.zone;
-            //if (this.zone._entities[key]._attachedMixins['PlayerActor'])
-            //    this.player = this.zone._entities[key];
-        }
-        */
-
     },
     
     _generateMap: function() {

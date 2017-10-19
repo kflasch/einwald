@@ -76,6 +76,10 @@ Game.Zone.prototype.setItemsAt = function(x, y, items) {
 
 Game.Zone.prototype.addItem = function(x, y, item) {
     var key = x + ',' + y;
+    this.addItem(key, item);
+};
+
+Game.Zone.prototype.addItem = function(key, item) {
     if (this._items[key]) {
         this._items[key].push(item);
     } else {
