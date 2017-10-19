@@ -98,7 +98,7 @@ Game.Dialog.MainMenu.extend(Game.Dialog);
 Game.Dialog.MainMenu.prototype.getOutput = function() {
     var output = " <br />" ;
     output += " [<span style='color:cyan'>s</span>]tart a new game <br />";
-    if (localStorage.getItem("einwaldplayer"))
+    if (localStorage.getItem("einwald_zone"))
         output += " [<span style='color:cyan'>l</span>]oad <br />";    
     output += " <br />";
     return output;
@@ -110,7 +110,7 @@ Game.Dialog.MainMenu.prototype.handleInput = function(inputType, inputData) {
             this.hide();
             Game._startGame();
         } else if (inputData.keyCode === ROT.VK_L) {
-            if (localStorage.getItem("einwaldplayer")) {
+            if (localStorage.getItem("einwald_zone")) {
                 this.hide();
                 Game._startGame(true);
             }

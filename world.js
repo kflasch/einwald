@@ -4,7 +4,7 @@ Game.World = function() {
     
     this._zones = null;
 
-    // initialze nested array
+    // initialize nested array
     var tiles = [];
     for (var x=0; x < Game.mapWidth; x++) {
         tiles[x] = [];

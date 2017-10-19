@@ -1,4 +1,4 @@
-Game.Zone = function(tiles) {
+Game.Zone = function Zone(tiles) {
 
     this._name = "";
     
@@ -12,6 +12,7 @@ Game.Zone = function(tiles) {
     // map of 'x,y' to items, entities
     this._items = {};
     this._entities = {};
+    
 
     this._explored = this._setupExplored();
 };
@@ -20,6 +21,7 @@ Game.Zone.prototype.getTile = function(x, y) {
     if (x < 0 || x >= this._width || y < 0 || y >= this._height) {
         return Game.Tile.nullTile;
     } else {
+        //console.log(x + ' ' + y);
         return this._tiles[x][y] || Game.Tile.nullTile;
     }
 };
@@ -173,10 +175,19 @@ Game.Zone.prototype.updateEntityPosition = function(entity, oldX, oldY) {
     this._entities[key] = entity;
 };
 
+Game.Zone.prototype.exportToString = function() {
+    function replacer(key, value) {
+        if (key === '_entities') {
+            return undefined;
+        }
+        return value;
+    };
+
+    return JSON.stringify(this, replacer);
+};
 
 
-
-Game.Zone.Forest = function(tiles, player) {
+Game.Zone.Forest = function Forest(tiles, player) {
 
     Game.Zone.call(this, tiles);
 

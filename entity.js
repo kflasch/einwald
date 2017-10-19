@@ -1,4 +1,4 @@
-Game.Entity = function(properties) {
+Game.Entity = function Entity(properties) {
     properties = properties || {};
 
     Game.DynamicGlyph.call(this, properties);
@@ -8,28 +8,27 @@ Game.Entity = function(properties) {
     this._sightRadius = properties['sightRadius'] || 0;
 
     this._zone = null;
+    this._zoneID = null;
     this._alive = true;
 };
 
 Game.Entity.extend(Game.DynamicGlyph);
 
-Game.Entity.prototype.setPosition = function(x, y) {
+Game.Entity.prototype.setPosition = function(x, y, zone) {
     var oldX = this._x;
     var oldY = this._y;
 
     this._x = x;
     this._y = y;
-
-    if (this._zone)
-        this._zone.updateEntityPosition(this, oldX, oldY);
+    zone.updateEntityPosition(this, oldX, oldY);
 };
 
 // todo: combine player with entities, zone arg?
 Game.Entity.prototype.tryMove = function(x, y, zone) {
-    var tile = this._zone.getTile(x, y);
+    var tile = zone.getTile(x, y);
     var isPlayer = this.hasMixin(Game.EntityMixins.PlayerActor);
     var descMsg = null;
-    var target = this._zone.getEntityAt(x, y);
+    var target = zone.getEntityAt(x, y);
     if (target) {
         if (this.hasMixin('Attacker')) {
             if (this.isHostile(target)) {
@@ -40,9 +39,9 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
             }
         }
     } else if (tile._passable) {
-        this.setPosition(x, y);
+        this.setPosition(x, y, zone);
 
-        var items = this._zone.getItemsAt(x, y);
+        var items = zone.getItemsAt(x, y);
         if (items) {
             if (items.length === 1) {
                 descMsg = "You see a " + items[0].getName() + ".";
@@ -64,7 +63,7 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
         Game.UI.addMessage(descMsg);
 };
 
-Game.Entity.prototype.kill = function(message) {
+Game.Entity.prototype.kill = function(message, zone) {
     if (!this._alive) {
         console.log("tried to kill already dead entity " + this);
         return;
@@ -78,7 +77,7 @@ Game.Entity.prototype.kill = function(message) {
             message = "You have died!";
         Game.UI.addMessage(message);
     } else {
-        this._zone.removeEntity(this);
+        zone.removeEntity(this);
     }
 };
 
@@ -87,6 +86,36 @@ Game.Entity.prototype.isHostile = function(target) {
     if (isPlayer || target.hasMixin(Game.EntityMixins.PlayerActor))
         return true;
     else return false;
+};
+
+Game.Entity.prototype.getZone = function() {
+    return Game.zoneMap.get(this._zoneID);
+};
+
+Game.Entity.prototype.exportToString = function() {    
+    function replacer(key, value) {
+        if (key === '_zone') {
+            return undefined;
+        }
+        return value;
+    };
+
+    return JSON.stringify(this, replacer);
+};
+
+Game.Entity.prototype.exportToStringOld = function() {
+    var proplist = [];
+    for (var key in this) {
+        if (typeof key !== 'function' && typeof this[key] !== 'function') {
+            if (typeof this[key] === 'object') {
+                if (key !== '_zone') 
+                    proplist.push('"'+key+'":' + JSON.stringify(this[key]));
+            } else {
+                proplist.push('"'+key+'":' + '"'+this[key]+'"');
+            }
+        }        
+    }
+    return "{" + proplist.toString() + "}";    
 };
 
 // mixins
@@ -224,9 +253,9 @@ Game.EntityMixins.TaskActor = {
     wander: function() {
         var moveOffset = (Math.round(Math.random()) === 1) ? 1 : -1;
         if (Math.round(Math.random()) === 1) {
-            this.tryMove(this._x + moveOffset, this._y);
+            this.tryMove(this._x + moveOffset, this._y, this._zone);
         } else {
-            this.tryMove(this._x, this._y + moveOffset);
+            this.tryMove(this._x, this._y + moveOffset, this._zone);
         }
     }
 };
@@ -246,7 +275,7 @@ Game.EntityMixins.Killable = {
         } else if (this._hp <= 0) {
             this.raiseEvent('onDeath', agent);
             agent.raiseEvent('onKill', this);
-            this.kill();
+            this.kill(null, this._zone);
             /*
             if (this.hasMixin('PlayerActor')) {
                 // player has died

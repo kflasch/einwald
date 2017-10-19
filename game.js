@@ -12,6 +12,7 @@ var Game = {
     zone: null,
     currentDialog: null,
     debug: false,
+    zoneMap: new Map(),
 
     init: function() {
         this.display = new ROT.Display({fontFamily:"droid sans mono, monospace",
@@ -47,13 +48,15 @@ var Game = {
         this.scheduler = new ROT.Scheduler.Simple();
 
         if (load) {
+            this.player = new Game.Entity(Game.PlayerTemplate);
+            //this._generateMap();
             this._loadGame();
         } else {
             this.player = new Game.Entity(Game.PlayerTemplate);
             this.player._name = Names.genPlayerName();
+            this._generateMap();
         }
 
-        this._generateMap();
         this._generateQuest();
 
         this.scheduler.add(this.player, true);
@@ -61,26 +64,68 @@ var Game = {
         this.engine = new ROT.Engine(this.scheduler);
         this.engine.start();            
     },
+    
+    _saveGame: function() {
+        localStorage.setItem("einwald_player", this.player.exportToString());
+        localStorage.setItem("einwald_zone", this.zone.exportToString());
+
+        
+        /*
+        for (var key in this.zone._entities)
+            delete this.zone._entities[key]._zone;        
+        localStorage.setItem("einwald_zone", JSON.stringify(this.zone));
+        */
+        /*
+        var seen = [];
+        var zoneJSON = JSON.stringify(this.zone, function(key, val) {
+            if (val != null && typeof val == "object") {
+                if (seen.indexOf(val) >= 0) {
+                    return;
+                }
+                seen.push(val);                
+            }
+            return val;
+        });
+        localStorage.setItem("einwald_zone", zoneJSON);        
+        */
+    },
 
     _loadGame: function() {
-        var playerJSON = localStorage.getItem("einwald_player");
-        this.player = JSON.parse(playerJSON);
 
-        //this.player = new Game.Entity(Game.PlayerTemplate);
-        //this.player._name = localStorage.getItem("einwald_playername");
-        //this.player._hp = localStorage.getItem("einwald_playerhp");
+        var savedPlayer = JSON.parse(localStorage.getItem("einwald_player"));
+        for (var key in savedPlayer) {
+            this.player[key] = savedPlayer[key];
+        }
+
+        var savedZone = JSON.parse(localStorage.getItem("einwald_zone"));
+        this.zone = new Game.Zone(savedZone._tiles);
+        this.zone._items = savedZone._items;
+        this.zone.addEntity(this.player);
+        for (var key in savedZone) {
+            //console.log(key);
+        }
+
+        this.refresh();
+        /*
+        var zoneJSON = localStorage.getItem("einwald_zone");
+        var loadZone = JSON.parse(zoneJSON);
         
-    },
+        for (var key in loadZone._entities) {
+            if (loadZone._entities[key]._attachedMixins['PlayerActor']) {
+                this.player._name = loadZone._entities[key]._name;
+            }
 
-    _saveGame: function() {
-        localStorage.setItem("einwald_player", JSON.stringify(this.player));
-        //localStorage.setItem("einwald_playername", this.player._name);
-        //localStorage.setItem("einwald_playerhp", this.player._hp);
-    },
+            //this.zone._entities[key]._zone = this.zone;
+            //if (this.zone._entities[key]._attachedMixins['PlayerActor'])
+            //    this.player = this.zone._entities[key];
+        }
+        */
 
+    },
+    
     _generateMap: function() {
 
-        // initialze nested array
+        // initialize nested array
         var tiles = [];
         for (var x=0; x < Game.mapWidth; x++) {
             tiles[x] = [];
