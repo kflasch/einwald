@@ -98,8 +98,9 @@ var Game = {
                 var entTemplate = Game.EntityRepository.getTemplate(savedEnt._templateName);
                 newEnt = new Game.Entity(entTemplate);
             }
-            for (var entProp in savedEnt)
+            for (var entProp in savedEnt) {
                 newEnt[entProp] = savedEnt[entProp];
+            }
             if (savedEnt._items) {
                 for (var i=0;i<savedEnt._items.length; i++) {
                     var savedItem = savedEnt._items[i];

@@ -179,7 +179,7 @@ Game.Zone.prototype.updateEntityPosition = function(entity, oldX, oldY) {
 
 Game.Zone.prototype.exportToString = function() {
     function replacer(key, value) {
-        if (key === '_zone') {
+        if (key === '_zone' || key === '_listeners') {
             return undefined;
         }
         return value;

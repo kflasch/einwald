@@ -147,7 +147,7 @@ Game.Dialog.Items.prototype.getItemOutput = function() {
         for (var i = 0; i < this._items.length; i++) {
             if (this._items[i]) {
                 var letter = String.fromCharCode(i+97);
-                var status = this.getItemStatus(this._items[i]);
+                var status = this.getItemStatus(i);
                 var selectionState = " - ";
                 var hl = "";
                 if (this._selectedIndices[i]) {
@@ -173,11 +173,11 @@ Game.Dialog.Items.prototype.getItemOutput = function() {
     return itemListText;
 };
 
-Game.Dialog.Items.prototype.getItemStatus = function(item) {
+Game.Dialog.Items.prototype.getItemStatus = function(i) {
     //var output = "";
-    if (Game.player._handOne === item)
+    if (Game.player._handOne === i)
         return "(wielding)";
-    if (Game.player._armor === item)
+    if (Game.player._armor === i)
         return "(wearing)";
     return "";
 };
@@ -230,13 +230,13 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
             this.show();
         } else if (inputData.keyCode === ROT.VK_W) {
             if (this._currentItem && this._currentItem.hasMixin('Equippable')) {
-                if (Game.player.isEquipped(this._currentItem)) {
-                    Game.player.unequip(this._currentItem);
+                if (Game.player.isEquipped(this._currentItemIndex)) {
+                    Game.player.unequip(this._currentItemIndex);
                     Game.UI.addMessage("You unequip the " + this._currentItem._name + ".");
                     this.hide();                    
                 } else {
-                    //Game.player.unequip(this._currentItem);
-                    Game.player.wield(this._currentItem);
+                    //Game.player.unequip(this._currentItemIndex);
+                    Game.player.wield(this._currentItemIndex);
                     Game.UI.addMessage("You equip the " + this._currentItem._name + ".");
                     this.hide();
                 }
@@ -254,23 +254,23 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
     }
 };
 
-Game.Dialog.Items.prototype.showSubWin = function(item) {
+Game.Dialog.Items.prototype.showSubWin = function(item, itemIndex) {
     var elem = document.getElementById("sub");
     elem.style.visibility = "visible";
-    output = "<span style='color:#CCCC00'>" + item.getName() + "</span> <br />";
+    var output = "<span style='color:#CCCC00'>" + item.getName() + "</span> <br />";
     output += "<br />";
     output += item._desc;
     output += "<span style='position:absolute; bottom:30px; left:20px'> ";
-    output += this.getActions(item);
+    output += this.getActions(item, itemIndex);
 //    output += "[ESC] to close ";
     output += "</span>";
     elem.innerHTML = output;
 };
 
-Game.Dialog.Items.prototype.getActions = function(item) {
+Game.Dialog.Items.prototype.getActions = function(item, itemIndex) {
     var output = "";
     if (item.hasMixin('Equippable')) {
-        if (Game.player.isEquipped(item)) {
+        if (Game.player.isEquipped(itemIndex)) {
             if (item._wieldable)
                 output += " un[<span style='color:cyan'>w</span>]ield";
             else
@@ -312,10 +312,11 @@ Game.Dialog.invProp = {
     title: 'Inventory',
     canSelectMultiple: false,
     mainAction: function(selItems) {
-        this._currentItem = this._items[Object.keys(selItems)[0]];
+        this._currentItemIndex = Number(Object.keys(selItems)[0]);
+        this._currentItem = this._items[this._currentItemIndex];
         if (this._currentItem) {
             this._subwin = true;
-            this.showSubWin(this._currentItem);
+            this.showSubWin(this._currentItem, this._currentItemIndex);
         }
     }
 };

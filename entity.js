@@ -331,35 +331,41 @@ Game.EntityMixins.Equipper = {
         this._handOne = null;
         this._handTwo = null;
     },
-    wield: function(item) {
-        this._handOne = item;
+    wield: function(i) {
+        this._handOne = i;
     },
     unwield: function() {
         this._handOne = null;        
     },
-    wear: function(item) {
-        this._armor = item;
+    wear: function(i) {
+        this._armor = i;
     },
     takeOff: function() {
         this._armor = null;
     },
     getWeapon: function() {
-        return this._handOne;
+        if (this._items)
+            return this._items[this._handOne];
+        else
+            return null;
     },
     getArmor: function() {
-        return this._armor;
+        if (this._items)
+            return this._items[this._armor];
+        else
+            return null;
     },
-    unequip: function(item) {
-        if (this._handOne === item) {
+    unequip: function(i) {
+        if (this._handOne === i) {
             this.unwield();
-        } else if (this._armor === item) {
+        } else if (this._armor === i) {
             this.takeOff();
         }
     },
-    isEquipped: function(item) {
-        if (this._armor === item)
+    isEquipped: function(i) {
+        if (this._armor === i)
             return true;
-        if (this._handOne === item)
+        if (this._handOne === i)
             return true;
         return false;
     }
@@ -374,7 +380,6 @@ Game.EntityMixins.Attacker = {
     getAttackValue: function() {
         if (this.hasMixin(Game.EntityMixins.Equipper)) {
             if (this.getWeapon()) {
-                console.log(this.getWeapon());
                 return this.getWeapon().getAttackValue();
             }
         }
