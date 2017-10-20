@@ -48,8 +48,6 @@ var Game = {
         this.scheduler = new ROT.Scheduler.Simple();
 
         if (load) {
-            this.player = new Game.Entity(Game.PlayerTemplate);
-            //this._generateMap();
             this._loadGame();
         } else {
             this.player = new Game.Entity(Game.PlayerTemplate);
@@ -76,29 +74,39 @@ var Game = {
         this.turns = localStorage.getItem("einwald_turns");
         
         var savedPlayer = JSON.parse(localStorage.getItem("einwald_player"));
+        this.player = new Game.Entity(Game.PlayerTemplate);
         for (var key in savedPlayer) {
-            this.player[key] = savedPlayer[key];
+            this.player[key] = savedPlayer[key];            
+        }
+        for (var i=0;i<savedPlayer._items.length; i++) {
+            var savedItem = savedPlayer._items[i];
+            if (savedItem) {
+                var template = Game.ItemRepository.getTemplate(savedItem._templateName);
+                var newItem = new Game.Item(template);
+                this.player._items[i] = newItem;
+            }
         }
 
         var savedZone = JSON.parse(localStorage.getItem("einwald_zone"));
         this.zone = new Game.Zone(savedZone._tiles);
+        this.zone._name = savedZone._name;
+        this.zone._explored = savedZone._explored;
         for (var xyloc in savedZone._items) {
             var itemArr = savedZone._items[xyloc];
             for (var i=0;i<itemArr.length; i++) {
                 var savedItem = itemArr[i];
-                //console.log(savedItem);
-                var newItem = new Game.Item();
+                var template = Game.ItemRepository.getTemplate(savedItem._templateName);
+                var newItem = new Game.Item(template);
                 for (var itemProp in savedItem)
                     newItem[itemProp] = savedItem[itemProp];
                 this.zone.addItem(xyloc, newItem);
-            }
-            
-                //newItem[itemProp] = savedZone._items[itemProp];
-        
+            }            
         }
         this.zone.addEntity(this.player);
-        for (var key in savedZone) {
-            //console.log(key);
+        for (var xyloc in savedZone._entities) {
+            var savedEnt = savedZone._entities[xyloc];
+            console.log(savedEnt);
+
         }
 
         this.refresh();

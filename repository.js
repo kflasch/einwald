@@ -21,6 +21,7 @@ Game.Repository.prototype.create = function(name, extraProperties) {
         throw new Error("No template named '" + name + "' in repository '" +
             this._name + "'");
     }
+    this._templates[name]['templateName'] = name;
     // Copy the template
     var template = Object.create(this._templates[name]);
     // Apply any extra properties
@@ -29,6 +30,7 @@ Game.Repository.prototype.create = function(name, extraProperties) {
             template[key] = extraProperties[key];
         }
     }
+
     // Create the object, passing the template as an argument
     return new this._ctor(template);
 };
@@ -37,4 +39,8 @@ Game.Repository.prototype.create = function(name, extraProperties) {
 Game.Repository.prototype.createRandom = function() {
 	// Pick a random key and create an object based off of it.
 	return this.create(Object.keys(this._randomTemplates).random());
+};
+
+Game.Repository.prototype.getTemplate = function(name) {
+    return this._templates[name];
 };

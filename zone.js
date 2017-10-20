@@ -13,7 +13,6 @@ Game.Zone = function Zone(tiles) {
     this._items = {};
     this._entities = {};
     
-
     this._explored = this._setupExplored();
 };
 

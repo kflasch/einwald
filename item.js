@@ -2,6 +2,7 @@ Game.Item = function(properties) {
     properties = properties || {};
     
     Game.DynamicGlyph.call(this, properties);
+    this._templateName = properties['templateName'] || '';
     this._passable = properties['passable'] || true;
     this._name = properties['name'] || '';
     this._desc = properties['desc'] || '';
