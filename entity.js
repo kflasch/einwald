@@ -2,7 +2,7 @@ Game.Entity = function Entity(properties) {
     properties = properties || {};
 
     Game.DynamicGlyph.call(this, properties);
-
+    this._templateName = properties['templateName'] || '';
     this._x = properties['x'] || 0;
     this._y = properties['y'] || 0;
     this._sightRadius = properties['sightRadius'] || 0;

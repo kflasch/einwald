@@ -20,7 +20,6 @@ Game.Zone.prototype.getTile = function(x, y) {
     if (x < 0 || x >= this._width || y < 0 || y >= this._height) {
         return Game.Tile.nullTile;
     } else {
-        //console.log(x + ' ' + y);
         return this._tiles[x][y] || Game.Tile.nullTile;
     }
 };
@@ -180,7 +179,7 @@ Game.Zone.prototype.updateEntityPosition = function(entity, oldX, oldY) {
 
 Game.Zone.prototype.exportToString = function() {
     function replacer(key, value) {
-        if (key === '_entities') {
+        if (key === '_zone') {
             return undefined;
         }
         return value;

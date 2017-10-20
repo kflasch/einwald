@@ -65,7 +65,6 @@ var Game = {
     
     _saveGame: function() {
         localStorage.setItem("einwald_turns", this.turns);
-        localStorage.setItem("einwald_player", this.player.exportToString());
         localStorage.setItem("einwald_zone", this.zone.exportToString());        
     },
 
@@ -73,20 +72,6 @@ var Game = {
 
         this.turns = localStorage.getItem("einwald_turns");
         
-        var savedPlayer = JSON.parse(localStorage.getItem("einwald_player"));
-        this.player = new Game.Entity(Game.PlayerTemplate);
-        for (var key in savedPlayer) {
-            this.player[key] = savedPlayer[key];            
-        }
-        for (var i=0;i<savedPlayer._items.length; i++) {
-            var savedItem = savedPlayer._items[i];
-            if (savedItem) {
-                var template = Game.ItemRepository.getTemplate(savedItem._templateName);
-                var newItem = new Game.Item(template);
-                this.player._items[i] = newItem;
-            }
-        }
-
         var savedZone = JSON.parse(localStorage.getItem("einwald_zone"));
         this.zone = new Game.Zone(savedZone._tiles);
         this.zone._name = savedZone._name;
@@ -102,11 +87,31 @@ var Game = {
                 this.zone.addItem(xyloc, newItem);
             }            
         }
-        this.zone.addEntity(this.player);
+
         for (var xyloc in savedZone._entities) {
             var savedEnt = savedZone._entities[xyloc];
-            console.log(savedEnt);
-
+            var newEnt = null;
+            if (savedEnt._attachedMixins['PlayerActor']) {
+                newEnt = new Game.Entity(Game.PlayerTemplate);
+                this.player = newEnt;
+            } else {
+                var entTemplate = Game.EntityRepository.getTemplate(savedEnt._templateName);
+                newEnt = new Game.Entity(entTemplate);
+            }
+            for (var entProp in savedEnt)
+                newEnt[entProp] = savedEnt[entProp];
+            if (savedEnt._items) {
+                for (var i=0;i<savedEnt._items.length; i++) {
+                    var savedItem = savedEnt._items[i];
+                    if (savedItem) {
+                        var template = Game.ItemRepository.getTemplate(savedItem._templateName);
+                        var newItem = new Game.Item(template);
+                        newEnt._items[i] = newItem;
+                    }
+                }
+            }
+            
+            this.zone.addEntity(newEnt);
         }
 
         this.refresh();
