@@ -72,12 +72,16 @@ Game.Zone.prototype.setItemsAt = function(x, y, items) {
     }
 };
 
+// can be called as f(key, item) or f(x, y, item)
 Game.Zone.prototype.addItem = function(x, y, item) {
-    var key = x + ',' + y;
-    this.addItem(key, item);
-};
-
-Game.Zone.prototype.addItem = function(key, item) {
+    var key;
+    if (arguments.length === 2) {
+        key = x;
+        item = y;
+    } else {
+        key = x + ',' + y;
+    }
+         
     if (this._items[key]) {
         this._items[key].push(item);
     } else {
