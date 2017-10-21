@@ -158,7 +158,7 @@ Game.EntityMixins.InventoryHolder = {
     removeItem: function(i) {
         // if item is equippable, make sure it is unequipped before dropping
         if (this._items[i] && this.hasMixin(Game.EntityMixins.Equipper))
-            this.unequip(this._items[i]);
+            this.unequip(i);
         this._items[i] = null;
     },
     pickupItems: function() {
@@ -314,7 +314,6 @@ Game.EntityMixins.CorpseDropper = {
         onDeath: function(attacker) {
             // Check if we should drop a corpse.
             if (Math.round(Math.random() * 100) <= this._corpseDropRate) {
-                console.log(this._zone);
                 this._zone.addItem(this._x, this._y,
                     Game.ItemRepository.create('corpse', {
                         name: this._name + ' corpse',
@@ -357,16 +356,16 @@ Game.EntityMixins.Equipper = {
             return null;
     },
     unequip: function(i) {
-        if (this._handOne === i) {
+        if (this._handOne == i) {
             this.unwield();
-        } else if (this._armor === i) {
+        } else if (this._armor == i) {
             this.takeOff();
         }
     },
     isEquipped: function(i) {
-        if (this._armor === i)
+        if (this._armor == i)
             return true;
-        if (this._handOne === i)
+        if (this._handOne == i)
             return true;
         return false;
     }

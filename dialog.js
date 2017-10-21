@@ -242,11 +242,11 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
                 }
             }
         } else if (inputData.keyCode === ROT.VK_D) {
-            Game.player.dropItem(Object.keys(this._selectedIndices)[0]);
+            Game.player.dropItem(this._currentItemIndex);
             this.hide();
         } else if (inputData.keyCode === ROT.VK_E) {
             if (this._currentItem && this._currentItem.hasMixin('Edible')) {
-                this._currentItem.eat(Game.player);
+                this._currentItem.eat(Game.player, this._currentItemIndex);
                 this.hide();
                 Game.engine.unlock();
             }

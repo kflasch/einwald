@@ -106,7 +106,9 @@ var Game = {
                     var savedItem = savedEnt._items[i];
                     if (savedItem) {
                         var template = Game.ItemRepository.getTemplate(savedItem._templateName);
-                        var newItem = new Game.Item(template);
+                        var newItem = new Game.Item(template);                        
+                        for (var itemProp in savedItem)
+                            newItem[itemProp] = savedItem[itemProp];
                         newEnt._items[i] = newItem;
                     }
                 }

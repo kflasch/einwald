@@ -27,12 +27,11 @@ Game.ItemMixins.Edible = {
         this.foodVal = template['foodVal'] || 0;
         this.hpVal = template['hpVal'] || 0;
     },
-    eat: function(entity) {
+    eat: function(entity, invIndex) {
         if (entity.hasMixin('Killable')) {
             entity.modifyHP(this, this.hpVal);
         }
-        if (entity.hasMixin('Eater')) {
-        }
+        entity.removeItem(invIndex);
     }
 };
 
