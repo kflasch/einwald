@@ -201,13 +201,21 @@ var Game = {
 
     keyMap: {
         38: 0,
+        104: 0,
         33: 1,
+        105: 1,
         39: 2,
+        102: 2,
         34: 3,
+        99: 3,
         40: 4,
+        98: 4,
         35: 5,
+        97: 5,
         37: 6,
-        36: 7
+        100: 6,
+        36: 7,
+        103: 7
     }
 };
 
@@ -267,6 +275,8 @@ Game.handleInput = function(inputType, inputData) {
             this._saveGame();
             Game.UI.addMessage("Game saved.");
             return;
+        } else if (inputData.keyCode === ROT.VK_GREATER_THAN) {
+            
         } else if (inputData.keyCode === ROT.VK_BACK_SLASH) {
             Game.debug = (Game.debug === false) ? true : false;
         } else {
