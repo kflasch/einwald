@@ -1,9 +1,16 @@
-Game.World = function() {
+Game.World = function(player) {
 
-    this._name = 'Generic World';
+    this._name = 'Einwald World';
     
-    this._zones = null;
+    this._zones = [];
+    
+    var fzone = new Game.Zone.Forest(this._getNewTiles(), player);
+    this._zones.push(fzone);
+    fzone._id = 0;
 
+};
+
+Game.World.prototype._getNewTiles = function() {
     // initialize nested array
     var tiles = [];
     for (var x=0; x < Game.mapWidth; x++) {
@@ -12,8 +19,21 @@ Game.World = function() {
             tiles[x][y] = Game.Tile.nullTile;
         }
     }
+    return tiles;
+};
 
-    this.zone = new Game.Zone.Forest(tiles, this.player);
+Game.World.prototype.generateNewZone = function(name, fromZoneID, x, y) {
+
+    if (!Game.Zone[name]) {
+        console.log("No such zone type: " + name);
+        return undefined;
+    }
+    
+    var newZone = new Game.Zone[name](this._getNewTiles());
+    var newID = this._zones.push(newZone) - 1;
+    newZone._id = newID;
+    newZone.addConnection(x, y, Game.Tile.stairUp, fromZoneID);
+    return newID;    
 };
 
 Game.Quest = function() {

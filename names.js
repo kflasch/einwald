@@ -6,6 +6,62 @@ var Names =  {
         //return names[x];
 
         return DonjonNames.generateName('default');
+
+        
+    }
+};
+
+// http://www.roguebasin.com/index.php?title=Names_from_a_high_order_Markov_Process_and_a_simplified_Katz_back-off_scheme
+
+Categorical = function(support, prior) {
+    this._counts = {};
+    for (let x of support)
+        this._counts[x] = prior;
+    this._total = Object.keys(this._counts).length;
+};
+
+Categorical.prototype.observe = function(event, count=1) {
+    this._counts[event] += count;
+    this._total += count;
+};
+
+Categorical.prototype.sample = function(dice) {
+    var sample = Math.random() * this._total;
+    Object.keys(self._counts).forEach(function(key,index) {
+        if (sample <= this._counts[key])
+            return key;
+        sample -= this._counts[key];
+    });
+};
+
+MarkovModel = function(support) {
+    this._support = support;
+    this._order = 3;
+    this._prefix = '';
+    this._postfix = '';
+    this._counts = {};
+};
+
+MarkovModel.prototype.categorical = function(context) {
+    if (!(context in this._counts)) {
+        this._counts.a = null;
+    }
+    return this._counts.context;
+};
+
+MarkovModel.prototype.observe = function(sequence, count=1) {
+    sequence = sequence.split('');
+    sequence = [this._prefix,...sequence,this._postfix];
+//    sequence = sequence.unshift(this._prefix);
+//    sequence = sequence.push(this._postfix);
+    var orderarr = [...Array(this._order).keys()];
+    for (var i=this._order; i<sequence.length; i++) {
+//        context = tuple(sequence[i - self.order:i])
+        var context = sequence.slice(i-self._order,i);
+        var event = sequence[i];
+        for (var j=0; j<context.length; j++) {
+            // self._categorical(context[j:]).observe(event, count)
+        }
     }
 };
 
@@ -15,7 +71,8 @@ var Names =  {
 
 var DonjonNames = {
 
-    nameSet: {'default': ["Alfonso", "Fredrick", "Henrietta", "Penelope"]},
+    
+    nameSet: {'default': ["Alfonso", "Fredrick", "Henrietta", "Penelope", "Vlad-Tepes"]},
     chainCache: {},
     
     generateName: function(type) {

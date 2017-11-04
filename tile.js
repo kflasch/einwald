@@ -13,6 +13,38 @@ Game.Tile.extend(Game.Glyph);
 
 Game.Tile.nullTile = new Game.Tile({
 });
+Game.Tile.stoneWall = new Game.Tile({
+    chr: '#',
+    fg: 'rgb(96,96,96)',
+    dfg: ROT.Color.toHex(ROT.Color.multiply([96,96,96], [80, 80, 80])),
+    passable: false,
+    blocksLight: true,
+    desc: 'a stone wall'
+});
+Game.Tile.stoneFloor = new Game.Tile({
+    chr: '.',
+    fg: 'rgb(90,90,90)',
+    dfg: ROT.Color.toHex(ROT.Color.multiply([90,90,90], [80, 80, 80])),
+    passable: true,
+    blocksLight: false,
+    desc: 'stone floor'
+});
+Game.Tile.stairDown = new Game.Tile({
+    chr: '>',
+    fg: 'rgb(120,120,120)',
+    dfg: ROT.Color.toHex(ROT.Color.multiply([120,120,120], [80, 80, 80])),
+    passable: true,
+    blocksLight: false,
+    desc: 'descending stairs'
+});
+Game.Tile.stairUp = new Game.Tile({
+    chr: '<',
+    fg: 'rgb(120,120,120)',
+    dfg: ROT.Color.toHex(ROT.Color.multiply([120,120,120], [80, 80, 80])),
+    passable: true,
+    blocksLight: false,
+    desc: 'ascending stairs'
+});
 Game.Tile.tree = new Game.Tile({
     chr: '♣', // ♠
     fg: 'rgb(0,128,0)',

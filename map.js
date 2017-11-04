@@ -16,6 +16,15 @@ Game.Map.fillMap = function(width, height, value) {
     return map;
 };
 
+Game.Map.filledSquare = function(x, y, size, value, map) {
+    for (var i=0; i < size; i++) {
+        for (var j=0; j < size; j++) {
+            map[x+i][y+j] = value;
+        }
+    }
+    return map;
+};
+
 Game.Map.ForestBuilder = function(width, height) {
     Game.Map.call(this, width, height);
 };
@@ -37,14 +46,27 @@ Game.Map.ForestBuilder.prototype.create = function(callback) {
             }
         }
     }
-    
-    x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 2));
-    y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 2));
-    map[x][y] = 2;
-    map[x+1][y] = 2;
-    map[x][y+1] = 2;
-    map[x+1][y+1] = 2;
 
+    // pond
+    var size = Math.floor(ROT.RNG.getUniform() * 10);
+    x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 3));
+    y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 3));
+    map = Game.Map.filledSquare(x, y, size, 2, map);
+
+    // crypt entrance
+    x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 3));
+    y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 4));
+    map[x][y] = 3;
+    map[x+1][y] = 3;
+    map[x+2][y] = 3;
+    map[x][y+1] = 3;
+    map[x][y+2] = 3;
+    map[x+2][y+1] = 3;
+    map[x+2][y+2] = 3;
+    map[x+1][y+1] = 5; // stair
+    map[x+1][y+2] = 4;
+    console.log(x + ', ' + y);
+    
     for (var i=0; i<this._width; i++) {
         for (var j=0; j<this._height; j++) {            
             callback(i, j, map[i][j]);
@@ -52,3 +74,20 @@ Game.Map.ForestBuilder.prototype.create = function(callback) {
     }
 };
 
+Game.Map.CryptBuilder = function(width, height) {
+    Game.Map.call(this, width, height);
+};
+
+Game.Map.CryptBuilder.extend(Game.Map);
+
+Game.Map.CryptBuilder.prototype.create = function(callback) {
+
+    var map = Game.Map.fillMap(this._width, this._height, 0);
+
+    for (var i=0; i<this._width; i++) {
+        for (var j=0; j<this._height; j++) {            
+            callback(i, j, map[i][j]);
+        }
+    }
+
+};

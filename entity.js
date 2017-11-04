@@ -8,7 +8,6 @@ Game.Entity = function Entity(properties) {
     this._sightRadius = properties['sightRadius'] || 0;
 
     this._zone = null;
-    this._zoneID = null;
     this._alive = true;
 };
 
@@ -63,6 +62,23 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
         Game.UI.addMessage(descMsg);
 };
 
+Game.Entity.prototype.changeZone = function() {
+    var tile = this._zone.getTile(this._x, this._y);
+    var zoneVal = this._zone._connections.get(this._x+','+this._y);
+    if (typeof zoneVal != 'undefined') {
+        if (Number.isInteger(zoneVal)) {
+            return zoneVal;
+        } else {
+            var newZoneID = Game.world.generateNewZone(zoneVal, this._zone._id, this._x, this._y);
+            this._zone._connections.set(this._x+','+this._y, newZoneID);
+            return newZoneID;
+        }
+    } else {
+        Game.UI.addMessage("You can't go there.");
+        return undefined;
+    }
+};
+
 Game.Entity.prototype.kill = function(message, zone) {
     if (!this._alive) {
         console.log("tried to kill already dead entity " + this);
@@ -86,10 +102,6 @@ Game.Entity.prototype.isHostile = function(target) {
     if (isPlayer || target.hasMixin(Game.EntityMixins.PlayerActor))
         return true;
     else return false;
-};
-
-Game.Entity.prototype.getZone = function() {
-    return Game.zoneMap.get(this._zoneID);
 };
 
 Game.Entity.prototype.exportToString = function() {    

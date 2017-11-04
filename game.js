@@ -12,7 +12,6 @@ var Game = {
     zone: null,
     currentDialog: null,
     debug: false,
-    zoneMap: new Map(),
 
     init: function() {
         this.display = new ROT.Display({fontFamily:"droid sans mono, monospace",
@@ -52,7 +51,7 @@ var Game = {
         } else {
             this.player = new Game.Entity(Game.PlayerTemplate);
             this.player._name = Names.genPlayerName();
-            this._generateMap();
+            this._generateWorld();
         }
 
         this._generateQuest();
@@ -119,7 +118,15 @@ var Game = {
 
         this.refresh();
     },
-    
+
+    _generateWorld: function() {
+
+        this.world = new Game.World(this.player);
+        this.zone = this.world._zones[0];
+
+        this.refresh();
+    },
+    /*
     _generateMap: function() {
 
         // initialize nested array
@@ -135,7 +142,7 @@ var Game = {
 
         this.refresh();
     },
-
+*/
     _generateQuest: function() {
     },
 
@@ -232,8 +239,20 @@ Game.movePlayer = function(dX, dY) {
     Game.player.tryMove(newX, newY, Game.zone);
 };
 
+Game.changeCurrentZone = function() {
+    var newZoneID = Game.player.changeZone();
+    if (Number.isInteger(newZoneID)) {
+        Game.zone = Game.world._zones[newZoneID];
+        Game.player._zone = Game.zone;
+        this.refresh();
+    }       
+};
+
 Game.handleInput = function(inputType, inputData) {
     if (inputType === 'keydown') {
+
+        //console.log(inputData.keyCode);
+        //console.log(inputData.charCode);
 
         if (inputData.keyCode in Game.keyMap) {
             var dir = ROT.DIRS[8][Game.keyMap[inputData.keyCode]];
@@ -275,8 +294,6 @@ Game.handleInput = function(inputType, inputData) {
             this._saveGame();
             Game.UI.addMessage("Game saved.");
             return;
-        } else if (inputData.keyCode === ROT.VK_GREATER_THAN) {
-            
         } else if (inputData.keyCode === ROT.VK_BACK_SLASH) {
             Game.debug = (Game.debug === false) ? true : false;
         } else {
@@ -291,6 +308,10 @@ Game.handleInput = function(inputType, inputData) {
         if (keyChar === '?') {
             Game.currentDialog = new Game.Dialog.Help();
             Game.currentDialog.show();
+        } else if (keyChar === '>') {
+            Game.changeCurrentZone();
+        } else if (keyChar === '<') {
+            Game.changeCurrentZone();
         } else {
             return;
         }        
