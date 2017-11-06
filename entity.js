@@ -62,15 +62,27 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
         Game.UI.addMessage(descMsg);
 };
 
+// TODO: clean this function up
 Game.Entity.prototype.changeZone = function() {
     var tile = this._zone.getTile(this._x, this._y);
-    var zoneVal = this._zone._connections[this._x+','+this._y];
+    var key = this._x + ',' + this._y;
+    var zoneVal = this._zone._connections[key];
     if (typeof zoneVal != 'undefined') {
+        if (this._zone._entities[key] == this) {
+            delete this._zone._entities[key];
+        } else {
+            console.log("Error: cannot remove entity from current zone.");
+            return undefined;
+        }
         if (Number.isInteger(zoneVal)) {
+            Game.world._zones[zoneVal].updateEntityPosition(this);
+            this._zone = Game.world._zones[zoneVal];
             return zoneVal;
         } else {
             var newZoneID = Game.world.generateNewZone(zoneVal, this._zone._id, this._x, this._y);
-            this._zone._connections[this._x+','+this._y] = newZoneID;
+            this._zone._connections[key] = newZoneID;
+            Game.world._zones[newZoneID].updateEntityPosition(this);
+            this._zone = Game.world._zones[newZoneID];
             return newZoneID;
         }
     } else {

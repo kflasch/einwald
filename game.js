@@ -79,6 +79,7 @@ var Game = {
             var savedZone = savedWorld._zones[z];
             var zone = new Game.Zone(savedZone._tiles);
             zone._name = savedZone._name;
+            zone._id = savedZone._id;
             zone._explored = savedZone._explored;
             zone._connections = savedZone._connections;
             
