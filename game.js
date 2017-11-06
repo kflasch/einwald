@@ -64,85 +64,85 @@ var Game = {
     
     _saveGame: function() {
         localStorage.setItem("einwald_turns", this.turns);
-        localStorage.setItem("einwald_zone", this.zone.exportToString());        
+        localStorage.setItem("einwald_world", this.world.exportToString());        
     },
 
     _loadGame: function() {
 
         this.turns = localStorage.getItem("einwald_turns");
         
-        var savedZone = JSON.parse(localStorage.getItem("einwald_zone"));
-        this.zone = new Game.Zone(savedZone._tiles);
-        this.zone._name = savedZone._name;
-        this.zone._explored = savedZone._explored;
-        for (var xyloc in savedZone._items) {
-            var itemArr = savedZone._items[xyloc];
-            for (var i=0;i<itemArr.length; i++) {
-                var savedItem = itemArr[i];
-                var template = Game.ItemRepository.getTemplate(savedItem._templateName);
-                var newItem = new Game.Item(template);
-                for (var itemProp in savedItem)
-                    newItem[itemProp] = savedItem[itemProp];
-                this.zone.addItem(xyloc, newItem);
-            }            
-        }
+        var savedWorld = JSON.parse(localStorage.getItem("einwald_world"));
+        this.world = new Game.World();
+        this.world._name = savedWorld._name;
+        
+        for (var z=0;z<savedWorld._zones.length;z++) {
+            var savedZone = savedWorld._zones[z];
+            var zone = new Game.Zone(savedZone._tiles);
+            zone._name = savedZone._name;
+            zone._explored = savedZone._explored;
+            zone._connections = savedZone._connections;
+            
+            for (var xyloc in savedZone._items) {
+                var itemArr = savedZone._items[xyloc];
+                for (var i=0;i<itemArr.length; i++) {
+                    var savedItem = itemArr[i];
+                    var template = Game.ItemRepository.getTemplate(savedItem._templateName);
+                    var newItem = new Game.Item(template);
+                    for (var itemProp in savedItem)
+                        newItem[itemProp] = savedItem[itemProp];
+                    zone.addItem(xyloc, newItem);
+                }            
+            }
 
-        for (var xyloc in savedZone._entities) {
-            var savedEnt = savedZone._entities[xyloc];
-            var newEnt = null;
-            if (savedEnt._attachedMixins['PlayerActor']) {
-                newEnt = new Game.Entity(Game.PlayerTemplate);
-                this.player = newEnt;
-            } else {
-                var entTemplate = Game.EntityRepository.getTemplate(savedEnt._templateName);
-                newEnt = new Game.Entity(entTemplate);
-            }
-            for (var entProp in savedEnt) {
-                newEnt[entProp] = savedEnt[entProp];
-            }
-            if (savedEnt._items) {
-                for (var i=0;i<savedEnt._items.length; i++) {
-                    var savedItem = savedEnt._items[i];
-                    if (savedItem) {
-                        var template = Game.ItemRepository.getTemplate(savedItem._templateName);
-                        var newItem = new Game.Item(template);                        
-                        for (var itemProp in savedItem)
-                            newItem[itemProp] = savedItem[itemProp];
-                        newEnt._items[i] = newItem;
+            for (var xyloc in savedZone._entities) {
+                var savedEnt = savedZone._entities[xyloc];
+                var newEnt = null;
+                if (savedEnt._attachedMixins['PlayerActor']) {
+                    newEnt = new Game.Entity(Game.PlayerTemplate);
+                    this.player = newEnt;
+                } else {
+                    var entTemplate = Game.EntityRepository.getTemplate(savedEnt._templateName);
+                    newEnt = new Game.Entity(entTemplate);
+                }
+                for (var entProp in savedEnt) {
+                    newEnt[entProp] = savedEnt[entProp];
+                }
+                if (savedEnt._items) {
+                    for (var i=0;i<savedEnt._items.length; i++) {
+                        var savedItem = savedEnt._items[i];
+                        if (savedItem) {
+                            var template = Game.ItemRepository.getTemplate(savedItem._templateName);
+                            var newItem = new Game.Item(template);                        
+                            for (var itemProp in savedItem)
+                                newItem[itemProp] = savedItem[itemProp];
+                            newEnt._items[i] = newItem;
+                        }
                     }
                 }
+                
+                zone.addEntity(newEnt);
             }
-            
-            this.zone.addEntity(newEnt);
+
+            // add reconstructed zone to world
+            this.world._zones[z] = zone;
+
         }
 
+        // set current player zone
+        this.zone = this.player._zone;
+        
         this.refresh();
     },
 
     _generateWorld: function() {
 
-        this.world = new Game.World(this.player);
+        this.world = new Game.World();
+        this.world._init(this.player);
         this.zone = this.world._zones[0];
 
         this.refresh();
     },
-    /*
-    _generateMap: function() {
 
-        // initialize nested array
-        var tiles = [];
-        for (var x=0; x < Game.mapWidth; x++) {
-            tiles[x] = [];
-            for (var y=0; y < Game.mapHeight; y++) {
-                tiles[x][y] = Game.Tile.nullTile;
-            }
-        }
-
-        this.zone = new Game.Zone.Forest(tiles, this.player);
-
-        this.refresh();
-    },
-*/
     _generateQuest: function() {
     },
 

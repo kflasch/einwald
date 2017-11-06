@@ -10,13 +10,13 @@ Game.Zone = function Zone(tiles) {
 
     this._fov = this._setupFOV();
 
-    // map of 'x,y' to items, entities
+    // map of 'x,y' to items, entities, zone connections
     this._items = {};
     this._entities = {};
+    this._connections = {};
     
     this._explored = this._setupExplored();
 
-    this._connections = new Map();
 };
 
 Game.Zone.prototype.getTile = function(x, y) {
@@ -187,7 +187,11 @@ Game.Zone.prototype.updateEntityPosition = function(entity, oldX, oldY) {
 
 Game.Zone.prototype.addConnection = function(x, y, tile, zoneID) {
     this._tiles[x][y] = tile;
-    this._connections.set(x+','+y, zoneID);
+    var key = x + ',' + y;
+    if (this._connections[key]) {
+        throw new Error('Tried to add connection to location with another connnection at ' + key);
+    }
+    this._connections[key] = zoneID;
 };
 
 Game.Zone.prototype.exportToString = function() {
@@ -220,7 +224,7 @@ Game.Zone.Forest = function Forest(tiles, player) {
             this._tiles[x][y] = Game.Tile.stoneFloor;
         } else if (value === 5) {
             this._tiles[x][y] = Game.Tile.stairDown;
-            this._connections.set(x+','+y, 'Crypt');
+            this._connections[x+','+y] = 'Crypt';
         } else {
             this._tiles[x][y] = Game.Tile.grass;
         }

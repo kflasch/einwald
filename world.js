@@ -1,13 +1,14 @@
-Game.World = function(player) {
+Game.World = function() {
 
-    this._name = 'Einwald World';
-    
+    this._name = 'Einwald World';    
     this._zones = [];
     
+};
+
+Game.World.prototype._init = function(player) {
     var fzone = new Game.Zone.Forest(this._getNewTiles(), player);
     this._zones.push(fzone);
     fzone._id = 0;
-
 };
 
 Game.World.prototype._getNewTiles = function() {
@@ -35,6 +36,18 @@ Game.World.prototype.generateNewZone = function(name, fromZoneID, x, y) {
     newZone.addConnection(x, y, Game.Tile.stairUp, fromZoneID);
     return newID;    
 };
+
+Game.World.prototype.exportToString = function() {
+    function replacer(key, value) {
+        if (key === '_zone' || key === '_listeners') {
+            return undefined;
+        }
+        return value;
+    };
+
+    return JSON.stringify(this, replacer);
+};
+
 
 Game.Quest = function() {
 

@@ -64,13 +64,13 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
 
 Game.Entity.prototype.changeZone = function() {
     var tile = this._zone.getTile(this._x, this._y);
-    var zoneVal = this._zone._connections.get(this._x+','+this._y);
+    var zoneVal = this._zone._connections[this._x+','+this._y];
     if (typeof zoneVal != 'undefined') {
         if (Number.isInteger(zoneVal)) {
             return zoneVal;
         } else {
             var newZoneID = Game.world.generateNewZone(zoneVal, this._zone._id, this._x, this._y);
-            this._zone._connections.set(this._x+','+this._y, newZoneID);
+            this._zone._connections[this._x+','+this._y] = newZoneID;
             return newZoneID;
         }
     } else {
