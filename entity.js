@@ -77,12 +77,14 @@ Game.Entity.prototype.changeZone = function() {
         if (Number.isInteger(zoneVal)) {
             Game.world._zones[zoneVal].updateEntityPosition(this);
             this._zone = Game.world._zones[zoneVal];
+            Game.UI.addMessage("You enter the " + this._zone._name + ".");
             return zoneVal;
         } else {
             var newZoneID = Game.world.generateNewZone(zoneVal, this._zone._id, this._x, this._y);
             this._zone._connections[key] = newZoneID;
             Game.world._zones[newZoneID].updateEntityPosition(this);
             this._zone = Game.world._zones[newZoneID];
+            Game.UI.addMessage("You enter the " + this._zone._name + ".");
             return newZoneID;
         }
     } else {

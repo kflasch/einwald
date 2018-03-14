@@ -211,7 +211,9 @@ Game.Zone.Forest = function Forest(tiles, player) {
     Game.Zone.call(this, tiles);
 
     this._name = "Forest";
-    
+
+    var cx = 1;
+    var cy = 1;
     var generator = new Game.Map.ForestBuilder();
     generator.create(function(x, y, value) {
         if (value === 1) {
@@ -225,12 +227,18 @@ Game.Zone.Forest = function Forest(tiles, player) {
         } else if (value === 5) {
             this._tiles[x][y] = Game.Tile.stairDown;
             this._connections[x+','+y] = 'Crypt';
+            cx = x;
+            cy = y;
         } else {
             this._tiles[x][y] = Game.Tile.grass;
         }
     }.bind(this));
 
-    this.addEntityAtRandomPosition(player);
+    var cpos = this.getEmptyRandomPositionNear(cx, cy, 6);
+    player._x = cpos.x;
+    player._y = cpos.y;
+    this.addEntity(player);
+    //this.addEntityAtRandomPosition(player);
 
     for (var i=0; i<10; i++) {
         x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 2));
@@ -256,13 +264,15 @@ Game.Zone.Forest = function Forest(tiles, player) {
 };
 Game.Zone.Forest.extend(Game.Zone);
 
-Game.Zone.Crypt = function Crypt(tiles, fromZoneID) {
+Game.Zone.Crypt = function Crypt(tiles, fromZoneID, sx, sy) {
 
     Game.Zone.call(this, tiles);
 
     this._name = "Crypt";
 
     var generator = new Game.Map.CryptBuilder();
+    generator._startx = sx;
+    generator._starty = sy;
     generator.create(function(x, y, value) {
         if (value === 1) {
             this._tiles[x][y] = Game.Tile.stoneWall;

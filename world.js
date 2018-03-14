@@ -30,7 +30,7 @@ Game.World.prototype.generateNewZone = function(name, fromZoneID, x, y) {
         return undefined;
     }
     
-    var newZone = new Game.Zone[name](this._getNewTiles());
+    var newZone = new Game.Zone[name](this._getNewTiles(), fromZoneID, x, y);
     var newID = this._zones.push(newZone) - 1;
     newZone._id = newID;
     newZone.addConnection(x, y, Game.Tile.stairUp, fromZoneID);
