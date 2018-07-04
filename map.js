@@ -28,7 +28,7 @@ Game.Map.filledSquare = function(x, y, size, value, map) {
     return map;
 };
 
-Game.Map.voroniRelaxation = function(width, height, points) {
+Game.Map.voronoiRelaxation = function(width, height, points) {
 
     var regions = [];
     for (var p=0; p<points.length; p++)
@@ -68,8 +68,10 @@ Game.Map.voroniRelaxation = function(width, height, points) {
     return points;
 };
 
-Game.Map.connectPoints = function(map, points) {
+// creates paths between all points in map
+Game.Map.connectPoints = function(map, pointsToConnect) {
     var connected = [];
+    var points = pointsToConnect.slice();
 
     connected.push(points.pop());
 
@@ -102,7 +104,7 @@ Game.Map.connectPoints = function(map, points) {
         connected.push(toPoint.slice());
         points.splice(bestToIndex, 1);
     }
-    
+
 };
 
 Game.Map.carvePath = function(map, from, to) {
@@ -113,7 +115,6 @@ Game.Map.carvePath = function(map, from, to) {
 
     for (var i=0; i<line.length; i++) {
         var point = line[i];
-        //console.log(point[0] + ' ' + point[1]);
         map[point[0]][point[1]] = 0;
 
         // make the path a bit wider
@@ -175,6 +176,102 @@ Game.Map.erode = function(map, iterations) {
     }
 };
 
+Game.Map.smoothMap = function(map) {
+
+    var mapWidth = map.length;
+    var mapHeight = map[0].length;
+
+    for (var y=1; y<=mapHeight-2; y++) {
+        for (var x=1; x<=mapWidth-2; x++) {
+            if (map[x][y] === 1 && ROT.RNG.getPercentage() < 35)
+                map[x][y] = 0;
+        }
+    }
+
+    for (var i=0; i<3; i++)
+        Game.Map.genCutoff2(map, 5, 2);
+    for (i=0; i<3; i++)
+        Game.Map.genCutoff(map, 5);
+
+};
+
+Game.Map.genCutoff = function(map, r1cutoff) {
+    var mapWidth = map.length;
+    var mapHeight = map[0].length;
+
+    for (var y=1; y<=mapHeight-2; y++) {
+        for (var x=1; x<=mapWidth-2; x++) {
+            var r1 = Game.Map.countTilesAround(map, 1, x, y);
+
+            if (r1 >= r1cutoff) {
+                map[x][y] = 1;
+            } else {
+                map[x][y] = 0;
+            }
+                
+        }
+    }
+};
+
+Game.Map.genCutoff2 = function(map, r1cutoff, r2cutoff) {
+    var mapWidth = map.length;
+    var mapHeight = map[0].length;
+
+    for (var y=1; y<=mapHeight-2; y++) {
+        for (var x=1; x<=mapWidth-2; x++) {
+            var r1 = 0, r2 = 0;
+
+            for (var dy=-2; dy<=2; dy++) {
+                for (var dx=-2; dx<=2; dx++) {
+                    var ax = Math.abs(dx);
+                    var ay = Math.abs(dy);
+
+                    if (ax == 2 && ay == 2)
+                        continue;
+
+                    var newx = x+dx;
+                    var newy = y+dy;
+                    
+                    if (Game.Map.inBounds(map, newx, newy) && map[newx][newy] === 1) {
+                        if (ax <= 1 & ay <= 1)
+                            r1 += 1;
+                        r2 += 1;
+                    }
+
+                    
+                }
+            }
+
+            if (r1 >= r1cutoff || r2 <= r2cutoff) {
+                map[x][y] = 1;
+            } else {
+                map[x][y] = 0;
+            }
+
+        }
+    }
+};
+
+Game.Map.inBounds = function(map, x, y) {
+    if (x < 0 || y < 0 || x >= map.length || y >= map[0].length)
+        return false;
+    return true;
+};
+
+Game.Map.countTilesAround = function(map, tileVal, x, y) {
+    var count = 0;
+    for (var dy=-1; dy<=1; dy++) {
+        for (var dx=-1; dx<=1; dx++) {
+            var newx = x+dx;
+            var newy = y+dy;
+            if (map[newx][newy] === tileVal)
+                count++;
+        }
+    }
+
+    return count;
+};
+
 // use rot's digLine instead??
 Game.Map.getLine = function(from, to) {
 
@@ -220,8 +317,27 @@ Game.Map.getLine = function(from, to) {
         }
     }
 
-    //console.log(line);
     return line;
+};
+
+
+// find closet map value of tileVal starting from x,y
+Game.Map.findClosest = function(map, x, y, tileVal) {
+
+    var dirs = ROT.DIRS[8];
+    var mult = 1;
+    do {
+        for (var j=0;j<dirs.length;j++) {
+            var dir = dirs[j];
+            var lookAtX = x + (dir[0] * mult);
+            var lookAtY = y + (dir[1] * mult);
+            if (map[lookAtX] != null && map[lookAtX][lookAtY] != null
+                && map[lookAtX][lookAtY] === tileVal)
+                return [lookAtX, lookAtY];
+        }
+        mult++;
+    } while(mult <= map.length);
+    return [x,y];
 };
 
 
@@ -279,6 +395,7 @@ Game.Map.ForestBuilder.prototype.create = function(callback) {
     // fill with trees
     var map = Game.Map.fillMap(this._width, this._height, 1);
 
+    // create center points of meadows
     var meadows = [];
     for (var i=0; i<10; i++) {
         var x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 1));
@@ -286,27 +403,54 @@ Game.Map.ForestBuilder.prototype.create = function(callback) {
         meadows.push([x,y]);
     }
 
-    for (var v=0; v<5; v++)
-        meadows = Game.Map.voroniRelaxation(this._width, this._height, meadows);
-    for (var i=0; i<meadows.length; i++)
+    // use Voronoi diagram to even out meadow centers
+    for (i=0; i<5; i++)
+        meadows = Game.Map.voronoiRelaxation(this._width, this._height, meadows);
+    // create meadows around center
+    for (i=0; i<meadows.length; i++)
         Game.Map.carveCircle(map, meadows[i], 5);
+    // connect meadows
     Game.Map.connectPoints(map, meadows);
+    // erode map to give it a more natural look
     Game.Map.erode(map, 10000);
 
-    // pond
-    var size = Math.floor(ROT.RNG.getUniform() * 10);
-    var x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 3));
-    var y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 3));
-    map = Game.Map.filledSquare(x, y, size, 2, map);
-
-    // crypt entrance
-    x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 3));
-    y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 4));
-    map = Game.Map.addRoom(x, y, 3, 3, 3, 4, map);
-    map[x+1][y+1] = 5; // stair
-    map[x+1][y+2] = 4; // opening
+    Game.Map.smoothMap(map);
     
-    for (var i=0; i<this._width; i++) {
+    // lake/pond
+    //var lakeSize = ROT.RNG.getUniformInt(3, 6);
+    //var x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 3));
+    //var y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 3));
+    //map = Game.Map.filledSquare(meadows[0][0], meadows[0][1], lakeSize, 2, map);
+    //map = Game.Map.filledSquare(x, y, lakeSize, 2, map);
+    
+    // crypt entrance
+    // find spot in forest to create, then build path to it
+    var check = 0, maxCheck = 2000, found=false;
+    do {
+        x = ROT.RNG.getUniformInt(1, Game.mapWidth - 4);
+        y = ROT.RNG.getUniformInt(1, Game.mapHeight - 4);
+        if (map[x][y] === 1) {
+            // TODO: erode section?
+            map = Game.Map.addRoom(x, y, 3, 3, 4, 4, map);
+            map[x+1][y+1] = 5; // stair
+            map[x+1][y+2] = 4; // opening
+            var toPoint = Game.Map.findClosest(map, x+1, y+2, 0);
+            Game.Map.carvePath(map, [x+1,y+2], toPoint);
+            found = true;
+        }
+        check++;
+    } while (!found && check<=maxCheck);
+
+
+    
+    //x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 3));
+    //y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 4));
+    //map = Game.Map.addRoom(x, y, 3, 3, 3, 4, map);
+    //map[x+1][y+1] = 5; // stair
+    //map[x+1][y+2] = 4; // opening
+
+    // callback to fill out the tiles
+    for (i=0; i<this._width; i++) {
         for (var j=0; j<this._height; j++) {            
             callback(i, j, map[i][j]);
         }
