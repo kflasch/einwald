@@ -431,9 +431,9 @@ Game.Map.ForestBuilder.prototype.create = function(callback) {
         y = ROT.RNG.getUniformInt(1, Game.mapHeight - 4);
         if (map[x][y] === 1) {
             // TODO: erode section?
-            map = Game.Map.addRoom(x, y, 3, 3, 4, 4, map);
-            map[x+1][y+1] = 5; // stair
-            map[x+1][y+2] = 4; // opening
+            map = Game.Map.addRoom(x, y, 3, 3, 6, 6, map);
+            map[x+1][y+1] = 3; // stair
+            map[x+1][y+2] = 6; // opening
             var toPoint = Game.Map.findClosest(map, x+1, y+2, 0);
             Game.Map.carvePath(map, [x+1,y+2], toPoint);
             found = true;
@@ -477,14 +477,14 @@ Game.Map.ForestBuilder.prototype.createOld = function(callback) {
     var size = Math.floor(ROT.RNG.getUniform() * 10);
     var x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 3));
     var y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 3));
-    map = Game.Map.filledSquare(x, y, size, 2, map);
+    map = Game.Map.filledSquare(x, y, size, 4, map);
 
     // crypt entrance
     x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 3));
     y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 4));
     map = Game.Map.addRoom(x, y, 3, 3, 3, 4, map);
-    map[x+1][y+1] = 5; // stair
-    map[x+1][y+2] = 4; // opening
+    map[x+1][y+1] = 3; // stair down
+    map[x+1][y+2] = 6; // opening
     
     for (var i=0; i<this._width; i++) {
         for (var j=0; j<this._height; j++) {            
@@ -500,15 +500,29 @@ Game.Map.CryptBuilder = function(width, height) {
 Game.Map.CryptBuilder.extend(Game.Map);
 
 Game.Map.CryptBuilder.prototype.create = function(callback) {
-
+    
     var map = Game.Map.fillMap(this._width, this._height, 1);
 
+    var gen = new ROT.Map.Digger(this._width, this._height);
+    gen.create(function(x, y, value) {
+        map[x][y] = value;
+    }.bind(this));
+
+    // place staircase back up
+    var stairsUp = gen.getRooms()[0].getCenter();
+    map[stairsUp[0]][stairsUp[1]] = 2;
+    
+//    stairs 
+
+    
+    /*
     var sx = this._startx - 5;
     if (sx < 0) sx = 0;
     var sy = this._starty - 5;
     if (sy < 0) sy = 0;
     
     map = Game.Map.addRoom(sx, sy, 11, 11, 1, 0, map);
+    */
     
     for (var i=0; i<this._width; i++) {
         for (var j=0; j<this._height; j++) {            
