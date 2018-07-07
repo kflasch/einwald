@@ -164,7 +164,7 @@ Game.Zone.prototype.removeEntity = function(entity) {
 
 Game.Zone.prototype.updateEntityPosition = function(entity, oldX, oldY) {
 
-    // if coords passed in, deleted old key 
+    // if coords passed in, delete old key 
     if (typeof oldX === 'number') {
         var oldKey = oldX + ',' + oldY;
         if (this._entities[oldKey] == entity) {
@@ -194,6 +194,14 @@ Game.Zone.prototype.addConnection = function(x, y, tile, zoneID) {
     this._connections[key] = zoneID;
 };
 
+Game.Zone.prototype.getConnectionForZone = function(zoneID) {
+    for (var key in this._connections) {
+        if (this._connections[key] == zoneID)
+            return key;
+    }
+    return undefined;
+};
+
 Game.Zone.prototype.exportToString = function() {
     function replacer(key, value) {
         if (key === '_zone' || key === '_listeners') {
@@ -219,16 +227,18 @@ Game.Zone.Forest = function Forest(tiles, player) {
         if (value === 1) {
             this._tiles[x][y] = Game.Tile.tree;
         } else if (value === 2) {
-            this._tiles[x][y] = Game.Tile.water;
+            this._tiles[x][y] = Game.Tile.stairUp;
         } else if (value === 3) {
-            this._tiles[x][y] = Game.Tile.stoneWall;
-        } else if (value === 4) {
-            this._tiles[x][y] = Game.Tile.stoneFloor;
-        } else if (value === 5) {
             this._tiles[x][y] = Game.Tile.stairDown;
             this._connections[x+','+y] = 'Crypt';
             cx = x;
             cy = y;
+        } else if (value === 4) {
+            this._tiles[x][y] = Game.Tile.water;
+        } else if (value === 5) {
+            this._tiles[x][y] = Game.Tile.stoneWall;
+        } else if (value === 6) {
+            this._tiles[x][y] = Game.Tile.stoneFloor;
         } else {
             this._tiles[x][y] = Game.Tile.grass;
         }
@@ -277,15 +287,13 @@ Game.Zone.Crypt = function Crypt(tiles, fromZoneID, sx, sy) {
         if (value === 1) {
             this._tiles[x][y] = Game.Tile.stoneWall;
         } else if (value === 2) {
-            this._tiles[x][y] = Game.Tile.water;
-        } else if (value === 3) {
-            this._tiles[x][y] = Game.Tile.stoneWall;
-        } else if (value === 4) {
-            this._tiles[x][y] = Game.Tile.stoneFloor;
-        } else if (value === 5) {
-            this._tiles[x][y] = Game.Tile.stairDown;
-        } else if (value === 6) {
             this._tiles[x][y] = Game.Tile.stairUp;
+            this._connections[x+','+y] = fromZoneID;
+            console.log('crypt stair up ' + x + ', ' + y);
+        } else if (value === 3) {
+            this._tiles[x][y] = Game.Tile.stairDown;
+        } else if (value === 4) {
+            this._tiles[x][y] = Game.Tile.water;
         } else {
             this._tiles[x][y] = Game.Tile.stoneFloor;
         }

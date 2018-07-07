@@ -75,6 +75,9 @@ Game.Entity.prototype.changeZone = function() {
             return undefined;
         }
         if (Number.isInteger(zoneVal)) {
+            var entranceKey = Game.world._zones[zoneVal].getConnectionForZone(this._zone._id);
+            this._x = Number(entranceKey.split(',')[0]);
+            this._y = Number(entranceKey.split(',')[1]);
             Game.world._zones[zoneVal].updateEntityPosition(this);
             this._zone = Game.world._zones[zoneVal];
             Game.UI.addMessage("You enter the " + this._zone._name + ".");
@@ -82,7 +85,13 @@ Game.Entity.prototype.changeZone = function() {
         } else {
             var newZoneID = Game.world.generateNewZone(zoneVal, this._zone._id, this._x, this._y);
             this._zone._connections[key] = newZoneID;
-            Game.world._zones[newZoneID].updateEntityPosition(this);
+            var entranceKeyNew = Game.world._zones[newZoneID].getConnectionForZone(this._zone._id);
+            var oldX = this._x;
+            var oldY = this._y;
+            this._x = Number(entranceKeyNew.split(',')[0]);
+            this._y = Number(entranceKeyNew.split(',')[1]);
+            console.log(this._x + ' ' + this._y + ' ' + newZoneID);
+            Game.world._zones[newZoneID].updateEntityPosition(this, oldX, oldY);
             this._zone = Game.world._zones[newZoneID];
             Game.UI.addMessage("You enter the " + this._zone._name + ".");
             return newZoneID;
