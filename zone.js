@@ -239,6 +239,8 @@ Game.Zone.Forest = function Forest(tiles, player) {
             this._tiles[x][y] = Game.Tile.stoneWall;
         } else if (value === 6) {
             this._tiles[x][y] = Game.Tile.stoneFloor;
+        } else if (value === 7) {
+            this._tiles[x][y] = Game.Tile.magicBarrier;
         } else {
             this._tiles[x][y] = Game.Tile.grass;
         }

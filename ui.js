@@ -18,7 +18,7 @@ Game.UI.Status = {
 
     getOutput: function() {
         var player = Game.player;
-        var output = "<span style='color:orange'>" + Game.player._name + "</span>";
+        var output = "";//<span style='color:orange'>" + Game.player._name + "</span>";
         output += "<br />";
         output += "Level: " + player._level;
         output += "<br />";

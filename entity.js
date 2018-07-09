@@ -51,7 +51,11 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
              //descMsg = 'You pass through ' + tile._desc + '.';
         }
     } else {
-        if (tile == Game.Tile.nullTile) {
+        // win condition!
+        if (isPlayer && zone._id === 0 && x === -1) {
+            Game.wonGame();
+            return undefined;
+        } if (tile == Game.Tile.nullTile) {
              descMsg = "You cannot pass this way.";
         } else {
              descMsg = (tile._desc || 'Something') + ' is in the way.';
@@ -485,6 +489,18 @@ Game.EntityRepository.define('wanderer', {
     name: 'wanderer',
     chr: '@',
     fg: '#ff0',
+    sightRadius: 6,
+    maxHP: 10,
+    mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Killable,
+             Game.EntityMixins.CorpseDropper,
+             Game.EntityMixins.Equipper]
+});
+
+Game.EntityRepository.define('skeleton', {
+    name: 'skeleton',
+    chr: 'S',
+    fg: 'white',
     sightRadius: 6,
     maxHP: 10,
     mixins: [Game.EntityMixins.TaskActor,

@@ -79,3 +79,12 @@ Game.Tile.caveWallTile = new Game.Tile({
     fg: 'goldenrod',
     passable: false
 });
+Game.Tile.magicBarrier = new Game.Tile({
+    chr: '#',
+    fg: 'rgb(127,0,255)',
+    dfg: ROT.Color.toHex(ROT.Color.multiply([96,96,96], [80, 80, 80])),
+    passable: true,
+    blocksLight: false,
+    desc: 'a magic barrier'
+});
+

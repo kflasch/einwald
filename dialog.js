@@ -123,6 +123,26 @@ Game.Dialog.MainMenu.prototype.handleInput = function(inputType, inputData) {
     }
 };
 
+// win screen
+Game.Dialog.WonGame = function() {
+    var properties = { title: '' };
+    Game.Dialog.call(this, properties);
+};
+
+Game.Dialog.WonGame.extend(Game.Dialog);
+
+Game.Dialog.WonGame.prototype.getOutput = function() {
+    var output = " <br />" ;
+    output += " <span style='color:purple'>Congratulations!</span> <br />";
+    output += " You escaped the forest!<br />";    
+    output += " <br />";
+    return output;
+};
+
+Game.Dialog.WonGame.prototype.handleInput = function(inputType, inputData) {
+    // TODO: show message log option?
+};
+
 
 // item dialogs
 

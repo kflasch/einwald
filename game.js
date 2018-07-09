@@ -54,8 +54,6 @@ var Game = {
             this._generateWorld();
         }
 
-        this._generateQuest();
-
         this.scheduler.add(this.player, true);
 
         this.engine = new ROT.Engine(this.scheduler);
@@ -142,9 +140,6 @@ var Game = {
         this.zone = this.world._zones[0];
 
         this.refresh();
-    },
-
-    _generateQuest: function() {
     },
 
     _renderZone: function() {
@@ -250,6 +245,11 @@ Game.changeCurrentZone = function() {
         Game.player._zone = Game.zone;
         this.refresh();
     }       
+};
+
+Game.wonGame = function() {
+    Game.currentDialog = new Game.Dialog.WonGame();
+    Game.currentDialog.show();
 };
 
 Game.handleInput = function(inputType, inputData) {

@@ -441,17 +441,32 @@ Game.Map.ForestBuilder.prototype.create = function(callback) {
         check++;
     } while (!found && check<=maxCheck);
 
+    // create exit
+    x = 0;
+    y = ROT.RNG.getUniformInt(10, Game.mapHeight - 10);
+    found = false;
+    var failed = 0;
+    do {
+        if (map[x][y] === 0) {
+            found = true;
+        } else if (x > Game.mapWidth) {
+            // uh oh, couldn't create path, try with a more constrained y
+            y = ROT.RNG.getUniformInt(20, Game.mapHeight - 20);
+            x = 0;
+        } else {
+            map[x][y] = 7;
+            x++;
+        }
+    } while (!found && failed < 3);
 
+    if (failed >= 3) {
+        // TODO
+        // game unwinnable
+    }
     
-    //x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 3));
-    //y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 4));
-    //map = Game.Map.addRoom(x, y, 3, 3, 3, 4, map);
-    //map[x+1][y+1] = 5; // stair
-    //map[x+1][y+2] = 4; // opening
-
     // callback to fill out the tiles
     for (i=0; i<this._width; i++) {
-        for (var j=0; j<this._height; j++) {            
+        for (var j=0; j<this._height; j++) {
             callback(i, j, map[i][j]);
         }
     }
