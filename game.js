@@ -151,8 +151,6 @@ var Game = {
         var visCells = {};
         var thisZone = this.zone;
 
-        var showAll = false;
-        
         this.zone._fov.compute(
             this.player._x, this.player._y,
             this.player._sightRadius,
@@ -168,7 +166,7 @@ var Game = {
 
         for (var x = topLeftX; x < topLeftX + Game.canvasWidth; x++) {
             for (var y = topLeftY; y < topLeftY + Game.canvasHeight; y++) {
-                if (this.zone.isExplored(x, y) || showAll) {
+                if (this.zone.isExplored(x, y) || Game.debug) {
                     var glyph = this.zone.getTile(x, y);
                     if (glyph !== Game.Tile.nullTile) {
                         var fg = glyph._darkfg;

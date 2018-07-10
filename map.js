@@ -3,9 +3,6 @@
 Game.Map = function(width, height) {
     this._width =  width || Game.mapWidth;
     this._height = height || Game.mapHeight;
-
-    this._startx = undefined;
-    this._starty = undefined;
 };
 
 Game.Map.fillMap = function(width, height, value) {
@@ -523,21 +520,14 @@ Game.Map.CryptBuilder.prototype.create = function(callback) {
         map[x][y] = value;
     }.bind(this));
 
+    var rooms = gen.getRooms();
     // place staircase back up
-    var stairsUp = gen.getRooms()[0].getCenter();
+    var stairsUp = rooms[0].getCenter();
     map[stairsUp[0]][stairsUp[1]] = 2;
-    
-//    stairs 
 
-    
-    /*
-    var sx = this._startx - 5;
-    if (sx < 0) sx = 0;
-    var sy = this._starty - 5;
-    if (sy < 0) sy = 0;
-    
-    map = Game.Map.addRoom(sx, sy, 11, 11, 1, 0, map);
-    */
+    // place staircase to next level
+    var stairsDown = rooms[rooms.length-1].getCenter();
+    map[stairsDown[0]][stairsDown[1]] = 3;    
     
     for (var i=0; i<this._width; i++) {
         for (var j=0; j<this._height; j++) {            

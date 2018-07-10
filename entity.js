@@ -84,20 +84,27 @@ Game.Entity.prototype.changeZone = function() {
             this._y = Number(entranceKey.split(',')[1]);
             Game.world._zones[zoneVal].updateEntityPosition(this);
             this._zone = Game.world._zones[zoneVal];
-            Game.UI.addMessage("You enter the " + this._zone._name + ".");
+            if (this._zone._isMultiLevel)
+                Game.UI.addMessage("You enter the " + this._zone._name.toLowerCase()
+                                   + ", depth " + this._zone._depth + ".");
+            else
+                Game.UI.addMessage("You enter the " + this._zone._name.toLowerCase() + ".");                
             return zoneVal;
         } else {
-            var newZoneID = Game.world.generateNewZone(zoneVal, this._zone._id, this._x, this._y);
+            var newZoneID = Game.world.generateNewZone(zoneVal, this._zone._id);
             this._zone._connections[key] = newZoneID;
             var entranceKeyNew = Game.world._zones[newZoneID].getConnectionForZone(this._zone._id);
             var oldX = this._x;
             var oldY = this._y;
             this._x = Number(entranceKeyNew.split(',')[0]);
             this._y = Number(entranceKeyNew.split(',')[1]);
-            console.log(this._x + ' ' + this._y + ' ' + newZoneID);
             Game.world._zones[newZoneID].updateEntityPosition(this, oldX, oldY);
             this._zone = Game.world._zones[newZoneID];
-            Game.UI.addMessage("You enter the " + this._zone._name + ".");
+            if (this._zone._isMultiLevel)
+                Game.UI.addMessage("You enter the " + this._zone._name.toLowerCase()
+                                   + ", depth " + this._zone._depth + ".");
+            else
+                Game.UI.addMessage("You enter the " + this._zone._name.toLowerCase() + ".");
             return newZoneID;
         }
     } else {

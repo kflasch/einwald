@@ -7,6 +7,8 @@ Game.Zone = function Zone(tiles) {
 
     this._width =  tiles.length || Game.mapWidth;
     this._height = tiles[0].length || Game.mapHeight;
+    this._depth = 1;
+    this._isMultiLevel = false;
 
     this._fov = this._setupFOV();
 
@@ -246,6 +248,7 @@ Game.Zone.Forest = function Forest(tiles, player) {
         }
     }.bind(this));
 
+    // this fails sometimes...
     var cpos = this.getEmptyRandomPositionNear(cx, cy, 6);
     player._x = cpos.x;
     player._y = cpos.y;
@@ -276,24 +279,27 @@ Game.Zone.Forest = function Forest(tiles, player) {
 };
 Game.Zone.Forest.extend(Game.Zone);
 
-Game.Zone.Crypt = function Crypt(tiles, fromZoneID, sx, sy) {
+Game.Zone.Crypt = function Crypt(tiles, fromZoneID, depth) {
 
     Game.Zone.call(this, tiles);
 
     this._name = "Crypt";
+    this._isMultiLevel = true;
+    this._depth = depth;
 
     var generator = new Game.Map.CryptBuilder();
-    generator._startx = sx;
-    generator._starty = sy;
     generator.create(function(x, y, value) {
         if (value === 1) {
             this._tiles[x][y] = Game.Tile.stoneWall;
         } else if (value === 2) {
             this._tiles[x][y] = Game.Tile.stairUp;
             this._connections[x+','+y] = fromZoneID;
-            console.log('crypt stair up ' + x + ', ' + y);
         } else if (value === 3) {
             this._tiles[x][y] = Game.Tile.stairDown;
+            if (this._depth === 5)
+                this._connections[x+','+y] = 'Sanctum';
+            else
+                this._connections[x+','+y] = 'Crypt';
         } else if (value === 4) {
             this._tiles[x][y] = Game.Tile.water;
         } else {

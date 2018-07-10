@@ -19,7 +19,7 @@ Game.UI.Status = {
     getOutput: function() {
         var player = Game.player;
         var output = "";//<span style='color:orange'>" + Game.player._name + "</span>";
-        output += "<br />";
+        //output += "<br />";
         output += "Level: " + player._level;
         output += "<br />";
         output += "HP: " + player._hp + " / " + player._maxHP;
@@ -28,6 +28,9 @@ Game.UI.Status = {
         output += "<br />";
         output += "<br />";
         output += "Location: " + Game.zone._name;
+        output += "<br />";
+        if (Game.zone._isMultiLevel)
+            output += "Depth: " + Game.zone._depth;
         output += "<br />";
         output += "<br />";
         return output;
