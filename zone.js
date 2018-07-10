@@ -309,3 +309,29 @@ Game.Zone.Crypt = function Crypt(tiles, fromZoneID, depth) {
 
 };
 Game.Zone.Crypt.extend(Game.Zone);
+
+Game.Zone.Sanctum = function Sanctum(tiles, fromZoneID, depth) {
+
+    Game.Zone.call(this, tiles);
+
+    this._name = "Sanctum";
+    this._isMultiLevel = false;
+
+    var generator = new Game.Map.SanctumBuilder();
+    generator.create(function(x, y, value) {
+        if (value === 1) {
+            this._tiles[x][y] = Game.Tile.stoneWall;
+        } else if (value === 2) {
+            this._tiles[x][y] = Game.Tile.stairUp;
+            this._connections[x+','+y] = fromZoneID;
+        } else if (value === 3) {
+            this._tiles[x][y] = Game.Tile.stairDown;
+        } else if (value === 4) {
+            this._tiles[x][y] = Game.Tile.water;
+        } else {
+            this._tiles[x][y] = Game.Tile.stoneFloor;
+        }
+    }.bind(this));
+
+};
+Game.Zone.Sanctum.extend(Game.Zone);

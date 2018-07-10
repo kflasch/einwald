@@ -535,3 +535,32 @@ Game.Map.CryptBuilder.prototype.create = function(callback) {
         }
     }
 };
+
+Game.Map.SanctumBuilder = function(width, height) {
+    Game.Map.call(this, width, height);
+};
+
+Game.Map.SanctumBuilder.extend(Game.Map);
+
+Game.Map.SanctumBuilder.prototype.create = function(callback) {
+    
+    var map = Game.Map.fillMap(this._width, this._height, 1);
+
+    var x = 40;
+    var y = 10;
+    map = Game.Map.addRoom(x, y, 25, 15, 1, 0, map);
+
+    // place staircase back up
+    do {
+        x = Math.floor(ROT.RNG.getUniform() * this._width);
+        y = Math.floor(ROT.RNG.getUniform() * this._height);
+        console.log(map[x][y]);
+    } while (map[x][y] != 0);
+    map[x][y] = 2;
+
+    for (var i=0; i<this._width; i++) {
+        for (var j=0; j<this._height; j++) {            
+            callback(i, j, map[i][j]);
+        }
+    }
+};
