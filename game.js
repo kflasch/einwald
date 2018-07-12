@@ -135,7 +135,9 @@ var Game = {
     _generatePlayer: function() {
         this.player = new Game.Entity(Game.PlayerTemplate);
         this.player._name = Names.genPlayerName();
-        this.player.addItem(Game.ItemRepository.create('boots'));
+        this.player.addItem(Game.ItemRepository.create('traveleroutfit'));
+        this.player.wear(0);
+        this.player.addItem(Game.ItemRepository.create('healingherb'));
     },
 
     _generateWorld: function() {

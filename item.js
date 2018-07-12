@@ -85,6 +85,15 @@ Game.ItemRepository.define('mushroom', {
     mixins: [Game.ItemMixins.Edible]
 });
 
+Game.ItemRepository.define('healingherb', {
+    name: 'healing herb',
+    chr: '%,',
+    fg: 'green',
+    foodVal: 0,
+    hpVal: 2,
+    mixins: [Game.ItemMixins.Edible]
+});
+
 Game.ItemRepository.define('dagger', {
     name: 'dagger',
     chr: ')',
@@ -95,13 +104,13 @@ Game.ItemRepository.define('dagger', {
     mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
 }, { disableRandomCreation: true });
 
-Game.ItemRepository.define('boots', {
-    name: 'boots',
+Game.ItemRepository.define('traveleroutfit', {
+    name: 'traveler outfit',
     chr: '[',
     fg: 'brown',
     wearable: true,
     defenseVal: 1,
-    desc: 'A worn pair of hiking boots.',
+    desc: 'Common traveler outfit.',
     mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
 }, { disableRandomCreation: true });
 
