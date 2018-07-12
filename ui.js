@@ -20,11 +20,13 @@ Game.UI.Status = {
         var player = Game.player;
         var output = "";//<span style='color:orange'>" + Game.player._name + "</span>";
         //output += "<br />";
-        output += "Level: " + player._level;
+        output += "Level: " + player._level + " XP: " + player._xp;
         output += "<br />";
         output += "HP: " + player._hp + " / " + player._maxHP;
         output += "<br />";
-        output += "Turns: " + Game.turns;
+        output += "Attack: " + player.getAttackValue();
+        output += "<br />";
+        output += "Defense: " + player.getDefenseValue();
         output += "<br />";
         output += "<br />";
         output += "Location: " + Game.zone._name;

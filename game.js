@@ -49,8 +49,7 @@ var Game = {
         if (load) {
             this._loadGame();
         } else {
-            this.player = new Game.Entity(Game.PlayerTemplate);
-            this.player._name = Names.genPlayerName();
+            this._generatePlayer();
             this._generateWorld();
         }
 
@@ -131,6 +130,12 @@ var Game = {
         this.zone = this.player._zone;
         
         this.refresh();
+    },
+
+    _generatePlayer: function() {
+        this.player = new Game.Entity(Game.PlayerTemplate);
+        this.player._name = Names.genPlayerName();
+        this.player.addItem(Game.ItemRepository.create('boots'));
     },
 
     _generateWorld: function() {

@@ -83,7 +83,7 @@ Game.Tile.magicBarrier = new Game.Tile({
     chr: '#',
     fg: 'rgb(127,0,255)',
     dfg: ROT.Color.toHex(ROT.Color.multiply([96,96,96], [80, 80, 80])),
-    passable: true,
+    passable: false,
     blocksLight: false,
     desc: 'a magic barrier'
 });

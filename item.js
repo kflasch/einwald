@@ -5,7 +5,7 @@ Game.Item = function(properties) {
     this._templateName = properties['templateName'] || '';
     this._passable = properties['passable'] || true;
     this._name = properties['name'] || '';
-    this._desc = properties['desc'] || '';
+    this._desc = properties['desc'] || '';    
 
     this._x = null;
     this._y = null;
@@ -39,11 +39,15 @@ Game.ItemMixins.Equippable = {
     name: 'Equippable',
     init: function(template) {
         this._attackVal = template['attackVal'] || 0;
+        this._defenseVal = template['defenseVal'] || 0;
         this._wieldable = template['wieldable'] || false;
         this._wearable = template['wearable'] || false;        
     },
     getAttackValue: function() {
         return this._attackVal;
+    },
+    getDefenseValue: function() {
+        return this._defenseVal;
     }
 };
 
@@ -90,6 +94,17 @@ Game.ItemRepository.define('dagger', {
     desc: 'A well-balanced iron dagger.',
     mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
 }, { disableRandomCreation: true });
+
+Game.ItemRepository.define('boots', {
+    name: 'boots',
+    chr: '[',
+    fg: 'brown',
+    wearable: true,
+    defenseVal: 1,
+    desc: 'A worn pair of hiking boots.',
+    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
+}, { disableRandomCreation: true });
+
 
 Game.ItemRepository.define('corpse', {
     name: 'corpse',

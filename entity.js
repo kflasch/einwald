@@ -181,7 +181,7 @@ Game.EntityMixins.PlayerActor = {
 Game.EntityMixins.InventoryHolder = {
     name: 'InventoryHolder',
     init: function(template) {
-        this._items = new Array(10);
+        this._items = template['items'] || new Array(10);
     },
     getItems: function() {
         return this._items;
@@ -404,10 +404,34 @@ Game.EntityMixins.Equipper = {
     unequip: function(i) {
         if (this._handOne == i) {
             this.unwield();
+            if (this.hasMixin('PlayerActor'))
+                Game.UI.addMessage("You unequip your " + this._items[i]._name + ".");
+            else
+                Game.UI.addMessage(this._name + " unequips their " + this._items[i]._name + ".");
         } else if (this._armor == i) {
             this.takeOff();
+            if (this.hasMixin('PlayerActor'))
+                Game.UI.addMessage("You remove your " + this._items[i]._name + ".");
+            else
+                Game.UI.addMessage(this._name + " removes their " + this._items[i]._name + ".");
         }
     },
+    equip: function(i) {
+        if (this._items[i]._wearable) {
+            this.wear(i);
+            if (this.hasMixin('PlayerActor'))
+                Game.UI.addMessage("You wear the " + this._items[i]._name + ".");
+            else
+                Game.UI.addMessage(this._name + " puts on " + this._items[i]._name + ".");
+        } else if (this._items[i]._wieldable) {
+            this.wield(i);
+            if (this.hasMixin('PlayerActor'))
+                Game.UI.addMessage("You wield the " + this._items[i]._name + ".");
+            else
+                Game.UI.addMessage(this._name + " wields their " + this._items[i]._name + ".");
+        }
+    },
+
     isEquipped: function(i) {
         if (this._armor == i)
             return true;
@@ -458,7 +482,8 @@ Game.PlayerTemplate = {
     chr: '@',
     fg: '#ffa',
     sightRadius: 6,
-    hp: 7,
+    hp: 10,
+    maxHP: 10,
     mixins: [Game.EntityMixins.PlayerActor,
              Game.EntityMixins.Equipper,
              Game.EntityMixins.Killable,
@@ -486,7 +511,7 @@ Game.EntityRepository.define('wolf', {
     chr: 'w',
     fg: 'grey',
     sightRadius: 6,
-    maxHP: 6,
+    maxHP: 5,
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Killable,
              Game.EntityMixins.CorpseDropper]
@@ -509,7 +534,7 @@ Game.EntityRepository.define('skeleton', {
     chr: 'S',
     fg: 'white',
     sightRadius: 6,
-    maxHP: 10,
+    maxHP: 12,
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Killable,
              Game.EntityMixins.CorpseDropper,

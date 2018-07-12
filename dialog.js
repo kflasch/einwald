@@ -252,12 +252,9 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
             if (this._currentItem && this._currentItem.hasMixin('Equippable')) {
                 if (Game.player.isEquipped(this._currentItemIndex)) {
                     Game.player.unequip(this._currentItemIndex);
-                    Game.UI.addMessage("You unequip the " + this._currentItem._name + ".");
                     this.hide();                    
                 } else {
-                    //Game.player.unequip(this._currentItemIndex);
-                    Game.player.wield(this._currentItemIndex);
-                    Game.UI.addMessage("You equip the " + this._currentItem._name + ".");
+                    Game.player.equip(this._currentItemIndex);
                     this.hide();
                 }
             }
