@@ -5,7 +5,8 @@ Game.Item = function(properties) {
     this._templateName = properties['templateName'] || '';
     this._passable = properties['passable'] || true;
     this._name = properties['name'] || '';
-    this._desc = properties['desc'] || '';    
+    this._desc = properties['desc'] || '';
+    this._foundIn = properties['foundIn'] || [];
 
     this._x = null;
     this._y = null;
@@ -66,6 +67,7 @@ Game.ItemRepository.define('smallrock', {
     name: 'small rock',
     chr: '*',
     fg: 'gray',
+    foundIn: ['Forest', 'Crypt'],
     mixins: [Game.ItemMixins.Throwable]
 });
 
@@ -73,6 +75,7 @@ Game.ItemRepository.define('book', {
     name: 'book',
     chr: '+',
     fg: 'brown',
+    foundIn: [],
     mixins: [Game.ItemMixins.Throwable]
 });
 
@@ -82,6 +85,7 @@ Game.ItemRepository.define('mushroom', {
     fg: 'darkkhaki',
     foodVal: 1,
     hpVal: 2,
+    foundIn: ['Forest', 'Crypt'],
     mixins: [Game.ItemMixins.Edible]
 });
 
@@ -91,6 +95,7 @@ Game.ItemRepository.define('healingherb', {
     fg: 'green',
     foodVal: 0,
     hpVal: 2,
+    foundIn: ['Forest'],
     mixins: [Game.ItemMixins.Edible]
 });
 

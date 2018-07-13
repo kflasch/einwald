@@ -273,7 +273,7 @@ Game.Zone.Forest = function Forest(tiles, player) {
         y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 2));
         if (this.getTile(x, y)._passable) {
             var key = x + ',' + y;
-            this._items[key] = [Game.ItemRepository.createRandom()];
+            this._items[key] = [Game.ItemRepository.createRandom('Forest')];
         }
     }
 };

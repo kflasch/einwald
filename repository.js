@@ -3,6 +3,7 @@ Game.Repository = function(name, ctor) {
     this._templates = {};
     this._ctor = ctor;
     this._randomTemplates = {};
+    this._zoneRandomTemplates = {};
 };
 
 Game.Repository.prototype.define = function(name, template, options) {
@@ -12,6 +13,14 @@ Game.Repository.prototype.define = function(name, template, options) {
     var disableRandomCreation = options && options['disableRandomCreation'];
     if (!disableRandomCreation) {
         this._randomTemplates[name] = template;
+        if (template.foundIn !== undefined && template.foundIn.length > 0) {
+            for (var i=0; i<template.foundIn.length; i++) {
+                var itemNames = this._zoneRandomTemplates[template.foundIn[i]];
+                if (itemNames == undefined) itemNames = [];
+                itemNames.push(name);
+                this._zoneRandomTemplates[template.foundIn[i]] = itemNames;
+            }
+        }
     }
 };
 
@@ -35,10 +44,14 @@ Game.Repository.prototype.create = function(name, extraProperties) {
     return new this._ctor(template);
 };
 
-// Create an object based on a random template
-Game.Repository.prototype.createRandom = function() {
-	// Pick a random key and create an object based off of it.
+// Create an object based on a random template, optionally only from zone
+Game.Repository.prototype.createRandom = function(zoneName) {
+    // Pick a random key and create an object based off of it.
+    if (zoneName !== undefined) {
+	return this.create(this._zoneRandomTemplates[zoneName].random());
+    } else {
 	return this.create(Object.keys(this._randomTemplates).random());
+    }
 };
 
 Game.Repository.prototype.getTemplate = function(name) {
