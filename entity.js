@@ -333,12 +333,13 @@ Game.EntityMixins.Killable = {
         }
     },
     getDefenseValue: function() {
+        var def = 0;
         if (this.hasMixin(Game.EntityMixins.Equipper)) {
             if (this.getArmor()) {
-                return this.getArmor().getDefenseValue();
+                def = this.getArmor().getDefenseValue();
             }
         }
-        return this._defenseValue;
+        return def + this._defenseValue;
     }
 };
 
@@ -347,7 +348,50 @@ Game.EntityMixins.ExperienceGainer = {
     init: function(template) {
         this._level = template['level'] || 1;
         this._xp = template['xp'] || 0;
+    },
+    getNextLevelExperience: function() {
+        return this._level * this._level * 10;
+    },
+    giveExperience: function(xp) {
+        var levelsGained = 0;
+        var pointsGained = 0;
+        var hpGained = 0;
+        // loop through xp gained to level up, possibly multiple times if enough xp
+        while (xp > 0) {            
+            if (this._xp + xp >= this.getNextLevelExperience()) {
+                var usedXP = this.getNextLevelExperience() - this._xp;
+                xp = xp - usedXP;
+                this._xp += usedXP;
+                this._level++;
+                levelsGained++;
+                this._attackValue++;
+                this._defenseValue++;
+                this._maxHP += 5;
+                this._hp = this._maxHP;
+                pointsGained++;
+                hpGained += 5;
+            } else {
+                this._xp += xp;
+                xp = 0;
+            }
+        }
+        if (levelsGained > 0) {
+            Game.UI.addMessage("You advance to level " + this._level + "! "
+                               + "You gained " + pointsGained + " attack and defense points "
+                               + " and " + hpGained + " HP.");
+        }
+    },
+    listeners: {
+        onKill: function(victim) {
+            var xp = 1;
+            xp += victim.getDefenseValue();
+            if (victim.hasMixin('Attacker'))
+                xp += victim.getAttackValue();
+            if (xp > 0)
+                this.giveExperience(xp);           
+        }
     }
+
 };
 
 Game.EntityMixins.CorpseDropper = {
@@ -448,19 +492,20 @@ Game.EntityMixins.Attacker = {
         this._attackValue = template['attackValue'] || 1;
     },
     getAttackValue: function() {
+        var att = 0;
         if (this.hasMixin(Game.EntityMixins.Equipper)) {
             if (this.getWeapon()) {
-                return this.getWeapon().getAttackValue();
+                att = this.getWeapon().getAttackValue();
             }
         }
-        return this._attackValue;
+        return att + this._attackValue;
     },
     attack: function(target) {
         if (target.hasMixin('Killable')) {
             var attVal = this.getAttackValue();
             var defVal = target.getDefenseValue();
             var max = Math.max(0, attVal - defVal);
-            var damage = 1 + Math.floor(Math.random() * max);
+            var damage = 1 + Math.floor(Math.random() * max);            
 
             if (this.hasMixin('PlayerActor')) {
                 Game.UI.addMessage("You strike the " + target.getName()
@@ -484,6 +529,8 @@ Game.PlayerTemplate = {
     sightRadius: 6,
     hp: 10,
     maxHP: 10,
+    attackValue: 1,
+    defenseValue: 1,
     mixins: [Game.EntityMixins.PlayerActor,
              Game.EntityMixins.Equipper,
              Game.EntityMixins.Killable,

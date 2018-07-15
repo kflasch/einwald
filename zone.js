@@ -268,7 +268,7 @@ Game.Zone.Forest = function Forest(tiles, player) {
         this._items[itemLoc.x + ',' + itemLoc.y] = [Game.ItemRepository.create('dagger')];
     }
 
-    for (var i=0; i<50; i++) {
+    for (var i=0; i<20; i++) {
         x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 2));
         y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 2));
         if (this.getTile(x, y)._passable) {

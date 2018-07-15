@@ -21,6 +21,7 @@ Game.UI.Status = {
         var output = "";//<span style='color:orange'>" + Game.player._name + "</span>";
         //output += "<br />";
         output += "Level: " + player._level + " XP: " + player._xp;
+        output += "/" + player.getNextLevelExperience();
         output += "<br />";
         output += "HP: " + player._hp + " / " + player._maxHP;
         output += "<br />";

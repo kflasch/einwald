@@ -104,7 +104,7 @@ Game.ItemRepository.define('dagger', {
     chr: ')',
     fg: 'grey',
     wieldable: true,
-    attackVal: 2,
+    attackVal: 1,
     desc: 'A well-balanced iron dagger.',
     mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
 }, { disableRandomCreation: true });
