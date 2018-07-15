@@ -294,7 +294,14 @@ Game.EntityMixins.TaskActor = {
         }
     },
     canDoTask: function(task) {
-        return true;
+        if (task === 'hunt') {
+            // entities will only hunt player 
+            return this.hasMixin('Sight') && this.canSee(Game.player);
+        } else if (task === 'wander') {
+            return true;
+        } else {
+            throw new Error('Tried to perform undefined task ' + task);
+        }
     },
     wander: function() {
         var moveOffset = (Math.round(Math.random()) === 1) ? 1 : -1;
@@ -303,8 +310,50 @@ Game.EntityMixins.TaskActor = {
         } else {
             this.tryMove(this._x, this._y + moveOffset, this._zone);
         }
+    },
+    hunt: function() {
+        
     }
 };
+
+Game.EntityMixins.Sight = {
+    name: 'Sight',
+    groupName: 'Sight',
+    init: function(template) {
+        this._sightRadius = template['sightRadius'] || 5;
+    },
+    getSightRadius: function() {
+        return this._sightRadius;
+    },
+    canSee: function(entity) {
+        // check if entity exists or is in the same zone
+        if (!entity || this._zone !== entity._zone) {
+            return false;
+        }
+
+        var entX = entity._x;
+        var entY = entity._y;
+
+        // check if within the bounds of the fov square
+        if ((entX - this._x) * (entX - this._x) +
+            (entY - this._y) * (entY - this._y) >
+            this._sightRadius * this._sightRadius) {
+            return false;
+        }
+
+        // compute fov and see if entity's coords are within it
+        var found = false;
+        this._zone._fov.compute(
+            this._x, this._y, this._sightRadius,
+            function(x, y, radius, visibility) {
+                if (x === entX && y === entY)
+                    found = true;
+            }
+        );
+        return found;
+    }
+};
+
 
 Game.EntityMixins.Killable = {
     name: 'Killable',
@@ -511,7 +560,7 @@ Game.EntityMixins.Attacker = {
                 Game.UI.addMessage("You strike the " + target.getName()
                                    + " for " + damage + " damage!");
             } else {
-                Game.UI.addMessage("The " + target.getName() + " strikes you for "
+                Game.UI.addMessage("The " + this.getName() + " strikes you for "
                                    + damage + " damage!");
             }
 
@@ -532,6 +581,7 @@ Game.PlayerTemplate = {
     attackValue: 1,
     defenseValue: 1,
     mixins: [Game.EntityMixins.PlayerActor,
+             Game.EntityMixins.Sight,
              Game.EntityMixins.Equipper,
              Game.EntityMixins.Killable,
              Game.EntityMixins.Attacker,
@@ -543,13 +593,17 @@ Game.PlayerTemplate = {
 Game.EntityRepository = new Game.Repository('entities', Game.Entity);
 
 Game.EntityRepository.define('spider', {
-    name: 'spider',
+    name: 'giant spider',
     chr: 's',
     fg: 'brown',
     sightRadius: 6,
     maxHP: 3,
+    attackValue: 1,
+    defenseValue: 1,
     mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
+             Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper]
 });
 
@@ -559,8 +613,13 @@ Game.EntityRepository.define('wolf', {
     fg: 'grey',
     sightRadius: 6,
     maxHP: 5,
+    attackValue: 2,
+    defenseValue: 1,
+    tasks: ['hunt', 'wander'],
     mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
+             Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper]
 });
 
@@ -570,8 +629,12 @@ Game.EntityRepository.define('wanderer', {
     fg: '#ff0',
     sightRadius: 6,
     maxHP: 10,
+    attackValue: 2,
+    defenseValue: 2,
     mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
+             Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper,
              Game.EntityMixins.Equipper]
 });
@@ -582,8 +645,30 @@ Game.EntityRepository.define('skeleton', {
     fg: 'white',
     sightRadius: 6,
     maxHP: 12,
+    attackValue: 3,
+    defenseValue: 3,
+    tasks: ['hunt', 'wander'],
     mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
+             Game.EntityMixins.Attacker,
+             Game.EntityMixins.CorpseDropper,
+             Game.EntityMixins.Equipper]
+});
+
+Game.EntityRepository.define('lich', {
+    name: 'lich',
+    chr: 'L',
+    fg: 'white',
+    sightRadius: 8,
+    maxHP: 30,
+    attackValue: 6,
+    defenseValue: 10,
+    tasks: ['hunt', 'wander'],
+    mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Sight,
+             Game.EntityMixins.Killable,
+             Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper,
              Game.EntityMixins.Equipper]
 });
