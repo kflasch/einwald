@@ -305,6 +305,7 @@ Game.EntityMixins.TaskActor = {
     },
     wander: function() {
         var moveOffset = (Math.round(Math.random()) === 1) ? 1 : -1;
+        // TODO: should wander diagonal too
         if (Math.round(Math.random()) === 1) {
             this.tryMove(this._x + moveOffset, this._y, this._zone);
         } else {
@@ -314,14 +315,13 @@ Game.EntityMixins.TaskActor = {
     hunt: function() {
         // TODO: extend this to allow non-players to be hunted
         var target = Game.player;
-//        console.log(this._name + ' hunting ' + target._name);
+        // console.log(this._name + ' hunting ' + target._name);
         
         // check adjacent
-        // TODO: fix diagonal offset
-        var offset = Math.abs(target._x - this._x)
-            + Math.abs(target._y - this._y);
-//        console.log(offset);
-        if (offset === 1) {
+        var offsetX = Math.abs(target._x - this._x);
+        var offsetY = Math.abs(target._y - this._y);
+        if ((offsetX + offsetY === 1) ||
+            (offsetX === 1 && offsetY === 1)) {
             if (this.hasMixin('Attacker')) {
                 this.attack(target);
                 return;
