@@ -144,6 +144,26 @@ Game.Dialog.WonGame.prototype.handleInput = function(inputType, inputData) {
 };
 
 
+Game.Dialog.LostGame = function() {
+    var properties = { title: '' };
+    Game.Dialog.call(this, properties);
+};
+
+Game.Dialog.LostGame.extend(Game.Dialog);
+
+Game.Dialog.LostGame.prototype.getOutput = function() {
+    var output = " <br />" ;
+    output += " <span style='color:red'>You have lost.</span> <br />";
+    output += " <br />";
+    output += " <br />";
+    return output;
+};
+
+Game.Dialog.LostGame.prototype.handleInput = function(inputType, inputData) {
+    // TODO: show message log option?
+};
+
+
 // item dialogs
 
 Game.Dialog.Items = function(properties, items) {

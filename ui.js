@@ -20,10 +20,15 @@ Game.UI.Status = {
         var player = Game.player;
         var output = "";//<span style='color:orange'>" + Game.player._name + "</span>";
         //output += "<br />";
-        output += "Level: " + player._level + " XP: " + player._xp;
-        output += "/" + player.getNextLevelExperience();
+        output += "Level: " + player._level;
         output += "<br />";
-        output += "HP: " + player._hp + " / " + player._maxHP;
+        output +=" XP: " + player._xp;
+        output += " / " + player.getNextLevelExperience();
+        output += "<br />";
+        if (player._hp < (player._maxHP * 0.25))
+            output += "HP: <span style='color:red'>" + player._hp + "</span> / " + player._maxHP;
+        else
+            output += "HP: " + player._hp + " / " + player._maxHP;
         output += "<br />";
         output += "Attack: " + player.getAttackValue();
         output += "<br />";

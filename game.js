@@ -257,6 +257,11 @@ Game.wonGame = function() {
     Game.currentDialog.show();
 };
 
+Game.lostGame = function() {
+    Game.currentDialog = new Game.Dialog.LostGame();
+    Game.currentDialog.show();
+};
+
 Game.handleInput = function(inputType, inputData) {
     if (inputType === 'keydown') {
 

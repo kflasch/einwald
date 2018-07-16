@@ -115,7 +115,7 @@ Game.Entity.prototype.changeZone = function() {
 
 Game.Entity.prototype.kill = function(message, zone) {
     if (!this._alive) {
-        console.log("tried to kill already dead entity " + this);
+        console.log("tried to kill already dead entity " + this._name);
         return;
     }
 
@@ -172,6 +172,9 @@ Game.EntityMixins.PlayerActor = {
     name: 'PlayerActor',
     groupName: 'Actor',
     act: function() {
+        if (!this._alive) {
+            Game.lostGame();
+        }
         Game.turns++;
         Game.refresh();
         Game.engine.lock();
@@ -304,13 +307,8 @@ Game.EntityMixins.TaskActor = {
         }
     },
     wander: function() {
-        var moveOffset = (Math.round(Math.random()) === 1) ? 1 : -1;
-        // TODO: should wander diagonal too
-        if (Math.round(Math.random()) === 1) {
-            this.tryMove(this._x + moveOffset, this._y, this._zone);
-        } else {
-            this.tryMove(this._x, this._y + moveOffset, this._zone);
-        }
+        var moveOffset = ROT.DIRS[8].random();
+        this.tryMove(this._x + moveOffset[0], this._y + moveOffset[1], this._zone);
     },
     hunt: function() {
         // TODO: extend this to allow non-players to be hunted
