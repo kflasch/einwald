@@ -312,7 +312,38 @@ Game.EntityMixins.TaskActor = {
         }
     },
     hunt: function() {
+        // TODO: extend this to allow non-players to be hunted
+        var target = Game.player;
+//        console.log(this._name + ' hunting ' + target._name);
         
+        // check adjacent
+        // TODO: fix diagonal offset
+        var offset = Math.abs(target._x - this._x)
+            + Math.abs(target._y - this._y);
+//        console.log(offset);
+        if (offset === 1) {
+            if (this.hasMixin('Attacker')) {
+                this.attack(target);
+                return;
+            }
+        }
+
+        // gen path towards target and move
+        var source = this;
+        var path = new ROT.Path.AStar(target._x, target._y, function(x, y) {
+            // if another (non-target) entity is in the way, can't move there
+            var entity = source._zone.getEntityAt(x, y);
+            if (entity && entity !== target && entity !== source)
+                return false;
+            return source._zone.getTile(x, y)._passable;            
+        });
+
+        var count = 0;
+        path.compute(source._x, source._y, function(x, y) {
+            if (count == 1)
+                source.tryMove(x, y, source._zone);
+            count++;
+        });
     }
 };
 
