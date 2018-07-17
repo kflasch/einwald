@@ -172,12 +172,19 @@ Game.EntityMixins.PlayerActor = {
     name: 'PlayerActor',
     groupName: 'Actor',
     act: function() {
+        if (this._acting)
+            return;
+
+        this._acting = true;
+        
         if (!this._alive) {
             Game.lostGame();
         }
+        
         Game.turns++;
         Game.refresh();
         Game.engine.lock();
+        this._acting = false;
     }
 };
 

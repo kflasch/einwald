@@ -141,7 +141,7 @@ Game.Zone.prototype.addEntity = function(entity) {
 
     this.updateEntityPosition(entity);
 
-    if (entity.hasMixin('Actor')) {
+    if (entity.hasMixin('TaskActor')) {
         Game.scheduler.add(entity, true);
     }
 
