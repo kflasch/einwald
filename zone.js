@@ -256,12 +256,8 @@ Game.Zone.Forest = function Forest(tiles, player) {
     //this.addEntityAtRandomPosition(player);
 
     for (var i=0; i<10; i++) {
-        x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 2));
-        y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 2));
-        if (this.getTile(x, y)._passable) {
-            var entity = Game.EntityRepository.createRandom();
-            this.addEntityAtRandomPosition(entity);
-        }
+        var entity = Game.EntityRepository.createRandom('Forest');
+        this.addEntityAtRandomPosition(entity);
     }
     var itemLoc = this.getEmptyRandomPositionNear(player._x, player._y, 2);
     if (itemLoc) {
@@ -302,10 +298,18 @@ Game.Zone.Crypt = function Crypt(tiles, fromZoneID, depth) {
                 this._connections[x+','+y] = 'Crypt';
         } else if (value === 4) {
             this._tiles[x][y] = Game.Tile.water;
+        } else if (value === 8) {
+            this._tiles[x][y] = Game.Tile.openDoor;
         } else {
             this._tiles[x][y] = Game.Tile.stoneFloor;
         }
     }.bind(this));
+
+    for (var i=0; i<10; i++) {
+        var entity = Game.EntityRepository.createRandom('Crypt');
+        this.addEntityAtRandomPosition(entity);
+    }
+
 
 };
 Game.Zone.Crypt.extend(Game.Zone);
@@ -332,6 +336,9 @@ Game.Zone.Sanctum = function Sanctum(tiles, fromZoneID, depth) {
             this._tiles[x][y] = Game.Tile.stoneFloor;
         }
     }.bind(this));
+
+    var entity = Game.EntityRepository.create('lich');
+    this.addEntityAtRandomPosition(entity);
 
 };
 Game.Zone.Sanctum.extend(Game.Zone);

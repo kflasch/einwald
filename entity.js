@@ -636,6 +636,7 @@ Game.EntityRepository.define('spider', {
     maxHP: 3,
     attackValue: 1,
     defenseValue: 1,
+    foundIn: ['Forest', 'Crypt'],
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
@@ -652,6 +653,7 @@ Game.EntityRepository.define('wolf', {
     attackValue: 2,
     defenseValue: 1,
     tasks: ['hunt', 'wander'],
+    foundIn: ['Forest'],
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
@@ -667,6 +669,7 @@ Game.EntityRepository.define('wanderer', {
     maxHP: 10,
     attackValue: 2,
     defenseValue: 2,
+    foundIn: ['Forest'],
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
@@ -684,6 +687,7 @@ Game.EntityRepository.define('skeleton', {
     attackValue: 3,
     defenseValue: 3,
     tasks: ['hunt', 'wander'],
+    foundIn: ['Crypt'],
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
@@ -707,4 +711,4 @@ Game.EntityRepository.define('lich', {
              Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper,
              Game.EntityMixins.Equipper]
-});
+}, { disableRandomCreation: true });

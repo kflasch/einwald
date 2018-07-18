@@ -527,7 +527,15 @@ Game.Map.CryptBuilder.prototype.create = function(callback) {
 
     // place staircase to next level
     var stairsDown = rooms[rooms.length-1].getCenter();
-    map[stairsDown[0]][stairsDown[1]] = 3;    
+    map[stairsDown[0]][stairsDown[1]] = 3;
+
+    var putDoor = function(x, y) {
+        map[x][y]= 8;
+    };
+    for (var i=0; i<rooms.length; i++) {
+        var room = rooms[i];
+        room.getDoors(putDoor);
+    }
     
     for (var i=0; i<this._width; i++) {
         for (var j=0; j<this._height; j++) {            
