@@ -29,6 +29,13 @@ Game.Zone.prototype.getTile = function(x, y) {
     }
 };
 
+Game.Zone.prototype.setTile = function(x, y, tile) {
+    console.log(x + ' ' + y);
+    if (x >= 0 && x < this._width && y >= 0 && y < this._height) {
+        this._tiles[x][y] = tile;
+    }
+};
+
 Game.Zone.prototype._setupFOV = function() {
     var thisZone = this;
     return new ROT.FOV.PreciseShadowcasting(function(x, y) {
@@ -300,6 +307,8 @@ Game.Zone.Crypt = function Crypt(tiles, fromZoneID, depth) {
             this._tiles[x][y] = Game.Tile.water;
         } else if (value === 8) {
             this._tiles[x][y] = Game.Tile.openDoor;
+        } else if (value === 9) {
+            this._tiles[x][y] = Game.Tile.closedDoor;
         } else {
             this._tiles[x][y] = Game.Tile.stoneFloor;
         }

@@ -81,14 +81,17 @@ Game.Tile.caveWallTile = new Game.Tile({
 });
 Game.Tile.closedDoor = new Game.Tile({
     chr: '+',
-    fg: 'brown',
-    passable: false
+    fg: 'rgb(102, 51, 0)',
+    blocksLight: true,
+    passable: false,
+    desc: 'a closed door'
 });
 Game.Tile.openDoor = new Game.Tile({
     chr: '-',
-    fg: 'brown',
+    fg: 'rgb(102, 51, 0)',
     blocksLight: false,
-    passable: true
+    passable: true,
+    desc: 'an open door'
 });
 Game.Tile.magicBarrier = new Game.Tile({
     chr: '#',

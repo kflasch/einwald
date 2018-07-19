@@ -529,8 +529,14 @@ Game.Map.CryptBuilder.prototype.create = function(callback) {
     var stairsDown = rooms[rooms.length-1].getCenter();
     map[stairsDown[0]][stairsDown[1]] = 3;
 
+    // add doors
     var putDoor = function(x, y) {
-        map[x][y]= 8;
+        var num = ROT.RNG.getUniform();
+        if (num < 0.25) {
+            map[x][y]= 9;
+        } else if (num < 0.5) {
+            map[x][y]= 8;
+        }
     };
     for (var i=0; i<rooms.length; i++) {
         var room = rooms[i];

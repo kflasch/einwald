@@ -66,6 +66,7 @@ Game.Dialog.Help.prototype.getOutput = function() {
     output += "'g' to get / pick up <br />";
     output += "'d' to drop <br />";
     output += "'i' to show inventory <br />";
+    output += "'o' + direction to open/close door <br />";
     output += "'.' to wait a turn <br />";
     output += "'ESC' to exit screens <br />";
     return output;

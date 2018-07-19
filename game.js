@@ -11,6 +11,7 @@ var Game = {
     world: null,
     zone: null,
     currentDialog: null,
+    pendingDirInput: null,
     debug: false,
 
     init: function() {
@@ -263,10 +264,20 @@ Game.lostGame = function() {
 };
 
 Game.handleInput = function(inputType, inputData) {
+    
     if (inputType === 'keydown') {
 
         //console.log(inputData.keyCode);
         //console.log(inputData.charCode);
+
+        // handle compound actions that require direction
+        if (Game.pendingDirInput) {
+            var didDirAction = Game.handleDirInput(inputData);
+            Game.pendingDirInput = null;
+            if (didDirAction)
+                Game.engine.unlock();
+            return;
+        }
 
         if (inputData.keyCode in Game.keyMap) {
             var dir = ROT.DIRS[8][Game.keyMap[inputData.keyCode]];
@@ -300,7 +311,10 @@ Game.handleInput = function(inputType, inputData) {
                 Game.UI.addMessage("There is nothing here to pick up.");
             }
             return;
-        } else if (inputData.keyCode === ROT.VK_PERIOD) {
+        } else if (inputData.keyCode === ROT.VK_O) {
+            Game.pendingDirInput = 'open';
+            return;
+        } else if (inputData.keyCode === ROT.VK_PERIOD || inputData.keyCode === ROT.VK_NUMPAD5) {
             // skip turn
             Game.engine.unlock();
             return;
@@ -331,6 +345,20 @@ Game.handleInput = function(inputType, inputData) {
         }        
     }
 
+};
+
+// handle compound directional actions (e.g., open door in specific dir)
+Game.handleDirInput = function(inputData) {
+    if (inputData.keyCode in Game.keyMap) {
+        var dir = ROT.DIRS[8][Game.keyMap[inputData.keyCode]];
+        var x = Game.player._x + dir[0];
+        var y = Game.player._y + dir[1];
+        Game.player.tryDoor(x, y, Game.zone);
+        return true;
+    } else {
+        // don't expend a turn, no action
+        return false;
+    }
 };
 
 window.onload = function() {

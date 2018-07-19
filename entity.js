@@ -66,6 +66,21 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
         Game.UI.addMessage(descMsg);
 };
 
+Game.Entity.prototype.tryDoor = function(x, y, zone) {
+    var tile = zone.getTile(x, y);
+    var isPlayer = this.hasMixin(Game.EntityMixins.PlayerActor);
+    var ent = zone.getEntityAt(x, y);
+    if (ent) {
+        Game.UI.addMessage('A ' + ent._name + ' is in the way!');        
+    } else if (tile === Game.Tile.closedDoor) {
+        zone.setTile(x, y, Game.Tile.openDoor);
+        Game.UI.addMessage('You open the door.');
+    } else if (tile === Game.Tile.openDoor) {
+        zone.setTile(x, y, Game.Tile.closedDoor);
+        Game.UI.addMessage('You close the door.');
+    }
+};
+
 // TODO: clean this function up
 Game.Entity.prototype.changeZone = function() {
     var tile = this._zone.getTile(this._x, this._y);
