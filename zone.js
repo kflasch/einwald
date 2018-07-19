@@ -107,7 +107,7 @@ Game.Zone.prototype.getEmptyRandomPosition = function() {
     do {
         x = Math.floor(ROT.RNG.getUniform() * this._width);
         y = Math.floor(ROT.RNG.getUniform() * this._height);
-    } while (!this.isPassable(x,y));
+    } while (!this.isPlaceable(x,y));
     return {x: x, y: y};
 };
 
@@ -121,14 +121,17 @@ Game.Zone.prototype.getEmptyRandomPositionNear = function(nx, ny, dist) {
         x = ROT.RNG.getUniformInt(minx, maxx);
         y = ROT.RNG.getUniformInt(miny, maxy);
         check++;
-    } while (!this.isPassable(x, y) && check<=maxCheck);
+    } while (!this.isPlaceable(x, y) && check<=maxCheck);
     if (check >= maxCheck) return null;
     return {x: x, y: y};
 };
 
-// true if given pos is passable and has no entities
-Game.Zone.prototype.isPassable = function(x, y) {
-    return this.getTile(x, y)._passable &&
+// true if given pos is passable, has no entities and not certain tiles
+Game.Zone.prototype.isPlaceable = function(x, y) {
+    var tile = this.getTile(x, y);
+    return tile._passable &&
+        tile !== Game.Tile.stairUp &&
+        tile !== Game.Tile.stairDown &&
         !this.getEntityAt(x, y);
 };
 
