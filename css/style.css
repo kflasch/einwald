@@ -47,6 +47,15 @@ body {
 //    display: none;
 }
 
+#legend {
+    text-align: left;
+    padding: 8px 10px 15px;
+    margin: 4px 5px 0px;
+    color: #DEDEDE;
+    background-color: rgba(34, 34, 34, 0.125);
+    border: 1px rgba(34, 34, 34, 0.75) solid;
+}
+
 .uibot {
     width: 900px;
     margin-top: 460px;

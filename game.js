@@ -12,6 +12,7 @@ var Game = {
     zone: null,
     currentDialog: null,
     pendingDirInput: null,
+    visibleEntities: [],
     debug: false,
 
     init: function() {
@@ -172,6 +173,7 @@ var Game = {
                 thisZone.setExplored(x, y, true);
             });
 
+        Game.visibleEntities = [];
         for (var x = topLeftX; x < topLeftX + Game.canvasWidth; x++) {
             for (var y = topLeftY; y < topLeftY + Game.canvasHeight; y++) {
                 if (this.zone.isExplored(x, y) || Game.debug) {
@@ -183,8 +185,11 @@ var Game = {
                             if (items) 
                                 glyph = items[items.length - 1];
                             var entity = this.zone.getEntityAt(x, y);
-                            if (entity)
+                            if (entity) {
+                                if (!entity.hasMixin(Game.EntityMixins.PlayerActor))
+                                    Game.visibleEntities.push(entity);
                                 glyph = entity;
+                            }
                             fg = glyph._foreground;
                             //fg = Game.shadeColor(glyph._foreground, visCells[x + "," + y]);
                         }

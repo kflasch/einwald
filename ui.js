@@ -12,11 +12,13 @@ Game.UI = {
 
 Game.UI.Status = {
     update: function() {
-        var elem = document.getElementById('status');
-        elem.innerHTML = Game.UI.Status.getOutput();
+        var elemStatus = document.getElementById('status');
+        elemStatus.innerHTML = Game.UI.Status.getStatus();
+        var elemLegend = document.getElementById('legend');
+        elemLegend.innerHTML = Game.UI.Status.getLegend();
     },
 
-    getOutput: function() {
+    getStatus: function() {
         var player = Game.player;
         var output = "";//<span style='color:orange'>" + Game.player._name + "</span>";
         //output += "<br />";
@@ -42,10 +44,21 @@ Game.UI.Status = {
         if (Game.zone._isMultiLevel)
             output += "Depth: " + Game.zone._depth;
         output += "<br />";
+        return output;
+    },
+
+    getLegend: function() {
+        var output = "<span style='color:orange'>Legend</span>";
         output += "<br />";
+        output += "<br />";
+        for (var i=0; i<Game.visibleEntities.length; i++) {
+            var entity = Game.visibleEntities[i];
+            output += "<span style='color:" + entity._foreground + "'>" + entity._char + "</span>  ";
+            output += entity._name + " ";
+            output += "<br />";
+        }
         return output;
     }
-
 };
 
 Game.UI.Messages = {
