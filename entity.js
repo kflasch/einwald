@@ -711,6 +711,24 @@ Game.EntityRepository.define('skeleton', {
              Game.EntityMixins.Equipper]
 });
 
+Game.EntityRepository.define('ghoul', {
+    name: 'ghoul',
+    chr: 'g',
+    fg: 'green',
+    sightRadius: 4,
+    maxHP: 8,
+    attackValue: 3,
+    defenseValue: 2,
+    tasks: ['hunt', 'wander'],
+    foundIn: ['Crypt'],
+    mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Sight,
+             Game.EntityMixins.Killable,
+             Game.EntityMixins.Attacker,
+             Game.EntityMixins.CorpseDropper,
+             Game.EntityMixins.Equipper]
+});
+
 Game.EntityRepository.define('lich', {
     name: 'lich',
     chr: 'L',

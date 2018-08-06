@@ -269,10 +269,12 @@ Game.Zone.Forest = function Forest(tiles, player) {
         var entity = Game.EntityRepository.createRandom('Forest');
         this.addEntityAtRandomPosition(entity);
     }
+    /*
     var itemLoc = this.getEmptyRandomPositionNear(player._x, player._y, 2);
     if (itemLoc) {
         this._items[itemLoc.x + ',' + itemLoc.y] = [Game.ItemRepository.create('dagger')];
     }
+*/
 
     for (var i=0; i<20; i++) {
         x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 2));

@@ -67,6 +67,7 @@ Game.ItemRepository.define('smallrock', {
     name: 'small rock',
     chr: '*',
     fg: 'gray',
+    desc: 'A small, sharp rock.',
     foundIn: ['Forest', 'Crypt'],
     mixins: [Game.ItemMixins.Throwable]
 });
@@ -75,6 +76,7 @@ Game.ItemRepository.define('book', {
     name: 'book',
     chr: '+',
     fg: 'brown',
+    desc: 'A worn leather-bound tome with strange symbols on the cover.',
     foundIn: [],
     mixins: [Game.ItemMixins.Throwable]
 });
@@ -85,6 +87,7 @@ Game.ItemRepository.define('mushroom', {
     fg: 'darkkhaki',
     foodVal: 1,
     hpVal: 2,
+    desc: 'A small, wild mushroom.',
     foundIn: ['Forest', 'Crypt'],
     mixins: [Game.ItemMixins.Edible]
 });
@@ -95,6 +98,7 @@ Game.ItemRepository.define('healingherb', {
     fg: 'green',
     foodVal: 0,
     hpVal: 2,
+    desc: 'A small green herb with medicinal properties.',
     foundIn: ['Forest'],
     mixins: [Game.ItemMixins.Edible]
 });
@@ -106,6 +110,16 @@ Game.ItemRepository.define('dagger', {
     wieldable: true,
     attackVal: 1,
     desc: 'A well-balanced iron dagger.',
+    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
+}, { disableRandomCreation: true });
+
+Game.ItemRepository.define('shortsword', {
+    name: 'shortsword',
+    chr: ')',
+    fg: 'grey',
+    wieldable: true,
+    attackVal: 1,
+    desc: 'A short sword.',
     mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
 }, { disableRandomCreation: true });
 

@@ -139,6 +139,8 @@ var Game = {
         this.player._name = Names.genPlayerName();
         this.player.addItem(Game.ItemRepository.create('traveleroutfit'));
         this.player.wear(0);
+        this.player.addItem(Game.ItemRepository.create('dagger'));
+        this.player.wield(1);
         this.player.addItem(Game.ItemRepository.create('healingherb'));
     },
 
