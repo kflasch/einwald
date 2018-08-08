@@ -8,6 +8,7 @@ var Game = {
     scheduler: null,
     player: null,
     turns: 0,
+    seed: null,
     world: null,
     zone: null,
     currentDialog: null,
@@ -51,6 +52,7 @@ var Game = {
         if (load) {
             this._loadGame();
         } else {
+            this.seed = ROT.RNG.getSeed();
             this._generatePlayer();
             this._generateWorld();
         }
@@ -62,13 +64,17 @@ var Game = {
     },
     
     _saveGame: function() {
+        localStorage.setItem("einwald_seed", this.seed);
         localStorage.setItem("einwald_turns", this.turns);
         localStorage.setItem("einwald_world", this.world.exportToString());        
     },
 
     _loadGame: function() {
 
+        this.seed = parseInt(localStorage.getItem("einwald_seed"), 10);
         this.turns = localStorage.getItem("einwald_turns");
+
+        ROT.RNG.setSeed(this.seed);
         
         var savedWorld = JSON.parse(localStorage.getItem("einwald_world"));
         this.world = new Game.World();
