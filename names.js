@@ -72,7 +72,8 @@ MarkovModel.prototype.observe = function(sequence, count=1) {
 var DonjonNames = {
 
     
-    nameSet: {'default': ["Alfonso", "Fredrick", "Henrietta", "Penelope", "Vlad-Tepes"]},
+    nameSet: {'default': ["Alfonso", "Fredrick", "Henrietta", "Penelope", "Vlad-Tepes", "Erik", "Annie", "Chadwick",
+                          "Greta", "Viktor", "Sally"]},
     chainCache: {},
     
     generateName: function(type) {
