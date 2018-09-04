@@ -421,7 +421,15 @@ Game.Map.ForestBuilder.prototype.create = function(callback) {
     //map = Game.Map.filledSquare(x, y, lakeSize, 2, map);
     
     // crypt entrance
+    // place in middle of a meadow
+    var cryptX = meadows[0][0];
+    var cryptY = meadows[0][1];
+    map = Game.Map.addRoom(cryptX, cryptY, 3, 3, 5, 6, map);
+    map[cryptX+1][cryptY+1] = 3; // stair
+    map[cryptX+1][cryptY+2] = 6; // opening
+    
     // find spot in forest to create, then build path to it
+    /*
     var check = 0, maxCheck = 2000, found=false;
     do {
         x = ROT.RNG.getUniformInt(1, Game.mapWidth - 4);
@@ -437,7 +445,8 @@ Game.Map.ForestBuilder.prototype.create = function(callback) {
         }
         check++;
     } while (!found && check<=maxCheck);
-
+    */
+    
     // create exit
     x = 0;
     y = ROT.RNG.getUniformInt(10, Game.mapHeight - 10);
