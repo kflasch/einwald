@@ -255,10 +255,11 @@ Game.Map.inBounds = function(map, x, y) {
     return true;
 };
 
-Game.Map.countTilesAround = function(map, tileVal, x, y) {
+Game.Map.countTilesAround = function(map, tileVal, x, y, radius) {
     var count = 0;
-    for (var dy=-1; dy<=1; dy++) {
-        for (var dx=-1; dx<=1; dx++) {
+    radius = radius || 1;
+    for (var dy=-radius; dy<=radius; dy++) {
+        for (var dx=-radius; dx<=radius; dx++) {
             var newx = x+dx;
             var newy = y+dy;
             if (map[newx][newy] === tileVal)
@@ -412,7 +413,24 @@ Game.Map.ForestBuilder.prototype.create = function(callback) {
     Game.Map.erode(map, 10000);
 
     Game.Map.smoothMap(map);
-    
+
+    // add scattered tree clumps for some more variety
+    for (i=0; i<200; i++) {
+        var x = ROT.RNG.getUniformInt(3, Game.mapWidth - 3);
+        var y = ROT.RNG.getUniformInt(3, Game.mapHeight - 3);
+        var tilesAround = Game.Map.countTilesAround(map, 0, x, y, 2);
+        if (tilesAround < 25)
+            continue;
+        for (var dy=-1; dy<=1; dy++) {
+            for (var dx=-1; dx<=1; dx++) {
+                var newx = x+dx;
+                var newy = y+dy;
+                if (ROT.RNG.getPercentage() > 50)
+                    map[newx][newy] = 1;
+            }
+        }
+    }
+
     // lake/pond
     //var lakeSize = ROT.RNG.getUniformInt(3, 6);
     //var x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 3));
