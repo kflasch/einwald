@@ -371,6 +371,16 @@ Game.Map.createRoom = function(x, y, w, h, wallVal, floorVal, map) {
     return map;
 };
 
+// add a predefined feature / preset 2d array
+// top left of 2d array starts at x,y
+Game.Map.addFeature = function(x, y, feature, map) {
+    for (var i=0; i<feature[0].length; i++) {
+        for (var j=0; j<feature.length; j++) {
+            map[x+j][y+i] = feature[i][j];
+        }
+    }
+};
+
 Game.Map.buildCrypt = function(map, sx, sy) {
 
     var width = ROT.RNG.getUniformInt(3, 8);
@@ -440,12 +450,13 @@ Game.Map.ForestBuilder.prototype.create = function(callback) {
     
     // crypt entrance
     // place in middle of a meadow
-    var cryptX = meadows[0][0];
-    var cryptY = meadows[0][1];
-    map = Game.Map.addRoom(cryptX, cryptY, 3, 3, 5, 6, map);
-    map[cryptX+1][cryptY+1] = 3; // stair
-    map[cryptX+1][cryptY+2] = 6; // opening
-    
+    var cryptEnt = [
+        [6,5,6],
+        [5,3,6],
+        [5,5,5]
+    ];
+    Game.Map.addFeature(meadows[0][0], meadows[0][1], cryptEnt, map);
+
     // find spot in forest to create, then build path to it
     /*
     var check = 0, maxCheck = 2000, found=false;
