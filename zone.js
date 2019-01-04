@@ -269,6 +269,9 @@ Game.Zone.Forest = function Forest(tiles, player) {
         var entity = Game.EntityRepository.createRandom('Forest');
         this.addEntityAtRandomPosition(entity);
     }
+    var wanderer = Game.EntityRepository.create('wanderer');
+    this.addEntityAtRandomPosition(wanderer);
+    
     /*
     var itemLoc = this.getEmptyRandomPositionNear(player._x, player._y, 2);
     if (itemLoc) {

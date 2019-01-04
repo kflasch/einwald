@@ -32,6 +32,11 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
         if (this.hasMixin('Attacker')) {
             if (this.isHostile(target)) {
                 this.attack(target);
+                // if attacking a non-Attacker, make it one
+                if (!target.hasMixin('Attacker'))
+                    target.addMixin('Attacker');
+                if (target.hasMixin('TaskActor') && !target._tasks.includes('hunt'))
+                    target._tasks.unshift('hunt');
                 return true;
             } else {
                 descMsg = target.getName() + " is in the way.";
@@ -647,7 +652,7 @@ Game.EntityRepository.define('spider', {
     name: 'giant spider',
     chr: 's',
     fg: 'brown',
-    sightRadius: 6,
+    sightRadius: 4,
     maxHP: 3,
     attackValue: 1,
     defenseValue: 1,
@@ -658,7 +663,7 @@ Game.EntityRepository.define('spider', {
              Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper]
 });
-
+/*
 Game.EntityRepository.define('wolf', {
     name: 'wolf',
     chr: 'w',
@@ -675,7 +680,7 @@ Game.EntityRepository.define('wolf', {
              Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper]
 });
-
+*/
 Game.EntityRepository.define('wanderer', {
     name: 'wanderer',
     chr: '@',
@@ -684,7 +689,6 @@ Game.EntityRepository.define('wanderer', {
     maxHP: 10,
     attackValue: 2,
     defenseValue: 2,
-    foundIn: ['Forest'],
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,

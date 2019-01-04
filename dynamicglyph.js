@@ -50,6 +50,15 @@ Game.DynamicGlyph.prototype.hasMixin = function(obj) {
     }
 };
 
+Game.DynamicGlyph.prototype.addMixin = function(obj) {
+    // Allow passing the mixin itself or the name as a string
+    if (typeof obj === 'object') {
+        this._attachedMixins[obj.name] = true;
+    } else {
+        this._attachedMixins[obj] = true;
+    }
+};
+
 Game.DynamicGlyph.prototype.getName = function() {
     return this._name;
 };

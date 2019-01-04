@@ -451,12 +451,14 @@ Game.Map.ForestBuilder.prototype.create = function(callback) {
     // crypt entrance
     // place in middle of a meadow
     var cryptEnt = [
-        [6,5,6],
-        [5,3,6],
-        [5,5,5]
+        [6,5,6,6,6],
+        [5,5,6,5,6],
+        [6,6,3,6,6],
+        [5,5,6,5,6],
+        [6,5,5,6,6]
     ];
     Game.Map.addFeature(meadows[0][0], meadows[0][1], cryptEnt, map);
-
+    
     // find spot in forest to create, then build path to it
     /*
     var check = 0, maxCheck = 2000, found=false;

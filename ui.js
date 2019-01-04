@@ -20,9 +20,9 @@ Game.UI.Status = {
 
     getStatus: function() {
         var player = Game.player;
-        var output = "<span style='color:orange'>" + Game.player._name + "</span>";
-        output += "<br />";
-        output += "Level: " + player._level;
+        //var output = "<span style='color:orange'>" + Game.player._name + "</span>";
+        //output += "<br />";
+        var output = "Level: " + player._level;
         output += "<br />";
         output +=" XP: " + player._xp;
         output += " / " + player.getNextLevelExperience();

@@ -55,6 +55,8 @@ var Game = {
             this.seed = ROT.RNG.getSeed();
             this._generatePlayer();
             this._generateWorld();
+            Game.UI.addMessage("Welcome to Einwald, adventurer!");
+            Game.UI.addMessage("Find a way to escape from the forest...");
         }
 
         this.scheduler.add(this.player, true);
