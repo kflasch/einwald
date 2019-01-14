@@ -39,25 +39,11 @@ Game.ItemMixins.Edible = {
 Game.ItemMixins.Drinkable = {
     name: 'Drinkable',
     init: function(template) {
-//        this.hpVal = template['hpVal'] || 0;
-//        this.attackVal = template['attackVal'] || 0;
-//        this.defenseVal = template['defenseVal'] || 0;
         this.type = template['type'] || 0;
         this.value = template['value'] || 1;
         this.duration = template['duration'] || 10;
     },
     drink: function(entity, invIndex) {
-        /*
-        if (entity.hasMixin('Killable')) {
-            entity.modifyHP(this, this.hpVal);
-            if (this.defenseVal > 0) {
-                entity.buffDefense(this, this.defenseVal, this.duration);
-            }
-        }
-        if (entity.hasMixin('Attacker') && this.attackVal > 0) {
-            entity.buffAttack(this, this.attackVal, this.duration);
-        }
-        */
         if (entity.hasMixin('Effectable')) {
             entity.addEffect(this.type, this.value, this.duration);
         }
@@ -140,7 +126,6 @@ Game.ItemRepository.define('defensepotion', {
     duration: 10,
     value: 4,
     desc: 'A potion that will temporarily bolster your defense.',
-    foundIn: ['Forest'],
     mixins: [Game.ItemMixins.Drinkable]
 });
 
@@ -152,7 +137,6 @@ Game.ItemRepository.define('attackpotion', {
     duration: 10,
     value: 3,
     desc: 'A potion that will temporarily bolster your attack power.',
-    foundIn: ['Forest'],
     mixins: [Game.ItemMixins.Drinkable]
 });
 
@@ -171,7 +155,7 @@ Game.ItemRepository.define('shortsword', {
     chr: ')',
     fg: 'grey',
     wieldable: true,
-    attackVal: 1,
+    attackVal: 2,
     desc: 'A short sword.',
     mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
 }, { disableRandomCreation: true });
@@ -179,11 +163,31 @@ Game.ItemRepository.define('shortsword', {
 Game.ItemRepository.define('traveleroutfit', {
     name: 'traveler outfit',
     chr: '[',
-    fg: 'brown',
+    fg: 'orange',
     wearable: true,
     defenseVal: 1,
     desc: 'Common traveler outfit.',
-    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
+    mixins: [Game.ItemMixins.Equippable]
+}, { disableRandomCreation: true });
+
+Game.ItemRepository.define('leatherarmor', {
+    name: 'leather armor',
+    chr: '[',
+    fg: 'brown',
+    wearable: true,
+    defenseVal: 2,
+    desc: 'Leather armor.',
+    mixins: [Game.ItemMixins.Equippable]
+}, { disableRandomCreation: true });
+
+Game.ItemRepository.define('chainmail', {
+    name: 'chain mail',
+    chr: '[',
+    fg: 'silver',
+    wearable: true,
+    defenseVal: 3,
+    desc: 'Chain mail.',
+    mixins: [Game.ItemMixins.Equippable]
 }, { disableRandomCreation: true });
 
 

@@ -497,7 +497,7 @@ Game.EntityMixins.ExperienceGainer = {
     listeners: {
         onKill: function(victim) {
             var xp = 1;
-            xp += victim.getDefenseValue();
+            xp += victim.getDefenseValue();            
             if (victim.hasMixin('Attacker'))
                 xp += victim.getAttackValue();
             if (xp > 0)
@@ -661,12 +661,14 @@ Game.EntityMixins.Effectable = {
         while (i--) {
             if (this._effects[i].duration <= 0) {
                 this.removeEffect(this._effects[i], i);
-//                this._effects.splice(i, 1);
             } else {
                 this._effects[i].duration--;
             }
         }
     }
+};
+
+Game.EntityMixins.Communicator = {
 };
 
 // entities
@@ -696,7 +698,7 @@ Game.EntityRepository = new Game.Repository('entities', Game.Entity);
 Game.EntityRepository.define('spider', {
     name: 'giant spider',
     chr: 's',
-    fg: 'brown',
+    fg: 'red',
     sightRadius: 4,
     maxHP: 3,
     attackValue: 1,
@@ -708,7 +710,38 @@ Game.EntityRepository.define('spider', {
              Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper]
 });
-/*
+Game.EntityRepository.define('snake', {
+    name: 'forest snake',
+    chr: 's',
+    fg: 'green',
+    sightRadius: 2,
+    maxHP: 1,
+    attackValue: 2,
+    defenseValue: 1,
+    tasks: ['hunt'],
+    foundIn: ['Forest'],
+    mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Sight,
+             Game.EntityMixins.Killable,
+             Game.EntityMixins.Attacker,
+             Game.EntityMixins.CorpseDropper]
+});
+Game.EntityRepository.define('bear', {
+    name: 'bear',
+    chr: 'b',
+    fg: 'brown',
+    sightRadius: 5,
+    maxHP: 10,
+    attackValue: 3,
+    defenseValue: 2,
+    tasks: ['wander'],
+    foundIn: ['Forest'],
+    mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Sight,
+             Game.EntityMixins.Killable,
+             Game.EntityMixins.Attacker,
+             Game.EntityMixins.CorpseDropper]
+});
 Game.EntityRepository.define('wolf', {
     name: 'wolf',
     chr: 'w',
@@ -725,7 +758,7 @@ Game.EntityRepository.define('wolf', {
              Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper]
 });
-*/
+
 Game.EntityRepository.define('wanderer', {
     name: 'wanderer',
     chr: '@',
