@@ -288,7 +288,13 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
                 this.hide();
                 Game.engine.unlock();
             }
-        } 
+        } else if (inputData.keyCode === ROT.VK_Q) {
+            if (this._currentItem && this._currentItem.hasMixin('Drinkable')) {
+                this._currentItem.drink(Game.player, this._currentItemIndex);
+                this.hide();
+                Game.engine.unlock();
+            }
+        }
     }
 };
 

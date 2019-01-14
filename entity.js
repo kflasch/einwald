@@ -200,6 +200,10 @@ Game.EntityMixins.PlayerActor = {
         if (!this._alive) {
             Game.lostGame();
         }
+
+        // always true since player... necessary?
+        if (this.hasMixin(Game.EntityMixins.Effectable))
+            this.elapseEffects();
         
         Game.turns++;
         Game.refresh();
@@ -316,6 +320,10 @@ Game.EntityMixins.TaskActor = {
         this._tasks = template['tasks'] || ['wander'];
     },
     act: function() {
+
+        if (this.hasMixin(Game.EntityMixins.Effectable))
+            this.elapseEffects();
+
         for (var i = 0; i < this._tasks.length; i++) {
             if (this.canDoTask(this._tasks[i])) {
                 this[this._tasks[i]]();
@@ -625,6 +633,42 @@ Game.EntityMixins.Attacker = {
     }
 };
 
+Game.EntityMixins.Effectable = {
+    name: 'Effectable',
+    groupName: 'Effectable',
+    init: function(template) {
+        this._effects = [];
+    },
+    addEffect: function(type, value, duration) {
+        this._effects.push({type: type,
+                            value: value,
+                            duration: duration});
+        if (type === 'defense')
+            this._defenseValue += value;
+        else if (type === 'attack')
+            this._attackValue += value;
+    },
+    removeEffect: function(effect, index) {
+        this._effects.splice(index, 1);
+        if (effect.type === 'defense')
+            this._defenseValue -= effect.value;
+        else if (effect.type === 'attack')
+            this._attackValue -= effect.value;
+    },
+    elapseEffects: function() {
+        // traverse array in reverse because splice re-indexes
+        var i = this._effects.length;
+        while (i--) {
+            if (this._effects[i].duration <= 0) {
+                this.removeEffect(this._effects[i], i);
+//                this._effects.splice(i, 1);
+            } else {
+                this._effects[i].duration--;
+            }
+        }
+    }
+};
+
 // entities
 
 Game.PlayerTemplate = {
@@ -641,6 +685,7 @@ Game.PlayerTemplate = {
              Game.EntityMixins.Equipper,
              Game.EntityMixins.Killable,
              Game.EntityMixins.Attacker,
+             Game.EntityMixins.Effectable,
              Game.EntityMixins.ExperienceGainer,
              Game.EntityMixins.InventoryHolder]
 };

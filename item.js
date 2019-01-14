@@ -36,6 +36,35 @@ Game.ItemMixins.Edible = {
     }
 };
 
+Game.ItemMixins.Drinkable = {
+    name: 'Drinkable',
+    init: function(template) {
+//        this.hpVal = template['hpVal'] || 0;
+//        this.attackVal = template['attackVal'] || 0;
+//        this.defenseVal = template['defenseVal'] || 0;
+        this.type = template['type'] || 0;
+        this.value = template['value'] || 1;
+        this.duration = template['duration'] || 10;
+    },
+    drink: function(entity, invIndex) {
+        /*
+        if (entity.hasMixin('Killable')) {
+            entity.modifyHP(this, this.hpVal);
+            if (this.defenseVal > 0) {
+                entity.buffDefense(this, this.defenseVal, this.duration);
+            }
+        }
+        if (entity.hasMixin('Attacker') && this.attackVal > 0) {
+            entity.buffAttack(this, this.attackVal, this.duration);
+        }
+        */
+        if (entity.hasMixin('Effectable')) {
+            entity.addEffect(this.type, this.value, this.duration);
+        }
+        entity.removeItem(invIndex);
+    }
+};
+
 Game.ItemMixins.Equippable = {
     name: 'Equippable',
     init: function(template) {
@@ -101,6 +130,30 @@ Game.ItemRepository.define('healingherb', {
     desc: 'A small green herb with medicinal properties.',
     foundIn: ['Forest'],
     mixins: [Game.ItemMixins.Edible]
+});
+
+Game.ItemRepository.define('defensepotion', {
+    name: 'potion of defense',
+    chr: '!,',
+    fg: 'blue',
+    type: 'defense',
+    duration: 10,
+    value: 4,
+    desc: 'A potion that will temporarily bolster your defense.',
+    foundIn: ['Forest'],
+    mixins: [Game.ItemMixins.Drinkable]
+});
+
+Game.ItemRepository.define('attackpotion', {
+    name: 'potion of attack',
+    chr: '!,',
+    fg: 'red',
+    type: 'attack',
+    duration: 10,
+    value: 3,
+    desc: 'A potion that will temporarily bolster your attack power.',
+    foundIn: ['Forest'],
+    mixins: [Game.ItemMixins.Drinkable]
 });
 
 Game.ItemRepository.define('dagger', {
