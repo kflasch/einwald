@@ -126,6 +126,7 @@ Game.ItemRepository.define('defensepotion', {
     duration: 10,
     value: 4,
     desc: 'A potion that will temporarily bolster your defense.',
+    foundIn: ['Crypt'],
     mixins: [Game.ItemMixins.Drinkable]
 });
 
@@ -137,6 +138,7 @@ Game.ItemRepository.define('attackpotion', {
     duration: 10,
     value: 3,
     desc: 'A potion that will temporarily bolster your attack power.',
+    foundIn: ['Crypt'],
     mixins: [Game.ItemMixins.Drinkable]
 });
 

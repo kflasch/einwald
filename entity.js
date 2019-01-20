@@ -603,6 +603,7 @@ Game.EntityMixins.Attacker = {
     groupName: 'Attacker',
     init: function(template) {
         this._attackValue = template['attackValue'] || 1;
+        this._attackVerbs = template['attackVerbs'] || ['hits'];
     },
     getAttackValue: function() {
         var att = 0;
@@ -612,6 +613,9 @@ Game.EntityMixins.Attacker = {
             }
         }
         return att + this._attackValue;
+    },
+    getAttackVerb: function() {
+        return getRandomItem(this._attackVerbs);
     },
     attack: function(target) {
         if (target.hasMixin('Killable')) {
@@ -624,8 +628,8 @@ Game.EntityMixins.Attacker = {
                 Game.UI.addMessage("You strike the " + target.getName()
                                    + " for " + damage + " damage!");
             } else {
-                Game.UI.addMessage("The " + this.getName() + " strikes you for "
-                                   + damage + " damage!");
+                Game.UI.addMessage("The " + this.getName() + " " + this.getAttackVerb()
+                                   + " you for " + damage + " damage!");
             }
 
             target.modifyHP(this, -damage);
@@ -703,6 +707,7 @@ Game.EntityRepository.define('spider', {
     maxHP: 3,
     attackValue: 1,
     defenseValue: 1,
+    attackVerbs: ['bites'],
     foundIn: ['Forest', 'Crypt'],
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Sight,
@@ -718,6 +723,7 @@ Game.EntityRepository.define('snake', {
     maxHP: 1,
     attackValue: 2,
     defenseValue: 1,
+    attackVerbs: ['bites'],
     tasks: ['hunt'],
     foundIn: ['Forest'],
     mixins: [Game.EntityMixins.TaskActor,
@@ -734,6 +740,7 @@ Game.EntityRepository.define('bear', {
     maxHP: 10,
     attackValue: 3,
     defenseValue: 2,
+    attackVerbs: ['claws', 'bites'],
     tasks: ['wander'],
     foundIn: ['Forest'],
     mixins: [Game.EntityMixins.TaskActor,

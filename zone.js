@@ -227,7 +227,6 @@ Game.Zone.prototype.exportToString = function() {
 
 
 Game.Zone.Forest = function Forest(tiles, player) {
-
     Game.Zone.call(this, tiles);
 
     this._name = "Forest";
@@ -283,15 +282,14 @@ Game.Zone.Forest = function Forest(tiles, player) {
         x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 2));
         y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 2));
         if (this.getTile(x, y)._passable) {
-            var key = x + ',' + y;
-            this._items[key] = [Game.ItemRepository.createRandom('Forest')];
+            this.addItem(x, y, Game.ItemRepository.createRandom('Forest'));
         }
     }
 };
+
 Game.Zone.Forest.extend(Game.Zone);
 
 Game.Zone.Crypt = function Crypt(tiles, fromZoneID, depth) {
-
     Game.Zone.call(this, tiles);
 
     this._name = "Crypt";
@@ -327,12 +325,14 @@ Game.Zone.Crypt = function Crypt(tiles, fromZoneID, depth) {
         this.addEntityAtRandomPosition(entity);
     }
 
+    if (this._depth < 3) {
+    }
 
 };
+
 Game.Zone.Crypt.extend(Game.Zone);
 
 Game.Zone.Sanctum = function Sanctum(tiles, fromZoneID, depth) {
-
     Game.Zone.call(this, tiles);
 
     this._name = "Sanctum";
@@ -358,4 +358,5 @@ Game.Zone.Sanctum = function Sanctum(tiles, fromZoneID, depth) {
     this.addEntityAtRandomPosition(entity);
 
 };
+
 Game.Zone.Sanctum.extend(Game.Zone);
