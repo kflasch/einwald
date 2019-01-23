@@ -75,12 +75,13 @@ Game.Entity.prototype.tryDoor = function(x, y, zone) {
     var tile = zone.getTile(x, y);
     var isPlayer = this.hasMixin(Game.EntityMixins.PlayerActor);
     var ent = zone.getEntityAt(x, y);
+    // gross checks but loading saved game breaks checking in a better way
     if (ent) {
         Game.UI.addMessage('A ' + ent._name + ' is in the way!');        
-    } else if (tile === Game.Tile.closedDoor) {
+    } else if (tile._desc === 'a closed door') {
         zone.setTile(x, y, Game.Tile.openDoor);
         Game.UI.addMessage('You open the door.');
-    } else if (tile === Game.Tile.openDoor) {
+    } else if (tile._desc === 'an open door') {
         zone.setTile(x, y, Game.Tile.closedDoor);
         Game.UI.addMessage('You close the door.');
     }
