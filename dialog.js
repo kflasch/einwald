@@ -102,6 +102,8 @@ Game.Dialog.MainMenu.prototype.getOutput = function() {
     if (localStorage.getItem("einwald_world"))
         output += " [<span style='color:cyan'>l</span>]oad <br />";    
     output += " <br />";
+    output += " [<span style='color:cyan'>a</span>] about <br />";
+    output += " [<span style='color:cyan'>?</span>] help <br />";
     return output;
 };
 
@@ -115,13 +117,35 @@ Game.Dialog.MainMenu.prototype.handleInput = function(inputType, inputData) {
                 this.hide();
                 Game._startGame(true);
             }
+        } else if (inputData.keyCode === ROT.VK_A) {
+            this.showAboutSubWin();
         }
     } else if (inputType === 'keypress') {
         var keyChar = String.fromCharCode(inputData.charCode);
         if (keyChar === '?') {
-            //this.hide();
-        }        
+            this.showHelpSubWin();
+        }
     }
+};
+
+Game.Dialog.MainMenu.prototype.showAboutSubWin = function() {
+    var elem = document.getElementById("sub");
+    elem.style.visibility = "visible";
+    var output = "<span style='color:#CCCC00'>About</span> <br />";
+    output += "<br />";
+    output += "<i>";
+    output += "";
+    
+    output += "</i>";
+    elem.innerHTML = output;
+};
+
+Game.Dialog.MainMenu.prototype.showHelpSubWin = function() {
+    var elem = document.getElementById("sub");
+    elem.style.visibility = "visible";
+    var output = "<span style='color:#CCCC00'>Help</span> <br />";
+    output += "<br />";
+    elem.innerHTML = output;
 };
 
 // win screen
@@ -135,7 +159,7 @@ Game.Dialog.WonGame.extend(Game.Dialog);
 Game.Dialog.WonGame.prototype.getOutput = function() {
     var output = " <br />" ;
     output += " <span style='color:purple'>Congratulations!</span> <br />";
-    output += " You escaped the forest!<br />";    
+    output += " You escaped the forest!<br />";
     output += " <br />";
     return output;
 };
