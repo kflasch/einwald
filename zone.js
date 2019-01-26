@@ -257,12 +257,21 @@ Game.Zone.Forest = function Forest(tiles, player) {
         }
     }.bind(this));
 
-    // this fails sometimes...
-    var cpos = this.getEmptyRandomPositionNear(cx, cy, 6);
-    player._x = cpos.x;
-    player._y = cpos.y;
+    // find random starting place for player, away from the crypt
+    var placingPlayer = true;
+    do {
+        var ppos = this.getEmptyRandomPosition();
+        if ((Math.abs(ppos.x - cx) > 15)) {// && (Math.abs(ppos.y - cy) > 5)) {
+            placingPlayer = false;
+            player._x = ppos.x;
+            player._y = ppos.y;
+        }
+    } while (placingPlayer);
+
+//    var cpos = this.getEmptyRandomPositionNear(cx, cy, 6);
+//    player._x = cpos.x;
+//    player._y = cpos.y;
     this.addEntity(player);
-    //this.addEntityAtRandomPosition(player);
 
     for (var i=0; i<10; i++) {
         var entity = Game.EntityRepository.createRandom('Forest');
