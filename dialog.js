@@ -62,7 +62,7 @@ Game.Dialog.Help = function() {
 Game.Dialog.Help.extend(Game.Dialog);
 
 Game.Dialog.Help.prototype.getOutput = function() {
-    var output = "arrow keys or numpad to move <br />";
+    var output = "Use arrow keys or numpad to move <br />";
     output += "'g' to get / pick up <br />";
     output += "'d' to drop <br />";
     output += "'i' to show inventory <br />";
@@ -102,8 +102,8 @@ Game.Dialog.MainMenu.prototype.getOutput = function() {
     if (localStorage.getItem("einwald_world"))
         output += " [<span style='color:cyan'>l</span>]oad <br />";    
     output += " <br />";
-    output += " [<span style='color:cyan'>a</span>] about <br />";
-    output += " [<span style='color:cyan'>?</span>] help <br />";
+    output += " [<span style='color:cyan'>a</span>]bout <br />";
+//    output += " [<span style='color:cyan'>?</span>] help <br />";
     return output;
 };
 
@@ -123,7 +123,7 @@ Game.Dialog.MainMenu.prototype.handleInput = function(inputType, inputData) {
     } else if (inputType === 'keypress') {
         var keyChar = String.fromCharCode(inputData.charCode);
         if (keyChar === '?') {
-            this.showHelpSubWin();
+  //          this.showHelpSubWin();
         }
     }
 };
@@ -133,10 +133,14 @@ Game.Dialog.MainMenu.prototype.showAboutSubWin = function() {
     elem.style.visibility = "visible";
     var output = "<span style='color:#CCCC00'>About</span> <br />";
     output += "<br />";
-    output += "<i>";
-    output += "";
-    
+    output += "<i>The ancient forest of Einwald is rumored to be cursed. ";
+    output += "You decided to take a shortcut through it anyways, but got ";
+    output += "lost and stumbled into a clearing. Find a way to escape!";
     output += "</i>";
+    output += "<br /> <br />";
+    output += "Einwald plays like a traditional roguelike. <br />";
+    output += "Press <span style='color:cyan'>?</span> during the game ";
+    output += "for help!";
     elem.innerHTML = output;
 };
 
@@ -150,7 +154,7 @@ Game.Dialog.MainMenu.prototype.showHelpSubWin = function() {
 
 // win screen
 Game.Dialog.WonGame = function() {
-    var properties = { title: '' };
+    var properties = { title: 'Congratulations!' };
     Game.Dialog.call(this, properties);
 };
 
@@ -158,8 +162,7 @@ Game.Dialog.WonGame.extend(Game.Dialog);
 
 Game.Dialog.WonGame.prototype.getOutput = function() {
     var output = " <br />" ;
-    output += " <span style='color:purple'>Congratulations!</span> <br />";
-    output += " You escaped the forest!<br />";
+    output += " You have escaped the forest!<br />";
     output += " <br />";
     return output;
 };
@@ -170,7 +173,7 @@ Game.Dialog.WonGame.prototype.handleInput = function(inputType, inputData) {
 
 
 Game.Dialog.LostGame = function() {
-    var properties = { title: '' };
+    var properties = { title: 'Game Over' };
     Game.Dialog.call(this, properties);
 };
 
@@ -178,7 +181,7 @@ Game.Dialog.LostGame.extend(Game.Dialog);
 
 Game.Dialog.LostGame.prototype.getOutput = function() {
     var output = " <br />" ;
-    output += " <span style='color:red'>You have lost.</span> <br />";
+    output += " <span style='color:red'>You have lost...</span> <br />";
     output += " <br />";
     output += " <br />";
     return output;
