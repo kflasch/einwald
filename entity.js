@@ -637,8 +637,8 @@ Game.EntityMixins.Attacker = {
                 Game.UI.addMessage("The " + this.getName() + " " + this.getAttackVerb()
                                    + " you for " + damage + " damage!");
             } else {
-                // TODO: need to see if in range to display this
-                for (var visEntity in Game.visibleEntities) {
+                // show player entities attacking each other if they are visible
+                for (var visEntity of Game.visibleEntities) {
                     if (this === visEntity)
                         Game.UI.addMessage("The " + this.getName() + " " + this.getAttackVerb()
                                            + " the " + target.getName()
