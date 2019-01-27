@@ -30,7 +30,7 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
     var target = zone.getEntityAt(x, y);
     if (target) {
         if (this.hasMixin('Attacker')) {
-            if (this.isHostile(target)) {
+            if (target.isHostile() && this.isHostile()) {
                 this.attack(target);
                 // if attacking a non-Attacker, make it one
                 if (!target.hasMixin('Attacker'))
@@ -38,6 +38,8 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
                 if (target.hasMixin('TaskActor') && !target._tasks.includes('hunt'))
                     target._tasks.unshift('hunt');
                 return true;
+            } else if (target.hasMixin('Communicator') && isPlayer) {
+                target.chat(this);
             } else {
                 descMsg = target.getName() + " is in the way.";
             }
@@ -152,12 +154,14 @@ Game.Entity.prototype.kill = function(message, zone) {
     }
 };
 
+/*
 Game.Entity.prototype.isHostile = function(target) {
     var isPlayer = this.hasMixin(Game.EntityMixins.PlayerActor);
     if (isPlayer || target.hasMixin(Game.EntityMixins.PlayerActor))
         return true;
     else return false;
 };
+*/
 
 Game.Entity.prototype.exportToString = function() {    
     function replacer(key, value) {
@@ -605,6 +609,7 @@ Game.EntityMixins.Attacker = {
     init: function(template) {
         this._attackValue = template['attackValue'] || 1;
         this._attackVerbs = template['attackVerbs'] || ['hits'];
+        this._hostile = template['hostile'];
     },
     getAttackValue: function() {
         var att = 0;
@@ -628,13 +633,25 @@ Game.EntityMixins.Attacker = {
             if (this.hasMixin('PlayerActor')) {
                 Game.UI.addMessage("You strike the " + target.getName()
                                    + " for " + damage + " damage!");
-            } else {
+            } else if (target.hasMixin('PlayerActor')) {
                 Game.UI.addMessage("The " + this.getName() + " " + this.getAttackVerb()
                                    + " you for " + damage + " damage!");
+            } else {
+                // TODO: need to see if in range to display this
+                for (var visEntity in Game.visibleEntities) {
+                    if (this === visEntity)
+                        Game.UI.addMessage("The " + this.getName() + " " + this.getAttackVerb()
+                                           + " the " + target.getName()
+                                           + " for " + damage + " damage!");
+                }
             }
 
             target.modifyHP(this, -damage);
         }
+    },
+    isHostile: function() {
+        if (this._hostile === undefined) return true;
+        else return this._hostile;
     }
 };
 
@@ -674,6 +691,14 @@ Game.EntityMixins.Effectable = {
 };
 
 Game.EntityMixins.Communicator = {
+    name: 'Communicator',
+    groupName: 'Communciator',
+    init: function(template) {
+    },
+    chat: function(target) {
+        if (target.hasMixin('PlayerActor'))
+            Game.UI.addMessage("The " + this.getName() + " says hi.");
+    }
 };
 
 // entities
@@ -775,12 +800,14 @@ Game.EntityRepository.define('wanderer', {
     maxHP: 10,
     attackValue: 2,
     defenseValue: 2,
+    hostile: false,
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
              Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper,
-             Game.EntityMixins.Equipper]
+             Game.EntityMixins.Equipper,
+             Game.EntityMixins.Communicator]
 });
 
 Game.EntityRepository.define('skeleton', {
