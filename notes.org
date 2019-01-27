@@ -1,0 +1,5 @@
+* Issues
+** turn happens as soon as you start
+** wanderer
+** throw
+** fonts
