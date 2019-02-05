@@ -324,6 +324,7 @@ Game.Dialog.Items.prototype.handleInputSub = function(inputType, inputData) {
                 Game.engine.unlock();
             }
         }
+        Game.UI.update();
     }
 };
 
