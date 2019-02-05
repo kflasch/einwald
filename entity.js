@@ -220,7 +220,15 @@ Game.EntityMixins.PlayerActor = {
 Game.EntityMixins.InventoryHolder = {
     name: 'InventoryHolder',
     init: function(template) {
-        this._items = template['items'] || new Array(10);
+//        this._items = template['items'] || new Array(10);
+        if (template['items']) {
+            this._items = new Array(template['items'].length);
+            for (var i=0; i<template['items'].length; i++) {
+                this._items[i]=Game.ItemRepository.create(template['items'][i]);
+            }
+        } else {
+            this._items = new Array(10);
+        }
     },
     getItems: function() {
         return this._items;
@@ -295,6 +303,12 @@ Game.EntityMixins.InventoryHolder = {
             } else {
                 Game.UI.addMessage("You don't drop anything.");
             }
+        } else {
+            if (removed === 1) {
+                Game.UI.addMessage("The " + this._name + " dropped a " + itemName + ".");
+            } else if (removed > 1) {
+                Game.UI.addMessage("The " + this._name + " dropped " + removed + " items.");
+            }
         }
     },
     dropItem: function(i) {
@@ -315,7 +329,14 @@ Game.EntityMixins.InventoryHolder = {
                 count++;
         }
         return count;
+    },
+    listeners: {
+        onDeath: function(attacker) {
+            if (!this.hasMixin(Game.EntityMixins.PlayerActor))
+                this.dropItems(Object.keys(this._items));
+        }
     }
+
 };
 
 Game.EntityMixins.TaskActor = {
@@ -694,10 +715,13 @@ Game.EntityMixins.Communicator = {
     name: 'Communicator',
     groupName: 'Communciator',
     init: function(template) {
+        this._dialogue = template['dialogue'] || ['...'];
     },
     chat: function(target) {
-        if (target.hasMixin('PlayerActor'))
-            Game.UI.addMessage("The " + this.getName() + " says hi.");
+        if (target.hasMixin('PlayerActor')) {
+            Game.UI.addMessage("The " + this.getName() + " says \""
+                               + getRandomItem(this._dialogue) + "\"");
+        }
     }
 };
 
@@ -758,9 +782,26 @@ Game.EntityRepository.define('snake', {
              Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper]
 });
+Game.EntityRepository.define('bat', {
+    name: 'bat',
+    chr: 't',
+    fg: 'brown',
+    sightRadius: 3,
+    maxHP: 1,
+    attackValue: 1,
+    defenseValue: 1,
+    attackVerbs: ['bites'],
+    tasks: ['wander'],
+    foundIn: ['Forest', 'Crypt'],
+    mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Sight,
+             Game.EntityMixins.Killable,
+             Game.EntityMixins.Attacker,
+             Game.EntityMixins.CorpseDropper]
+});
 Game.EntityRepository.define('bear', {
     name: 'bear',
-    chr: 'b',
+    chr: 'B',
     fg: 'brown',
     sightRadius: 5,
     maxHP: 10,
@@ -774,15 +815,16 @@ Game.EntityRepository.define('bear', {
              Game.EntityMixins.Killable,
              Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper]
-});
+}, { disableRandomCreation: true });
 Game.EntityRepository.define('wolf', {
     name: 'wolf',
-    chr: 'w',
+    chr: 'd',
     fg: 'grey',
     sightRadius: 6,
     maxHP: 5,
     attackValue: 2,
     defenseValue: 1,
+    attackVerbs: ['claws', 'bites'],
     tasks: ['hunt', 'wander'],
     foundIn: ['Forest'],
     mixins: [Game.EntityMixins.TaskActor,
@@ -801,6 +843,11 @@ Game.EntityRepository.define('wanderer', {
     attackValue: 2,
     defenseValue: 2,
     hostile: false,
+    dialogue: ["I can't seem to find my way out of this place...",
+               "I've heard of an old evil that lurks under the forest...",
+               "A strange magic barrier seems like it blocks the way out.",
+               "Excuse me.", "Mmm. Hmmmmm.",
+               "Oh-hoh! Forgive me.. I was absorbed in thought."],
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
@@ -808,6 +855,24 @@ Game.EntityRepository.define('wanderer', {
              Game.EntityMixins.CorpseDropper,
              Game.EntityMixins.Equipper,
              Game.EntityMixins.Communicator]
+}, { disableRandomCreation: true });
+
+Game.EntityRepository.define('ghost', {
+    name: 'ghost',
+    chr: 'h',
+    fg: 'blue',
+    sightRadius: 3,
+    maxHP: 1,
+    attackValue: 1,
+    defenseValue: 1,
+    tasks: ['wander'],
+    foundIn: ['Crypt'],
+    mixins: [Game.EntityMixins.TaskActor,
+             Game.EntityMixins.Sight,
+             Game.EntityMixins.Killable,
+             Game.EntityMixins.Attacker,
+//             Game.EntityMixins.CorpseDropper,
+             Game.EntityMixins.Equipper]
 });
 
 Game.EntityRepository.define('skeleton', {
@@ -818,6 +883,7 @@ Game.EntityRepository.define('skeleton', {
     maxHP: 12,
     attackValue: 3,
     defenseValue: 3,
+    items: ['shortsword'],
     tasks: ['hunt', 'wander'],
     foundIn: ['Crypt'],
     mixins: [Game.EntityMixins.TaskActor,
@@ -825,8 +891,9 @@ Game.EntityRepository.define('skeleton', {
              Game.EntityMixins.Killable,
              Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper,
+             Game.EntityMixins.InventoryHolder,
              Game.EntityMixins.Equipper]
-});
+}, { disableRandomCreation: true });
 
 Game.EntityRepository.define('ghoul', {
     name: 'ghoul',
@@ -849,7 +916,7 @@ Game.EntityRepository.define('ghoul', {
 Game.EntityRepository.define('lich', {
     name: 'lich',
     chr: 'L',
-    fg: 'white',
+    fg: 'blue',
     sightRadius: 8,
     maxHP: 30,
     attackValue: 6,
