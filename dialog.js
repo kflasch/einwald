@@ -198,6 +198,7 @@ Game.Dialog.Items = function(properties, items) {
     this._selectedIndices = {};
     this._mainAction = properties['mainAction'];
     this._canSelectMultiple = properties['canSelectMultiple'];
+    this._dontShowEquipped = properties['dontShowEquipped'];
     this._items = items;
     Game.Dialog.call(this, properties);
 };
@@ -242,7 +243,8 @@ Game.Dialog.Items.prototype.getItemOutput = function() {
 };
 
 Game.Dialog.Items.prototype.getItemStatus = function(i) {
-    //var output = "";
+    if (this._dontShowEquipped)
+        return "";
     if (Game.player._handOne === i)
         return "(wielding)";
     if (Game.player._armor === i)
@@ -405,6 +407,7 @@ Game.Dialog.dropProp = {
 Game.Dialog.pickupProp = {
     title: 'Pick Up',
     canSelectMultiple: true,
+    dontShowEquipped: true,
     mainAction: function(selItems) {
         Game.player.pickupItems(Object.keys(selItems));
         this.hide();
