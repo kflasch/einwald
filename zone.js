@@ -30,7 +30,6 @@ Game.Zone.prototype.getTile = function(x, y) {
 };
 
 Game.Zone.prototype.setTile = function(x, y, tile) {
-    console.log(x + ' ' + y);
     if (x >= 0 && x < this._width && y >= 0 && y < this._height) {
         this._tiles[x][y] = tile;
     }
@@ -155,9 +154,14 @@ Game.Zone.prototype.addEntity = function(entity) {
         Game.scheduler.add(entity, true);
     }
 
-    //if (entity.hasMixin('PlayerActor')) {
-    //    Game.player = entity;
-    //}
+    var isPlayer = entity.hasMixin(Game.EntityMixins.PlayerActor);
+    if (!isPlayer && entity._items) {
+        console.log(entity._items);
+        for (var i=0; i<entity._items.length; i++) {
+            if (entity._items[i].hasMixin('Equippable'))
+                entity.equip(i);
+        }
+    }
 };
 
 Game.Zone.prototype.removeEntity = function(entity) {
@@ -279,7 +283,9 @@ Game.Zone.Forest = function Forest(tiles, player) {
     }
     var wanderer = Game.EntityRepository.create('wanderer');
     this.addEntityAtRandomPosition(wanderer);
-    
+    var bear = Game.EntityRepository.create('bear');
+    this.addEntityAtRandomPosition(bear);
+
     /*
     var itemLoc = this.getEmptyRandomPositionNear(player._x, player._y, 2);
     if (itemLoc) {
@@ -329,6 +335,10 @@ Game.Zone.Crypt = function Crypt(tiles, fromZoneID, depth) {
         }
     }.bind(this));
 
+    if (this._depth == 1) {
+        var skel1 = Game.EntityRepository.create('skeleton');
+        this.addEntityAtRandomPosition(skel1);
+    }
     for (var i=0; i<10; i++) {
         var entity = Game.EntityRepository.createRandom('Crypt');
         this.addEntityAtRandomPosition(entity);
