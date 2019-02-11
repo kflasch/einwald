@@ -109,8 +109,8 @@ Game.ItemRepository.define('mushroom', {
 
 Game.ItemRepository.define('healingherb', {
     name: 'healing herb',
-    chr: '%,',
-    fg: 'green',
+    chr: '%',
+    fg: 'olive',
     foodVal: 0,
     hpVal: 2,
     desc: 'A small green herb with medicinal properties.',
@@ -120,7 +120,7 @@ Game.ItemRepository.define('healingherb', {
 
 Game.ItemRepository.define('defensepotion', {
     name: 'potion of defense',
-    chr: '!,',
+    chr: '!',
     fg: 'blue',
     type: 'defense',
     duration: 10,
@@ -132,7 +132,7 @@ Game.ItemRepository.define('defensepotion', {
 
 Game.ItemRepository.define('attackpotion', {
     name: 'potion of attack',
-    chr: '!,',
+    chr: '!',
     fg: 'red',
     type: 'attack',
     duration: 10,
