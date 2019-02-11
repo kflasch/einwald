@@ -200,3 +200,10 @@ Game.ItemRepository.define('corpse', {
     consumptions: 1,
     mixins: [Game.ItemMixins.Edible]
 }, { disableRandomCreation: true });
+
+Game.ItemRepository.define('runestone', {
+    name: 'runestone',
+    chr: '*',
+    fg: 'rgb(127,0,255)',
+    desc: 'A stone engraved with strange markings. It pulses with magical energy.'
+}, { disableRandomCreation : true });

@@ -608,7 +608,7 @@ Game.Map.SanctumBuilder.prototype.create = function(callback) {
     do {
         x = Math.floor(ROT.RNG.getUniform() * this._width);
         y = Math.floor(ROT.RNG.getUniform() * this._height);
-        console.log(map[x][y]);
+        //console.log(map[x][y]);
     } while (map[x][y] != 0);
     map[x][y] = 2;
 

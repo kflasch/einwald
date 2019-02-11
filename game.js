@@ -190,7 +190,7 @@ var Game = {
                     var glyph = this.zone.getTile(x, y);
                     if (glyph !== Game.Tile.nullTile) {
                         var fg = glyph._darkfg;
-                        if (visCells[x + "," + y]) {
+                        if (visCells[x + "," + y] || Game.debug) {
                             var items = this.zone.getItemsAt(x, y);
                             if (items) 
                                 glyph = items[items.length - 1];

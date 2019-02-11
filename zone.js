@@ -35,6 +35,16 @@ Game.Zone.prototype.setTile = function(x, y, tile) {
     }
 };
 
+Game.Zone.prototype.changeTiles = function(fromTile, toTile) {
+    for (var x=0; x < this._width; x++) {
+        for (var y=0; y < this._height; y++) {
+            if (this.getTile(x, y)._desc === fromTile._desc) {
+                this.setTile(x, y, toTile);
+            }
+        }
+    }
+};
+
 Game.Zone.prototype._setupFOV = function() {
     var thisZone = this;
     return new ROT.FOV.PreciseShadowcasting(function(x, y) {
@@ -155,10 +165,11 @@ Game.Zone.prototype.addEntity = function(entity) {
     }
 
     var isPlayer = entity.hasMixin(Game.EntityMixins.PlayerActor);
+    // very sloppy non-player equipping. goes through all their items
+    // and equips them if they are equippable, overriding previous
     if (!isPlayer && entity._items) {
-        console.log(entity._items);
         for (var i=0; i<entity._items.length; i++) {
-            if (entity._items[i].hasMixin('Equippable'))
+            if (entity._items[i] && entity._items[i].hasMixin('Equippable'))
                 entity.equip(i);
         }
     }

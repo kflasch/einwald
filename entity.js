@@ -57,12 +57,15 @@ Game.Entity.prototype.tryMove = function(x, y, zone) {
         } else {
              //descMsg = 'You pass through ' + tile._desc + '.';
         }
-    } else {
-        // win condition!
-        if (isPlayer && zone._id === 0 && x === -1) {
+    } else if (isPlayer) {
+        if (zone._id === 0 && tile._desc === 'a magic barrier' && this.hasItem('runestone')) {
+            descMsg = 'The runestone crackles and the magic barrier disspiates!';
+            zone.changeTiles(Game.Tile.magicBarrier, Game.Tile.grass);
+        } else if (zone._id === 0 && x === -1) {
+            // win condition!
             Game.wonGame();
             return undefined;
-        } if (tile == Game.Tile.nullTile) {
+        } else if (tile == Game.Tile.nullTile) {
              descMsg = "You cannot pass this way.";
         } else {
              descMsg = (tile._desc || 'Something') + ' is in the way.';
@@ -329,6 +332,13 @@ Game.EntityMixins.InventoryHolder = {
                 count++;
         }
         return count;
+    },
+    hasItem: function(name) {
+        for (var i=0; i < this._items.length; i++) {
+            if (this._items[i] && this._items[i]._name === name)
+                return true;
+        }
+        return false;
     },
     listeners: {
         onDeath: function(attacker) {
@@ -853,6 +863,7 @@ Game.EntityRepository.define('wanderer', {
              Game.EntityMixins.Killable,
              Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper,
+             Game.EntityMixins.InventoryHolder,
              Game.EntityMixins.Equipper,
              Game.EntityMixins.Communicator]
 }, { disableRandomCreation: true });
@@ -870,9 +881,9 @@ Game.EntityRepository.define('ghost', {
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
-             Game.EntityMixins.Attacker,
+             Game.EntityMixins.Attacker]
 //             Game.EntityMixins.CorpseDropper,
-             Game.EntityMixins.Equipper]
+//             Game.EntityMixins.Equipper]
 });
 
 Game.EntityRepository.define('skeleton', {
@@ -903,6 +914,7 @@ Game.EntityRepository.define('ghoul', {
     maxHP: 8,
     attackValue: 3,
     defenseValue: 2,
+    items: [],
     tasks: ['hunt', 'wander'],
     foundIn: ['Crypt'],
     mixins: [Game.EntityMixins.TaskActor,
@@ -910,6 +922,7 @@ Game.EntityRepository.define('ghoul', {
              Game.EntityMixins.Killable,
              Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper,
+             Game.EntityMixins.InventoryHolder,
              Game.EntityMixins.Equipper]
 });
 
@@ -921,11 +934,13 @@ Game.EntityRepository.define('lich', {
     maxHP: 30,
     attackValue: 6,
     defenseValue: 10,
+    items: ['runestone'],
     tasks: ['hunt', 'wander'],
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
              Game.EntityMixins.Attacker,
              Game.EntityMixins.CorpseDropper,
+             Game.EntityMixins.InventoryHolder,
              Game.EntityMixins.Equipper]
 }, { disableRandomCreation: true });
