@@ -89,6 +89,8 @@ var Game = {
             zone._id = savedZone._id;
             zone._explored = savedZone._explored;
             zone._connections = savedZone._connections;
+            zone._isMultiLevel = savedZone._isMultiLevel;
+            zone._depth = savedZone._depth;
             
             for (var xyloc in savedZone._items) {
                 var itemArr = savedZone._items[xyloc];
