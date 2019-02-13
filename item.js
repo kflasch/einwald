@@ -101,9 +101,9 @@ Game.ItemRepository.define('mushroom', {
     chr: '\,',
     fg: 'darkkhaki',
     foodVal: 1,
-    hpVal: 2,
-    desc: 'A small, wild mushroom.',
-    foundIn: ['Forest', 'Crypt'],
+    hpVal: 5,
+    desc: 'A mushroom known to heal wounds.',
+    foundIn: ['Crypt'],
     mixins: [Game.ItemMixins.Edible]
 });
 
@@ -112,7 +112,7 @@ Game.ItemRepository.define('healingherb', {
     chr: '%',
     fg: 'olive',
     foodVal: 0,
-    hpVal: 2,
+    hpVal: 3,
     desc: 'A small green herb with medicinal properties.',
     foundIn: ['Forest'],
     mixins: [Game.ItemMixins.Edible]
@@ -159,6 +159,16 @@ Game.ItemRepository.define('shortsword', {
     wieldable: true,
     attackVal: 2,
     desc: 'A short sword.',
+    mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
+}, { disableRandomCreation: true });
+
+Game.ItemRepository.define('longsword', {
+    name: 'longsword',
+    chr: ')',
+    fg: 'grey',
+    wieldable: true,
+    attackVal: 4,
+    desc: 'A long sword.',
     mixins: [Game.ItemMixins.Equippable, Game.ItemMixins.Throwable]
 }, { disableRandomCreation: true });
 

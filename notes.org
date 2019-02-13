@@ -1,9 +1,8 @@
 
+
 * Issues
 ** wandering creatures will become hunters if they wander into you
 ** turn happens as soon as you start
 ** ghosts
 ** wanderer
 ** throw
-** fonts
-** depth is wrong when loading a game

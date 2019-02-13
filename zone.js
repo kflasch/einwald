@@ -111,6 +111,11 @@ Game.Zone.prototype.addItem = function(x, y, item) {
     }
 };
 
+Game.Zone.prototype.addItemAtRandomPosition = function(item) {
+    var pos = this.getEmptyRandomPosition();
+    this.addItem(pos.x, pos.y, item);
+};
+
 Game.Zone.prototype.getEmptyRandomPosition = function() {
     var x, y;
     do {
@@ -297,20 +302,11 @@ Game.Zone.Forest = function Forest(tiles, player) {
     var bear = Game.EntityRepository.create('bear');
     this.addEntityAtRandomPosition(bear);
 
-    /*
-    var itemLoc = this.getEmptyRandomPositionNear(player._x, player._y, 2);
-    if (itemLoc) {
-        this._items[itemLoc.x + ',' + itemLoc.y] = [Game.ItemRepository.create('dagger')];
+    var numItems = Math.ceil(5 + ROT.RNG.getUniform() * 10);
+    for (var i=0; i<numItems; i++) {
+        this.addItemAtRandomPosition(Game.ItemRepository.createRandom('Forest'));
     }
-*/
 
-    for (var i=0; i<20; i++) {
-        x = Math.floor(ROT.RNG.getUniform() * (Game.mapWidth - 2));
-        y = Math.floor(ROT.RNG.getUniform() * (Game.mapHeight - 2));
-        if (this.getTile(x, y)._passable) {
-            this.addItem(x, y, Game.ItemRepository.createRandom('Forest'));
-        }
-    }
 };
 
 Game.Zone.Forest.extend(Game.Zone);
@@ -346,17 +342,36 @@ Game.Zone.Crypt = function Crypt(tiles, fromZoneID, depth) {
         }
     }.bind(this));
 
-    if (this._depth == 1) {
+    for (var i=0; i<this._depth; i++) {
         var skel1 = Game.EntityRepository.create('skeleton');
         this.addEntityAtRandomPosition(skel1);
     }
-    for (var i=0; i<10; i++) {
+
+    for (i=0; i<10; i++) {
         var entity = Game.EntityRepository.createRandom('Crypt');
         this.addEntityAtRandomPosition(entity);
     }
 
-    if (this._depth < 3) {
+    for (i=0; i<4; i++) {
+        this.addItemAtRandomPosition(Game.ItemRepository.createRandom('Crypt'));
     }
+
+    switch (this._depth) {
+    case 1:
+        this.addItemAtRandomPosition(Game.ItemRepository.create('leatherarmor'));
+        break;
+    case 2:
+        this.addItemAtRandomPosition(Game.ItemRepository.create('longsword'));
+        break;
+    case 3:
+        break;
+    case 4:
+        this.addItemAtRandomPosition(Game.ItemRepository.create('chainmail'));
+        break;
+    case 5:
+        break;
+    }
+
 
 };
 
