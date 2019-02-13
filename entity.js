@@ -157,6 +157,14 @@ Game.Entity.prototype.kill = function(message, zone) {
     }
 };
 
+Game.Entity.prototype.isVisibleToPlayer = function() {
+    for (var visEntity of Game.visibleEntities) {
+        if (this === visEntity)
+            return true;
+    }
+    return false;
+};
+
 /*
 Game.Entity.prototype.isHostile = function(target) {
     var isPlayer = this.hasMixin(Game.EntityMixins.PlayerActor);
@@ -599,13 +607,13 @@ Game.EntityMixins.Equipper = {
             this.unwield();
             if (this.hasMixin('PlayerActor'))
                 Game.UI.addMessage("You unequip your " + this._items[i]._name + ".");
-            else
+            else if (this.isVisibleToPlayer())
                 Game.UI.addMessage(this._name + " unequips their " + this._items[i]._name + ".");
         } else if (this._armor == i) {
             this.takeOff();
             if (this.hasMixin('PlayerActor'))
                 Game.UI.addMessage("You remove your " + this._items[i]._name + ".");
-            else
+            else if (this.isVisibleToPlayer())
                 Game.UI.addMessage(this._name + " removes their " + this._items[i]._name + ".");
         }
     },
@@ -614,14 +622,14 @@ Game.EntityMixins.Equipper = {
             this.wear(i);
             if (this.hasMixin('PlayerActor'))
                 Game.UI.addMessage("You wear the " + this._items[i]._name + ".");
-            else
+            else if (this.isVisibleToPlayer())
                 Game.UI.addMessage(this._name + " puts on " + this._items[i]._name + ".");
         } else if (this._items[i]._wieldable) {
             this.wield(i);
             if (this.hasMixin('PlayerActor'))
                 Game.UI.addMessage("You wield the " + this._items[i]._name + ".");
-            else
-                Game.UI.addMessage(this._name + " wields their " + this._items[i]._name + ".");
+            else if (this.isVisibleToPlayer())
+                Game.UI.addMessage('The ' + this._name + " wields their " + this._items[i]._name + ".");
         }
     },
 
@@ -669,12 +677,10 @@ Game.EntityMixins.Attacker = {
                                    + " you for " + damage + " damage!");
             } else {
                 // show player entities attacking each other if they are visible
-                for (var visEntity of Game.visibleEntities) {
-                    if (this === visEntity)
-                        Game.UI.addMessage("The " + this.getName() + " " + this.getAttackVerb()
-                                           + " the " + target.getName()
-                                           + " for " + damage + " damage!");
-                }
+                if (this.isVisibleToPlayer())
+                    Game.UI.addMessage("The " + this.getName() + " " + this.getAttackVerb()
+                                       + " the " + target.getName()
+                                       + " for " + damage + " damage!");
             }
 
             target.modifyHP(this, -damage);
@@ -876,14 +882,13 @@ Game.EntityRepository.define('ghost', {
     maxHP: 1,
     attackValue: 1,
     defenseValue: 1,
+    attackVerbs: ['touches'],
     tasks: ['wander'],
     foundIn: ['Crypt'],
     mixins: [Game.EntityMixins.TaskActor,
              Game.EntityMixins.Sight,
              Game.EntityMixins.Killable,
              Game.EntityMixins.Attacker]
-//             Game.EntityMixins.CorpseDropper,
-//             Game.EntityMixins.Equipper]
 });
 
 Game.EntityRepository.define('skeleton', {
@@ -914,6 +919,7 @@ Game.EntityRepository.define('ghoul', {
     maxHP: 8,
     attackValue: 3,
     defenseValue: 2,
+    attackVerbs: ['claws', 'gnaws'],
     items: [],
     tasks: ['hunt', 'wander'],
     foundIn: ['Crypt'],
@@ -934,6 +940,7 @@ Game.EntityRepository.define('lich', {
     maxHP: 30,
     attackValue: 6,
     defenseValue: 10,
+    attackVerbs: ['defiles', 'corrupts', 'befouls'],
     items: ['runestone'],
     tasks: ['hunt', 'wander'],
     mixins: [Game.EntityMixins.TaskActor,
